@@ -150,7 +150,7 @@
                 <br>
                 <span style="font-size:11px; color:#445566;">(WhatsApp / Telepon)</span>
             </div>
-            <div class="version">v2.0 • OpenRouter AI</div>
+            <div class="version">v2.0 • by Kreatorpedia</div>
         </div>
     </div>
 
@@ -225,8 +225,6 @@
                             <button onclick="fetchOpenRouterModels()" class="flex-1 bg-dark-800 hover:bg-dark-700 text-[10px] py-1.5 px-3 rounded-lg text-slate-300 transition-all">📦 Refresh Model</button>
                             <button onclick="openRouterKeys()" class="flex-1 bg-purple-600/20 hover:bg-purple-600/40 text-[10px] py-1.5 px-3 rounded-lg text-purple-300 transition-all border border-purple-500/20">📋 Ambil Key</button>
                         </div>
-                        <div id="api-status-text" class="text-[9px] text-slate-500 text-center mt-1">Masukkan API Key OpenRouter</div>
-                        <div id="model-status-text" class="text-[8px] text-slate-600 text-center"></div>
                     </div>
 
                     <div id="gemini-settings" class="hidden">
@@ -240,7 +238,6 @@
                             <button onclick="testGeminiKey()" class="flex-1 bg-dark-800 hover:bg-dark-700 text-[10px] py-1.5 px-3 rounded-lg text-slate-300 transition-all">🔑 Test Key</button>
                             <button onclick="geminiKeys()" class="flex-1 bg-purple-600/20 hover:bg-purple-600/40 text-[10px] py-1.5 px-3 rounded-lg text-purple-300 transition-all border border-purple-500/20">📋 Ambil Key</button>
                         </div>
-                        <div id="gemini-status-text" class="text-[9px] text-slate-500 text-center mt-1">Masukkan API Key Gemini</div>
                     </div>
                 </div>
             </div>
@@ -251,7 +248,7 @@
             <header class="sticky top-0 z-10 glass-panel px-4 md:px-8 py-3 md:py-4 flex justify-between items-center border-b border-dark-800/50">
                 <div class="pr-2">
                     <h2 id="header-title" class="text-sm md:text-base font-bold text-white">Ideasi & Naskah Cerita</h2>
-                    <p id="header-subtitle" class="text-[10px] md:text-[11px] text-slate-400 line-clamp-1 md:line-clamp-none">Gunakan OpenRouter AI dengan model free terbaik.</p>
+                    <p id="header-subtitle" class="text-[10px] md:text-[11px] text-slate-400 line-clamp-1 md:line-clamp-none">by Kreatorpedia</p>
                 </div>
                 <div class="flex items-center gap-3">
                     <span class="hidden md:flex bg-gradient-to-r from-purple-500/10 to-indigo-500/10 border border-purple-500/20 text-purple-400 px-3.5 py-1.5 rounded-full text-xs font-semibold items-center gap-1.5">
@@ -824,21 +821,7 @@
             return null;
         }
 
-        function updateAPIStatus(valid, msg) {
-            const dot = document.getElementById('apiStatusDot');
-            const status = document.getElementById('api-status-text');
-            if (valid === true) {
-                dot.className = 'api-status-dot on';
-                status.innerHTML = `<span style="color:#10b981;">✅ ${msg || 'Valid'}</span>`;
-            } else if (valid === null) {
-                dot.className = 'api-status-dot testing';
-                status.innerHTML = `<span style="color:#fbbf24;">⏳ ${msg || 'Testing...'}</span>`;
-            } else {
-                dot.className = 'api-status-dot off';
-                status.innerHTML = `<span style="color:#ef4444;">❌ ${msg || 'Tidak valid'}</span>`;
-            }
-        }
-
+        // ===== API KEY FUNCTIONS (tanpa notifikasi di bawah) =====
         const FALLBACK_MODELS = [
             { id: 'openrouter/free', label: 'openrouter/free' },
             { id: 'deepseek/deepseek-r1:free', label: 'deepseek-r1:free' },
@@ -850,12 +833,9 @@
         async function fetchOpenRouterModels() {
             const key = getAPIKey();
             if (!key) {
-                updateAPIStatus(false, 'Masukkan API Key dulu!');
                 showToast('❌ Masukkan API Key dulu!', 'error');
                 return;
             }
-            updateAPIStatus(null, 'Mengambil model...');
-            document.getElementById('model-status-text').textContent = '⏳ Mengambil model...';
             try {
                 const response = await fetch('https://openrouter.ai/api/v1/models', {
                     headers: { 'Authorization': `Bearer ${key}` }
@@ -878,9 +858,7 @@
                         if (m.id === currentValue || m.id === 'openrouter/free') opt.selected = true;
                         select.appendChild(opt);
                     });
-                    document.getElementById('model-status-text').textContent = '⚠️ Tidak ada model free dari API, gunakan fallback';
-                    updateAPIStatus(true, 'Valid (fallback)');
-                    showToast('⚠️ Gunakan model fallback (API tidak mengembalikan free model)', 'warn');
+                    showToast('⚠️ Gunakan model fallback', 'warn');
                 } else {
                     freeModels.forEach(m => {
                         const opt = document.createElement('option');
@@ -892,12 +870,9 @@
                         }
                         select.appendChild(opt);
                     });
-                    document.getElementById('model-status-text').textContent = `✅ ${freeModels.length} model free tersedia`;
-                    updateAPIStatus(true, 'Valid');
                     showToast(`✅ ${freeModels.length} model free ditemukan!`, 'success');
                 }
             } catch (e) {
-                document.getElementById('model-status-text').textContent = `❌ ${e.message} - Gunakan fallback`;
                 const select = document.getElementById('openrouter-model');
                 const currentValue = select.value;
                 select.innerHTML = '';
@@ -908,7 +883,6 @@
                     if (m.id === currentValue || m.id === 'openrouter/free') opt.selected = true;
                     select.appendChild(opt);
                 });
-                updateAPIStatus(false, 'Gagal ambil model, gunakan fallback');
                 showToast(`⚠️ Gagal ambil model: ${e.message}`, 'warn');
             }
         }
@@ -916,37 +890,25 @@
         async function testOpenRouterKey() {
             const key = getAPIKey();
             if (!key) {
-                updateAPIStatus(false, 'Key kosong!');
                 showToast('❌ Masukkan API Key!', 'error');
                 return;
             }
             if (!key.startsWith('sk-or-v1-')) {
-                updateAPIStatus(false, 'Format key salah! Harus sk-or-v1-...');
                 showToast('❌ Format key salah! Harus diawali sk-or-v1-', 'error');
                 return;
             }
-            updateAPIStatus(null, 'Menguji...');
             showToast('🔍 Menguji...', 'info');
             try {
                 const res = await fetch('https://openrouter.ai/api/v1/models', {
                     headers: { 'Authorization': `Bearer ${key}` }
                 });
                 if (res.ok) {
-                    const data = await res.json();
-                    const freeModels = data.data.filter(m =>
-                        m.id && (m.id.includes('free') ||
-                            (m.pricing && m.pricing.prompt === '0' && m.pricing.completion === '0'))
-                    );
-                    updateAPIStatus(true, 'Valid');
-                    showToast(`✅ API Key valid!`, 'success');
+                    showToast('✅ API Key OpenRouter Valid!', 'success');
                     await fetchOpenRouterModels();
                 } else {
-                    const err = await res.text();
-                    updateAPIStatus(false, 'Key tidak valid');
-                    showToast(`❌ ${err}`, 'error');
+                    showToast('❌ API Key tidak valid!', 'error');
                 }
             } catch (e) {
-                updateAPIStatus(false, 'Gagal koneksi');
                 showToast('❌ Gagal koneksi ke OpenRouter', 'error');
             }
         }
@@ -954,28 +916,25 @@
         async function testGeminiKey() {
             const key = document.getElementById('gemini-api-key').value.trim();
             if (!key) {
-                document.getElementById('gemini-status-text').innerHTML = '<span style="color:#ef4444;">❌ Masukkan API Key!</span>';
+                showToast('❌ Masukkan API Key!', 'error');
                 return;
             }
-            document.getElementById('gemini-status-text').innerHTML = '<span style="color:#fbbf24;">⏳ Menguji...</span>';
+            showToast('🔍 Menguji...', 'info');
             try {
                 const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${key}`);
                 if (res.ok) {
-                    document.getElementById('gemini-status-text').innerHTML = '<span style="color:#10b981;">✅ Valid</span>';
-                    showToast('✅ Gemini API Key valid!', 'success');
+                    showToast('✅ Gemini API Key Valid!', 'success');
                 } else {
-                    document.getElementById('gemini-status-text').innerHTML = '<span style="color:#ef4444;">❌ Tidak valid</span>';
                     showToast('❌ Gemini API Key tidak valid!', 'error');
                 }
             } catch (e) {
-                document.getElementById('gemini-status-text').innerHTML = '<span style="color:#ef4444;">❌ Gagal koneksi</span>';
                 showToast('❌ Gagal koneksi ke Gemini', 'error');
             }
         }
 
         function openRouterKeys() {
             window.open('https://openrouter.ai/keys', '_blank');
-            showToast('📋 Ambil API Key dari OpenRouter (sk-or-v1-...)', 'info');
+            showToast('📋 Ambil API Key dari OpenRouter', 'info');
         }
 
         function geminiKeys() {
@@ -1421,7 +1380,7 @@
             }
         }
 
-        // ----- Fungsi Visual (serentak, tanpa berurutan) -----
+        // ----- Fungsi Visual (serentak) -----
         function initStylePresets() {
             const container = document.getElementById('stylePresetsContainer');
             container.innerHTML = '';
@@ -1500,7 +1459,6 @@
             imgEl.src = `https://placehold.co/${w}x${h}/0a0f1d/6c5ce7?text=Adegan+${sceneNum}`;
         }
 
-        // generateImageForScene (tanpa Promise, langsung)
         function generateImageForScene(idx) {
             const promptInput = document.getElementById(`visual-prompt-input-${idx}`);
             const promptValue = promptInput ? promptInput.value.trim() : "";
@@ -1558,7 +1516,6 @@
             showToast(`Visual diacak (Seed #${seed})!`, "success");
         }
 
-        // generateAllImages – serentak (paralel)
         function generateAllImages() {
             if (!generatedStory.scenes || generatedStory.scenes.length === 0) {
                 showToast("Buat naskah dulu!", "error");
@@ -1572,7 +1529,7 @@
             });
         }
 
-        // ----- Player & Render (sama) -----
+        // ----- Player & Render -----
         function adjustPlayerAspect() {
             const isV = document.querySelector('input[name="video-duration"]:checked').value === "short";
             const f = document.getElementById('player-outer-frame');
@@ -1830,22 +1787,10 @@
             const savedOpenRouter = localStorage.getItem('openrouter_key');
             if (savedOpenRouter) {
                 document.getElementById('openrouter-api-key').value = savedOpenRouter;
-                if (savedOpenRouter.startsWith('sk-or-v1-')) {
-                    setTimeout(() => {
-                        testOpenRouterKey();
-                    }, 500);
-                }
             }
             const savedGemini = localStorage.getItem('gemini_key');
             if (savedGemini) {
                 document.getElementById('gemini-api-key').value = savedGemini;
-            }
-            if (!savedOpenRouter && !savedGemini) {
-                showToast("🔑 Masukkan API Key OpenRouter di sidebar", "info");
-                document.getElementById('api-settings').classList.remove('hidden');
-            }
-            if (savedOpenRouter && savedOpenRouter.startsWith('sk-or-v1-')) {
-                setTimeout(fetchOpenRouterModels, 1000);
             }
             console.log("🎬 Studio Konten Pro - Full Version siap.");
         }
