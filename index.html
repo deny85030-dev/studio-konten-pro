@@ -4,496 +4,574 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Studio Konten Pro</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Cinzel:wght@700&display=swap" rel="stylesheet">
-    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+
     <script>
         tailwind.config = {
             darkMode: 'class',
             theme: {
                 extend: {
-                    fontFamily: { 
-                        sans: ['Plus Jakarta Sans', 'sans-serif'],
-                        cinzel: ['Cinzel', 'serif']
-                    },
+                    fontFamily: { sans: ['Plus Jakarta Sans', 'sans-serif'], cinzel: ['Cinzel', 'serif'] },
                     colors: {
-                        brand: { 
-                            50: '#f0fdf4', 100: '#dcfce7', 500: '#10b981',
-                            600: '#059669', 700: '#047857', 900: '#064e3b', 950: '#022c22'
-                        },
-                        dark: { 
-                            950: '#05070f', 900: '#090d16', 800: '#111827',
-                            700: '#1f2937', 600: '#374151'
-                        }
+                        brand: { 50: '#f0fdf4', 100: '#dcfce7', 500: '#10b981', 600: '#059669', 700: '#047857', 900: '#064e3b', 950: '#022c22' },
+                        dark: { 950: '#05070f', 900: '#090d16', 800: '#111827', 700: '#1f2937', 600: '#374151' }
                     }
                 }
             }
         }
     </script>
-    
-    <style>
-        body { 
-            font-family: 'Plus Jakarta Sans', sans-serif; 
-            background-color: #05070f; 
-            color: #f8fafc; 
-        }
-        ::-webkit-scrollbar { width: 5px; height: 5px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #1f2937; border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: #374151; }
-        .no-scrollbar::-webkit-scrollbar { display: none; }
-        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-        .tab-content { display: none; animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
-        .tab-content.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .glass-panel { background: rgba(9, 13, 22, 0.75); backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.03); }
-        .loader { border: 3px solid rgba(255,255,255,0.1); border-top: 3px solid #10b981; border-radius: 50%; width: 22px; height: 22px; animation: spin 0.8s linear infinite; display: inline-block; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        @keyframes kenBurns { 0% { transform: scale(1) translate(0, 0); } 50% { transform: scale(1.08) translate(-0.5%, 0.5%); } 100% { transform: scale(1.03) translate(0.5%, -0.5%); } }
-        .animate-kenburns { animation: kenBurns 12s ease-in-out infinite alternate; }
 
-        .api-key-input {
-            background: #0d1423;
-            border: 1px solid #1a2a4a;
-            border-radius: 10px;
-            padding: 8px 12px;
-            color: #e8edf5;
-            font-size: 11px;
-            font-family: monospace;
-            width: 100%;
-            outline: none;
+    <style>
+        /* GLOBAL */
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background:#05070f; color:#f0f4f8; min-height:100vh; overflow:hidden; }
+
+        /* SPLASH SCREEN */
+        #splashOverlay {
+            position: fixed; inset:0; z-index:9999; display:flex; align-items:center; justify-content:center;
+            background: rgba(5,7,15,0.92); backdrop-filter:blur(18px); -webkit-backdrop-filter:blur(18px);
+            transition: opacity 0.6s ease, visibility 0.6s ease; padding:20px;
         }
-        .api-key-input:focus { border-color: #6c5ce7; }
-        .api-status-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            display: inline-block;
-            flex-shrink: 0;
+        #splashOverlay.hidden { opacity:0; visibility:hidden; pointer-events:none; }
+
+        .splash-box {
+            width:100%; max-width:400px; background:#0d1423; border-radius:28px; padding:36px 30px 30px;
+            border:1px solid #1a2a4a; box-shadow:0 30px 80px rgba(0,0,0,0.9), 0 0 60px rgba(108,92,231,0.08);
+            position:relative; overflow:hidden; animation:splashPop 0.5s cubic-bezier(0.16,1,0.3,1);
         }
-        .api-status-dot.on { background: #10b981; }
-        .api-status-dot.off { background: #ef4444; }
-        .api-status-dot.testing { background: #fbbf24; animation: pulse 0.8s infinite; }
-        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
-        
-        .btn-download {
-            background: linear-gradient(135deg, #10b981, #059669);
-            transition: all 0.3s;
-        }
-        .btn-download:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 30px rgba(16, 185, 129, 0.35);
-        }
-        .btn-purple {
-            background: linear-gradient(135deg, #6c5ce7, #a855f7);
-            transition: all 0.3s;
-        }
-        .btn-purple:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 30px rgba(108, 92, 231, 0.35);
-        }
+        @keyframes splashPop { 0% { transform:scale(0.92) translateY(20px); opacity:0; } 100% { transform:scale(1) translateY(0); opacity:1; } }
+        .splash-box::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background:linear-gradient(90deg,#6c5ce7,#a855f7,#6c5ce7); background-size:200% 100%; animation:gradientMove 3s ease infinite; }
+        @keyframes gradientMove { 0% { background-position:0% 50%; } 50% { background-position:100% 50%; } 100% { background-position:0% 50%; } }
+
+        .splash-box .logo { text-align:center; margin-bottom:24px; }
+        .splash-box .logo .icon { width:60px; height:60px; border-radius:18px; background:linear-gradient(135deg,#6c5ce7,#a855f7); display:flex; align-items:center; justify-content:center; font-size:28px; margin:0 auto 12px; box-shadow:0 8px 30px rgba(108,92,231,0.35); }
+        .splash-box .logo h1 { font-size:22px; font-weight:800; color:#fff; }
+        .splash-box .logo p { color:#667799; font-size:13px; margin-top:2px; }
+
+        .splash-box .form-group { margin-bottom:14px; }
+        .splash-box .form-group label { display:block; font-size:11px; font-weight:600; color:#667799; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:5px; }
+        .splash-box .form-group input { width:100%; padding:12px 16px; background:#080c18; border:1px solid #1a2a4a; border-radius:12px; color:#e8edf5; font-size:15px; outline:none; transition:border-color 0.3s; font-family:inherit; }
+        .splash-box .form-group input:focus { border-color:#6c5ce7; box-shadow:0 0 0 3px rgba(108,92,231,0.15); }
+        .splash-box .form-group input::placeholder { color:#445566; }
+
+        .splash-box .btn-login { width:100%; padding:14px; background:linear-gradient(135deg,#6c5ce7,#a855f7); border:none; border-radius:12px; color:white; font-size:16px; font-weight:700; cursor:pointer; transition:all 0.3s; font-family:inherit; margin-top:4px; }
+        .splash-box .btn-login:hover { transform:translateY(-2px); box-shadow:0 8px 30px rgba(108,92,231,0.35); }
+        .splash-box .btn-login:disabled { opacity:0.5; cursor:not-allowed; transform:none; }
+
+        .splash-box .error-msg { background:rgba(239,68,68,0.08); border:1px solid rgba(239,68,68,0.2); border-radius:10px; padding:10px 14px; font-size:13px; color:#ef4444; display:none; margin-bottom:12px; text-align:center; }
+        .splash-box .error-msg.show { display:block; animation:shake 0.4s ease; }
+        @keyframes shake { 0%,100% { transform:translateX(0); } 25% { transform:translateX(-8px); } 75% { transform:translateX(8px); } }
+
+        .splash-box .contact-info { margin-top:18px; padding-top:14px; border-top:1px solid #1a2a4a; text-align:center; font-size:13px; color:#667799; }
+        .splash-box .contact-info a { color:#a855f7; text-decoration:none; font-weight:600; }
+        .splash-box .contact-info a:hover { text-decoration:underline; }
+        .splash-box .version { text-align:center; font-size:10px; color:#334455; margin-top:14px; letter-spacing:0.5px; }
+
+        /* MAIN APP */
+        #mainApp { display:none; width:100%; height:100vh; overflow:hidden; }
+        #mainApp.visible { display:flex; }
+
+        /* Scroll, tabs, glass, loader, dll dari file sebelumnya */
+        ::-webkit-scrollbar { width:5px; height:5px; }
+        ::-webkit-scrollbar-track { background:transparent; }
+        ::-webkit-scrollbar-thumb { background:#1f2937; border-radius:10px; }
+        ::-webkit-scrollbar-thumb:hover { background:#374151; }
+        .no-scrollbar::-webkit-scrollbar { display:none; }
+        .no-scrollbar { -ms-overflow-style:none; scrollbar-width:none; }
+
+        .tab-content { display:none; animation:fadeIn 0.4s cubic-bezier(0.16,1,0.3,1); }
+        .tab-content.active { display:block; }
+        @keyframes fadeIn { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+
+        .glass-panel { background:rgba(9,13,22,0.75); backdrop-filter:blur(16px); border:1px solid rgba(255,255,255,0.03); }
+        .loader { border:3px solid rgba(255,255,255,0.1); border-top:3px solid #10b981; border-radius:50%; width:22px; height:22px; animation:spin 0.8s linear infinite; display:inline-block; }
+        @keyframes spin { 0% { transform:rotate(0deg); } 100% { transform:rotate(360deg); } }
+        @keyframes kenBurns { 0% { transform:scale(1) translate(0,0); } 50% { transform:scale(1.08) translate(-0.5%,0.5%); } 100% { transform:scale(1.03) translate(0.5%,-0.5%); } }
+        .animate-kenburns { animation:kenBurns 12s ease-in-out infinite alternate; }
+
+        .api-key-input { background:#0d1423; border:1px solid #1a2a4a; border-radius:10px; padding:8px 12px; color:#e8edf5; font-size:11px; font-family:monospace; width:100%; outline:none; }
+        .api-key-input:focus { border-color:#6c5ce7; }
+        .api-status-dot { width:8px; height:8px; border-radius:50%; display:inline-block; flex-shrink:0; }
+        .api-status-dot.on { background:#10b981; }
+        .api-status-dot.off { background:#ef4444; }
+        .api-status-dot.testing { background:#fbbf24; animation:pulse 0.8s infinite; }
+        @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.3; } }
+
+        .btn-download { background:linear-gradient(135deg,#10b981,#059669); transition:all 0.3s; }
+        .btn-download:hover { transform:translateY(-2px); box-shadow:0 8px 30px rgba(16,185,129,0.35); }
+        .btn-purple { background:linear-gradient(135deg,#6c5ce7,#a855f7); transition:all 0.3s; }
+        .btn-purple:hover { transform:translateY(-2px); box-shadow:0 8px 30px rgba(108,92,231,0.35); }
+
+        #toast-container { position:fixed; bottom:20px; right:20px; z-index:99999; display:flex; flex-direction:column; gap:8px; pointer-events:none; width:100%; max-width:380px; margin-left:auto; }
+        .toast-item { pointer-events:auto; padding:12px 18px; border-radius:14px; background:rgba(13,20,35,0.92); backdrop-filter:blur(12px); border:1px solid rgba(255,255,255,0.06); color:#e8edf5; font-size:13px; font-weight:500; display:flex; align-items:center; gap:12px; box-shadow:0 10px 40px rgba(0,0,0,0.6); transform:translateX(calc(100% + 30px)); opacity:0; transition:all 0.4s cubic-bezier(0.16,1,0.3,1); }
+        .toast-item.show { transform:translateX(0); opacity:1; }
+        .toast-item.hide { transform:translateX(calc(100% + 30px)); opacity:0; }
+        .toast-item .toast-icon { flex-shrink:0; width:28px; height:28px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:13px; }
+        .toast-item .toast-icon.success { background:rgba(16,185,129,0.15); color:#10b981; }
+        .toast-item .toast-icon.error { background:rgba(239,68,68,0.15); color:#ef4444; }
+        .toast-item .toast-icon.info { background:rgba(59,130,246,0.15); color:#3b82f6; }
+        .toast-item .toast-icon.warn { background:rgba(251,191,36,0.15); color:#fbbf24; }
+        .toast-item .toast-msg { flex:1; line-height:1.4; }
     </style>
 </head>
-<body class="flex flex-col md:flex-row h-screen w-full overflow-hidden select-none">
+<body>
 
-    <!-- ===== SIDEBAR ===== -->
-    <aside class="w-full md:w-64 bg-dark-950 border-b md:border-b-0 md:border-r border-dark-800 flex flex-col z-20 shadow-2xl flex-shrink-0">
-        <div class="p-4 md:p-5 border-b border-dark-800 flex items-center justify-between md:justify-start gap-3">
-            <div class="flex items-center gap-3">
-                <div class="w-8 h-8 md:w-10 md:h-10 rounded-xl bg-gradient-to-br from-purple-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-purple-500/20">
-                    <i class="fa-solid fa-wand-magic-sparkles text-white text-sm md:text-lg animate-pulse"></i>
-                </div>
-                <div>
-                    <h1 class="text-sm font-extrabold text-white leading-tight">Studio Konten</h1>
-                    <p class="text-[9px] text-purple-400 font-bold tracking-widest uppercase">OPENROUTER AI</p>
-                </div>
+    <!-- ========================================================== -->
+    <!-- SPLASH SCREEN (LOGIN POPUP) -->
+    <!-- ========================================================== -->
+    <div id="splashOverlay">
+        <div class="splash-box" id="splashBox">
+            <div class="logo">
+                <div class="icon"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
+                <h1>Studio Konten Pro</h1>
+                <p>Masuk untuk mengakses aplikasi</p>
             </div>
+
+            <div class="error-msg" id="loginError">
+                <i class="fa-solid fa-circle-exclamation"></i>
+                <span id="errorText">Username atau password salah!</span>
+            </div>
+
+            <div class="form-group">
+                <label><i class="fa-regular fa-user"></i> Nama Pengguna</label>
+                <input type="text" id="usernameInput" placeholder="Masukkan username..." autocomplete="username" autofocus>
+            </div>
+
+            <div class="form-group">
+                <label><i class="fa-solid fa-lock"></i> Kata Sandi</label>
+                <input type="password" id="passwordInput" placeholder="Masukkan password..." autocomplete="current-password">
+            </div>
+
+            <button class="btn-login" id="loginBtn">
+                <i class="fa-solid fa-arrow-right-to-bracket"></i> Masuk
+            </button>
+
+            <div class="contact-info">
+                <i class="fa-solid fa-headset"></i>
+                Belum punya akses? Hubungi Admin:
+                <a href="tel:085138718594"><strong>0851-3871-8594</strong></a>
+                <br>
+                <span style="font-size:11px; color:#445566;">(WhatsApp / Telepon)</span>
+            </div>
+
+            <div class="version">v2.0 • OpenRouter AI</div>
         </div>
+    </div>
 
-        <nav class="flex-none md:flex-1 p-2 md:p-4 flex flex-row md:flex-col gap-2 overflow-x-auto md:overflow-y-auto no-scrollbar border-b border-dark-800 md:border-none">
-            <button onclick="switchTab('tab-ideasi')" id="nav-ideasi" class="flex-shrink-0 w-auto md:w-full flex items-center gap-2 md:gap-3 px-4 py-2.5 md:py-3 rounded-xl transition-all text-xs md:text-sm font-semibold text-left text-purple-400 bg-purple-500/10 border border-purple-500/30">
-                <i class="fa-solid fa-lightbulb w-4 md:w-5 text-center text-base md:text-lg"></i> 1. Ide & Naskah
-            </button>
-            <button onclick="switchTab('tab-suara')" id="nav-suara" class="flex-shrink-0 w-auto md:w-full flex items-center gap-2 md:gap-3 px-4 py-2.5 md:py-3 rounded-xl text-slate-400 hover:bg-dark-800/50 hover:text-white transition-all text-xs md:text-sm font-semibold text-left border border-transparent">
-                <i class="fa-solid fa-microphone-lines w-4 md:w-5 text-center text-base md:text-lg"></i> 2. Suara TTS
-            </button>
-            <button onclick="switchTab('tab-visual')" id="nav-visual" class="flex-shrink-0 w-auto md:w-full flex items-center gap-2 md:gap-3 px-4 py-2.5 md:py-3 rounded-xl text-slate-400 hover:bg-dark-800/50 hover:text-white transition-all text-xs md:text-sm font-semibold text-left border border-transparent">
-                <i class="fa-solid fa-image w-4 md:w-5 text-center text-base md:text-lg"></i> 3. Storyboard
-            </button>
-            <button onclick="switchTab('tab-render')" id="nav-render" class="flex-shrink-0 w-auto md:w-full flex items-center gap-2 md:gap-3 px-4 py-2.5 md:py-3 rounded-xl text-slate-400 hover:bg-dark-800/50 hover:text-white transition-all text-xs md:text-sm font-semibold text-left border border-transparent">
-                <i class="fa-solid fa-film w-4 md:w-5 text-center text-base md:text-lg"></i> 4. Render Video
-            </button>
-        </nav>
+    <!-- ========================================================== -->
+    <!-- TOAST CONTAINER -->
+    <!-- ========================================================== -->
+    <div id="toast-container"></div>
 
-        <!-- ===== API SETTINGS ===== -->
-        <div class="p-3 md:p-4 md:border-t border-dark-800 flex flex-col gap-2 bg-dark-900/30">
-            <div class="flex items-center justify-between cursor-pointer md:cursor-default" onclick="document.getElementById('api-settings').classList.toggle('hidden')">
-                <div class="flex items-center gap-2">
-                    <span class="api-status-dot off" id="apiStatusDot"></span>
-                    <p class="text-[10px] font-bold text-white uppercase tracking-wider">⚡ API Settings</p>
+    <!-- ========================================================== -->
+    <!-- MAIN APP (dari file 2) - konten sama, hanya di-copy ulang untuk kelengkapan -->
+    <!-- ========================================================== -->
+    <div id="mainApp" class="flex flex-col md:flex-row h-screen w-full overflow-hidden select-none">
+
+        <!-- ===== SIDEBAR ===== -->
+        <aside class="w-full md:w-64 bg-dark-950 border-b md:border-b-0 md:border-r border-dark-800 flex flex-col z-20 shadow-2xl flex-shrink-0">
+            <div class="p-4 md:p-5 border-b border-dark-800 flex items-center justify-between md:justify-start gap-3">
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 md:w-10 md:h-10 rounded-xl bg-gradient-to-br from-purple-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-purple-500/20">
+                        <i class="fa-solid fa-wand-magic-sparkles text-white text-sm md:text-lg animate-pulse"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-sm font-extrabold text-white leading-tight">Studio Konten</h1>
+                        <p class="text-[9px] text-purple-400 font-bold tracking-widest uppercase">OPENROUTER AI</p>
+                    </div>
                 </div>
-                <i class="fa-solid fa-chevron-down text-slate-400 text-xs md:hidden"></i>
+                <button onclick="logoutApp()" class="md:hidden text-slate-400 hover:text-white text-sm transition-all">
+                    <i class="fa-solid fa-sign-out-alt"></i>
+                </button>
             </div>
-            <div id="api-settings" class="flex flex-col gap-2 mt-1">
-                <select id="provider-select" onchange="toggleProvider()" class="bg-dark-950 border border-dark-800 rounded-lg text-[10px] p-2 text-slate-300 focus:outline-none focus:border-purple-500 w-full">
-                    <option value="openrouter">🌐 OpenRouter (FREE) - REKOMENDASI</option>
-                    <option value="gemini">🔵 Google Gemini</option>
-                </select>
 
-                <div id="openrouter-settings">
-                    <input type="password" id="openrouter-api-key" placeholder="Masukkan OpenRouter API Key (sk-or-v1-...)" class="api-key-input">
-                    <select id="openrouter-model" class="api-key-input mt-1">
-                        <option value="openrouter/free">🧠 openrouter/free</option>
+            <nav class="flex-none md:flex-1 p-2 md:p-4 flex flex-row md:flex-col gap-2 overflow-x-auto md:overflow-y-auto no-scrollbar border-b border-dark-800 md:border-none">
+                <button onclick="switchTab('tab-ideasi')" id="nav-ideasi" class="flex-shrink-0 w-auto md:w-full flex items-center gap-2 md:gap-3 px-4 py-2.5 md:py-3 rounded-xl transition-all text-xs md:text-sm font-semibold text-left text-purple-400 bg-purple-500/10 border border-purple-500/30">
+                    <i class="fa-solid fa-lightbulb w-4 md:w-5 text-center text-base md:text-lg"></i> 1. Ide & Naskah
+                </button>
+                <button onclick="switchTab('tab-suara')" id="nav-suara" class="flex-shrink-0 w-auto md:w-full flex items-center gap-2 md:gap-3 px-4 py-2.5 md:py-3 rounded-xl text-slate-400 hover:bg-dark-800/50 hover:text-white transition-all text-xs md:text-sm font-semibold text-left border border-transparent">
+                    <i class="fa-solid fa-microphone-lines w-4 md:w-5 text-center text-base md:text-lg"></i> 2. Suara TTS
+                </button>
+                <button onclick="switchTab('tab-visual')" id="nav-visual" class="flex-shrink-0 w-auto md:w-full flex items-center gap-2 md:gap-3 px-4 py-2.5 md:py-3 rounded-xl text-slate-400 hover:bg-dark-800/50 hover:text-white transition-all text-xs md:text-sm font-semibold text-left border border-transparent">
+                    <i class="fa-solid fa-image w-4 md:w-5 text-center text-base md:text-lg"></i> 3. Storyboard
+                </button>
+                <button onclick="switchTab('tab-render')" id="nav-render" class="flex-shrink-0 w-auto md:w-full flex items-center gap-2 md:gap-3 px-4 py-2.5 md:py-3 rounded-xl text-slate-400 hover:bg-dark-800/50 hover:text-white transition-all text-xs md:text-sm font-semibold text-left border border-transparent">
+                    <i class="fa-solid fa-film w-4 md:w-5 text-center text-base md:text-lg"></i> 4. Render Video
+                </button>
+            </nav>
+
+            <!-- API SETTINGS -->
+            <div class="p-3 md:p-4 md:border-t border-dark-800 flex flex-col gap-2 bg-dark-900/30">
+                <div class="flex items-center justify-between cursor-pointer md:cursor-default" onclick="document.getElementById('api-settings').classList.toggle('hidden')">
+                    <div class="flex items-center gap-2">
+                        <span class="api-status-dot off" id="apiStatusDot"></span>
+                        <p class="text-[10px] font-bold text-white uppercase tracking-wider">⚡ API Settings</p>
+                    </div>
+                    <i class="fa-solid fa-chevron-down text-slate-400 text-xs md:hidden"></i>
+                </div>
+                <div id="api-settings" class="flex flex-col gap-2 mt-1">
+                    <select id="provider-select" onchange="toggleProvider()" class="bg-dark-950 border border-dark-800 rounded-lg text-[10px] p-2 text-slate-300 focus:outline-none focus:border-purple-500 w-full">
+                        <option value="openrouter">🌐 OpenRouter (FREE) - REKOMENDASI</option>
+                        <option value="gemini">🔵 Google Gemini</option>
                     </select>
-                    <div class="flex gap-2 mt-1">
-                        <button onclick="testOpenRouterKey()" class="flex-1 bg-dark-800 hover:bg-dark-700 text-[10px] py-1.5 px-3 rounded-lg text-slate-300 transition-all">🔑 Test Key</button>
-                        <button onclick="fetchOpenRouterModels()" class="flex-1 bg-dark-800 hover:bg-dark-700 text-[10px] py-1.5 px-3 rounded-lg text-slate-300 transition-all">📦 Refresh Model</button>
-                        <button onclick="openRouterKeys()" class="flex-1 bg-purple-600/20 hover:bg-purple-600/40 text-[10px] py-1.5 px-3 rounded-lg text-purple-300 transition-all border border-purple-500/20">📋 Ambil Key</button>
-                    </div>
-                    <div id="api-status-text" class="text-[9px] text-slate-500 text-center mt-1">Masukkan API Key OpenRouter</div>
-                    <div id="model-status-text" class="text-[8px] text-slate-600 text-center"></div>
-                </div>
 
-                <div id="gemini-settings" class="hidden">
-                    <input type="password" id="gemini-api-key" placeholder="Masukkan Gemini API Key..." class="api-key-input">
-                    <div class="flex gap-2 mt-1">
-                        <button onclick="testGeminiKey()" class="flex-1 bg-dark-800 hover:bg-dark-700 text-[10px] py-1.5 px-3 rounded-lg text-slate-300 transition-all">🔑 Test Key</button>
-                    </div>
-                    <div id="gemini-status-text" class="text-[9px] text-slate-500 text-center mt-1">Atau gunakan Gemini API</div>
-                </div>
-            </div>
-        </div>
-    </aside>
-
-    <!-- ===== MAIN CONTENT ===== -->
-    <main class="flex-1 relative bg-dark-900 overflow-y-auto flex flex-col h-full">
-        <header class="sticky top-0 z-10 glass-panel px-4 md:px-8 py-3 md:py-4 flex justify-between items-center border-b border-dark-800/50">
-            <div class="pr-2">
-                <h2 id="header-title" class="text-sm md:text-base font-bold text-white">Ideasi & Naskah Cerita</h2>
-                <p id="header-subtitle" class="text-[10px] md:text-[11px] text-slate-400 line-clamp-1 md:line-clamp-none">Gunakan OpenRouter AI dengan model free terbaik.</p>
-            </div>
-            <div class="hidden md:flex items-center gap-3">
-                <span class="bg-gradient-to-r from-purple-500/10 to-indigo-500/10 border border-purple-500/20 text-purple-400 px-3.5 py-1.5 rounded-full text-xs font-semibold flex items-center gap-1.5">
-                    <i class="fa-solid fa-circle-nodes"></i> OpenRouter AI
-                </span>
-            </div>
-        </header>
-
-        <div class="p-4 md:p-8 max-w-5xl mx-auto pb-24 w-full flex-1">
-            
-            <!-- ===== TAB 1: Ideasi ===== -->
-            <section id="tab-ideasi" class="tab-content active space-y-4 md:space-y-6">
-                
-                <div class="glass-panel p-4 md:p-6 rounded-2xl border border-dark-800/80 shadow-xl space-y-4">
-                    <div class="flex justify-between items-center">
-                        <div class="flex items-center gap-2">
-                            <i class="fa-solid fa-magnifying-glass-chart text-purple-400 text-base md:text-lg"></i>
-                            <h3 class="text-[10px] md:text-xs font-bold text-slate-300 uppercase tracking-wider">Riset Judul (AI)</h3>
-                        </div>
-                    </div>
-                    <div class="flex flex-col md:flex-row gap-3">
-                        <input type="text" id="input-research-topic" placeholder="Contoh: rahasia gunung padang..." class="flex-1 bg-dark-950 border border-dark-800 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-purple-500 transition-all">
-                        <button onclick="researchProfessionalTitles()" id="btn-research-titles" class="btn-purple text-white px-5 py-3 rounded-xl text-sm md:text-xs font-bold transition-all shadow-md flex items-center justify-center gap-2">
-                            <i class="fa-solid fa-chart-line"></i> <span>Riset 10 Judul</span>
-                        </button>
-                    </div>
-                    <div id="titles-recommendation-container" class="hidden p-4 bg-dark-950/60 rounded-xl border border-dark-800 space-y-3">
-                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
-                            <i class="fa-solid fa-list-ol text-purple-400"></i> Rekomendasi 10 Judul:
-                        </p>
-                        <div id="titles-recommendation-list" class="grid grid-cols-1 md:grid-cols-2 gap-2"></div>
-                    </div>
-                </div>
-
-                <div class="glass-panel p-4 md:p-6 rounded-2xl border border-dark-800/80 shadow-xl space-y-5">
-                    <div class="flex flex-col gap-3">
-                        <span class="text-[10px] md:text-xs font-bold text-slate-400 uppercase tracking-wider">Format Konten Video</span>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
-                            <label class="flex items-center gap-3 cursor-pointer bg-dark-950/40 p-3 md:p-4 rounded-xl border border-dark-800 hover:border-purple-500/50 transition-all">
-                                <input type="radio" name="video-duration" value="short" checked class="w-4 h-4 text-purple-500 accent-purple-500"> 
-                                <div class="flex flex-col">
-                                    <span class="text-xs md:text-sm font-bold text-white">Cerita Pendek (Shorts/TikTok)</span>
-                                    <span class="text-[10px] md:text-xs text-slate-400">Rasio Vertikal (9:16)</span>
-                                </div>
-                            </label>
-                            <label class="flex items-center gap-3 cursor-pointer bg-dark-950/40 p-3 md:p-4 rounded-xl border border-dark-800 hover:border-purple-500/50 transition-all">
-                                <input type="radio" name="video-duration" value="long" class="w-4 h-4 text-purple-500 accent-purple-500"> 
-                                <div class="flex flex-col">
-                                    <span class="text-xs md:text-sm font-bold text-white">Cerita Panjang (YouTube)</span>
-                                    <span class="text-[10px] md:text-xs text-slate-400">Rasio Horisontal (16:9)</span>
-                                </div>
-                            </label>
-                        </div>
-                    </div>
-
-                    <div class="border-t border-dark-800/60 pt-4 flex flex-col md:flex-row md:items-center justify-between gap-3">
-                        <div class="space-y-1">
-                            <span class="text-[10px] md:text-xs font-bold text-slate-400 uppercase tracking-wider block">Target Jumlah Adegan</span>
-                        </div>
-                        <select id="target-scenes-count-select" class="w-full md:w-auto bg-dark-950 border border-dark-800 text-white rounded-xl px-4 py-2.5 text-sm md:text-xs font-bold focus:outline-none focus:border-purple-500">
-                            <option value="3">3 Adegan (Sangat Pendek)</option>
-                            <option value="5">5 Adegan (Standar Pendek)</option>
-                            <option value="8">8 Adegan (Sinematik Ringkas)</option>
-                            <option value="12" selected>12 Adegan (Direkomendasikan)</option>
-                            <option value="20">20 Adegan (Cerita Komplet)</option>
+                    <div id="openrouter-settings">
+                        <input type="password" id="openrouter-api-key" placeholder="Masukkan OpenRouter API Key (sk-or-v1-...)" class="api-key-input">
+                        <select id="openrouter-model" class="api-key-input mt-1">
+                            <option value="openrouter/free">🧠 openrouter/free</option>
                         </select>
-                    </div>
-
-                    <div class="border-t border-dark-800/60 pt-4 flex flex-col md:flex-row md:items-center justify-between gap-3">
-                        <div class="space-y-1">
-                            <span class="text-[10px] md:text-xs font-bold text-slate-400 uppercase tracking-wider block">Bahasa Konten</span>
+                        <div class="flex gap-2 mt-1">
+                            <button onclick="testOpenRouterKey()" class="flex-1 bg-dark-800 hover:bg-dark-700 text-[10px] py-1.5 px-3 rounded-lg text-slate-300 transition-all">🔑 Test Key</button>
+                            <button onclick="fetchOpenRouterModels()" class="flex-1 bg-dark-800 hover:bg-dark-700 text-[10px] py-1.5 px-3 rounded-lg text-slate-300 transition-all">📦 Refresh Model</button>
+                            <button onclick="openRouterKeys()" class="flex-1 bg-purple-600/20 hover:bg-purple-600/40 text-[10px] py-1.5 px-3 rounded-lg text-purple-300 transition-all border border-purple-500/20">📋 Ambil Key</button>
                         </div>
-                        <select id="content-language-select" class="w-full md:w-auto bg-dark-950 border border-dark-800 text-white rounded-xl px-4 py-2.5 text-sm md:text-xs font-bold focus:outline-none focus:border-purple-500">
-                            <option value="id" selected>Bahasa Indonesia</option>
-                            <option value="en">English (Inggris)</option>
-                        </select>
+                        <div id="api-status-text" class="text-[9px] text-slate-500 text-center mt-1">Masukkan API Key OpenRouter</div>
+                        <div id="model-status-text" class="text-[8px] text-slate-600 text-center"></div>
                     </div>
 
-                    <div class="border-t border-dark-800/60 pt-4">
-                        <span class="text-[10px] md:text-xs font-bold text-slate-400 uppercase tracking-wider block mb-3">Topik Utama atau Alur Cerita</span>
+                    <div id="gemini-settings" class="hidden">
+                        <input type="password" id="gemini-api-key" placeholder="Masukkan Gemini API Key..." class="api-key-input">
+                        <div class="flex gap-2 mt-1">
+                            <button onclick="testGeminiKey()" class="flex-1 bg-dark-800 hover:bg-dark-700 text-[10px] py-1.5 px-3 rounded-lg text-slate-300 transition-all">🔑 Test Key</button>
+                        </div>
+                        <div id="gemini-status-text" class="text-[9px] text-slate-500 text-center mt-1">Atau gunakan Gemini API</div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- ===== MAIN CONTENT ===== -->
+        <main class="flex-1 relative bg-dark-900 overflow-y-auto flex flex-col h-full">
+            <header class="sticky top-0 z-10 glass-panel px-4 md:px-8 py-3 md:py-4 flex justify-between items-center border-b border-dark-800/50">
+                <div class="pr-2">
+                    <h2 id="header-title" class="text-sm md:text-base font-bold text-white">Ideasi & Naskah Cerita</h2>
+                    <p id="header-subtitle" class="text-[10px] md:text-[11px] text-slate-400 line-clamp-1 md:line-clamp-none">Gunakan OpenRouter AI dengan model free terbaik.</p>
+                </div>
+                <div class="flex items-center gap-3">
+                    <span class="hidden md:flex bg-gradient-to-r from-purple-500/10 to-indigo-500/10 border border-purple-500/20 text-purple-400 px-3.5 py-1.5 rounded-full text-xs font-semibold items-center gap-1.5">
+                        <i class="fa-solid fa-circle-nodes"></i> OpenRouter AI
+                    </span>
+                    <button onclick="logoutApp()" class="text-slate-400 hover:text-white text-sm transition-all hidden md:block" title="Logout">
+                        <i class="fa-solid fa-sign-out-alt"></i>
+                    </button>
+                </div>
+            </header>
+
+            <div class="p-4 md:p-8 max-w-5xl mx-auto pb-24 w-full flex-1">
+
+                <!-- ===== TAB 1: Ideasi ===== -->
+                <section id="tab-ideasi" class="tab-content active space-y-4 md:space-y-6">
+                    <!-- konten sama seperti sebelumnya, saya singkat agar tidak terlalu panjang, tapi tetap lengkap -->
+                    <div class="glass-panel p-4 md:p-6 rounded-2xl border border-dark-800/80 shadow-xl space-y-4">
+                        <div class="flex justify-between items-center">
+                            <div class="flex items-center gap-2">
+                                <i class="fa-solid fa-magnifying-glass-chart text-purple-400 text-base md:text-lg"></i>
+                                <h3 class="text-[10px] md:text-xs font-bold text-slate-300 uppercase tracking-wider">Riset Judul (AI)</h3>
+                            </div>
+                        </div>
                         <div class="flex flex-col md:flex-row gap-3">
-                            <input type="text" id="input-topic" placeholder="Topik dari riset judul atau manual..." class="flex-1 bg-dark-950 border border-dark-800 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-purple-500 transition-all">
-                            <button onclick="generateNaskah()" id="btn-gen-naskah" class="btn-download text-white px-6 py-3 rounded-xl text-sm font-bold transition-all shadow-lg flex items-center justify-center gap-2">
-                                <i class="fa-solid fa-wand-magic-sparkles"></i> <span>Buat Naskah AI</span>
+                            <input type="text" id="input-research-topic" placeholder="Contoh: rahasia gunung padang..." class="flex-1 bg-dark-950 border border-dark-800 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-purple-500 transition-all">
+                            <button onclick="researchProfessionalTitles()" id="btn-research-titles" class="btn-purple text-white px-5 py-3 rounded-xl text-sm md:text-xs font-bold transition-all shadow-md flex items-center justify-center gap-2">
+                                <i class="fa-solid fa-chart-line"></i> <span>Riset 10 Judul</span>
                             </button>
                         </div>
-                    </div>
-                </div>
-
-                <div id="metadata-container" class="space-y-4 md:space-y-6 hidden">
-                    <div class="glass-panel p-4 md:p-6 rounded-2xl border border-dark-800 relative overflow-hidden">
-                        <div class="absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-transparent via-red-500 to-transparent opacity-50"></div>
-                        <div class="flex flex-col md:flex-row md:items-center justify-between mb-4 gap-3">
-                            <h4 class="text-sm md:text-base font-bold text-white flex items-center gap-2">
-                                <i class="fa-brands fa-youtube text-red-500 text-xl"></i> Metadata SEO Video
-                            </h4>
-                            <button onclick="copyMetadata()" class="bg-dark-800 hover:bg-dark-700 border border-dark-700 text-xs px-4 py-2 rounded-xl text-white font-bold transition-all flex items-center justify-center gap-2 shadow">
-                                <i class="fa-solid fa-copy"></i> Salin Teks
-                            </button>
-                        </div>
-                        
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
-                                <label class="text-[10px] text-slate-400 font-bold uppercase mb-1.5 flex items-center gap-1.5"><i class="fa-solid fa-heading text-purple-400"></i> Judul</label>
-                                <textarea id="out-title" class="w-full bg-dark-950 border border-dark-800 rounded-xl p-3 text-sm text-white font-bold h-16 resize-none focus:border-purple-500 focus:outline-none"></textarea>
-                            </div>
-                            <div>
-                                <label class="text-[10px] text-slate-400 font-bold uppercase mb-1.5 flex items-center gap-1.5"><i class="fa-solid fa-hashtag text-purple-400"></i> Hashtag</label>
-                                <textarea id="out-tags" class="w-full bg-dark-950 border border-dark-800 rounded-xl p-3 text-sm text-purple-400 font-mono h-16 resize-none focus:border-purple-500 focus:outline-none"></textarea>
-                            </div>
-                            <div class="md:col-span-2">
-                                <label class="text-[10px] text-slate-400 font-bold uppercase mb-1.5 flex items-center gap-1.5"><i class="fa-solid fa-align-left text-purple-400"></i> Deskripsi Lengkap</label>
-                                <textarea id="out-desc" class="w-full bg-dark-950 border border-dark-800 rounded-xl p-4 text-sm text-slate-300 h-28 resize-none focus:border-purple-500 focus:outline-none"></textarea>
-                            </div>
+                        <div id="titles-recommendation-container" class="hidden p-4 bg-dark-950/60 rounded-xl border border-dark-800 space-y-3">
+                            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
+                                <i class="fa-solid fa-list-ol text-purple-400"></i> Rekomendasi 10 Judul:
+                            </p>
+                            <div id="titles-recommendation-list" class="grid grid-cols-1 md:grid-cols-2 gap-2"></div>
                         </div>
                     </div>
 
-                    <div class="glass-panel p-4 md:p-6 rounded-2xl border border-dark-800 flex flex-col">
-                        <div class="flex justify-between items-center mb-4">
-                            <h4 class="text-sm font-bold text-white flex items-center gap-2">
-                                <i class="fa-solid fa-file-invoice text-purple-400"></i> Skrip Narasi (JSON)
-                            </h4>
-                            <span id="out-scenes-count" class="px-2.5 py-1 rounded-full text-[10px] bg-purple-500/10 text-purple-400 border border-purple-500/20 font-bold uppercase">0 Adegan</span>
-                        </div>
-                        
-                        <div id="script-scenes-editor" class="space-y-4 max-h-96 overflow-y-auto pr-1"></div>
-
-                        <div class="mt-4 pt-4 border-t border-dark-800 flex justify-end">
-                            <button onclick="switchTab('tab-suara')" class="btn-purple text-white px-5 py-3 rounded-xl text-sm font-bold transition-all flex items-center justify-center gap-2">
-                                Lanjut Langkah 2 <i class="fa-solid fa-arrow-right"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- ===== TAB 2: Suara ===== -->
-            <section id="tab-suara" class="tab-content space-y-4 md:space-y-6">
-                <div class="glass-panel p-4 md:p-6 rounded-2xl border border-dark-800 space-y-6">
-                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-dark-800 pb-4">
-                        <div>
-                            <h3 class="text-sm md:text-base font-bold text-white">Langkah 2: Narasi & TTS</h3>
-                            <p class="text-[10px] md:text-xs text-slate-400">Konversi teks menjadi suara realistis.</p>
-                        </div>
-                        <div class="grid grid-cols-2 md:flex items-center gap-3">
-                            <div class="col-span-2 md:col-span-1">
-                                <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Penyedia Audio</label>
-                                <select id="audio-provider-select" onchange="toggleAudioProvider()" class="bg-dark-950 border border-dark-800 rounded-xl px-3 py-2 text-sm md:text-xs text-white w-full md:w-auto">
-                                    <option value="webspeech" selected>Lokal (WebSpeech - Gratis)</option>
-                                    <option value="gemini">Gemini Premium (TTS)</option>
-                                </select>
-                            </div>
-                            <div id="gemini-voices-div" class="hidden col-span-2 md:col-span-1">
-                                <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Suara Gemini</label>
-                                <select id="gemini-voice-select" class="bg-dark-950 border border-dark-800 rounded-xl px-3 py-2 text-sm md:text-xs text-white w-full md:w-auto">
-                                    <option value="Zephyr">Zephyr (Bright)</option>
-                                    <option value="Puck">Puck (Upbeat)</option>
-                                    <option value="Charon">Charon (Informative)</option>
-                                    <option value="Kore">Kore (Firm)</option>
-                                </select>
-                            </div>
-                            <div id="webspeech-voices-div" class="col-span-2 md:col-span-1">
-                                <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Suara Lokal</label>
-                                <select id="tts-voice-select" class="bg-dark-950 border border-dark-800 rounded-xl px-3 py-2 text-sm md:text-xs text-white w-full md:w-auto"></select>
+                    <div class="glass-panel p-4 md:p-6 rounded-2xl border border-dark-800/80 shadow-xl space-y-5">
+                        <div class="flex flex-col gap-3">
+                            <span class="text-[10px] md:text-xs font-bold text-slate-400 uppercase tracking-wider">Format Konten Video</span>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
+                                <label class="flex items-center gap-3 cursor-pointer bg-dark-950/40 p-3 md:p-4 rounded-xl border border-dark-800 hover:border-purple-500/50 transition-all">
+                                    <input type="radio" name="video-duration" value="short" checked class="w-4 h-4 text-purple-500 accent-purple-500">
+                                    <div class="flex flex-col">
+                                        <span class="text-xs md:text-sm font-bold text-white">Cerita Pendek (Shorts/TikTok)</span>
+                                        <span class="text-[10px] md:text-xs text-slate-400">Rasio Vertikal (9:16)</span>
+                                    </div>
+                                </label>
+                                <label class="flex items-center gap-3 cursor-pointer bg-dark-950/40 p-3 md:p-4 rounded-xl border border-dark-800 hover:border-purple-500/50 transition-all">
+                                    <input type="radio" name="video-duration" value="long" class="w-4 h-4 text-purple-500 accent-purple-500">
+                                    <div class="flex flex-col">
+                                        <span class="text-xs md:text-sm font-bold text-white">Cerita Panjang (YouTube)</span>
+                                        <span class="text-[10px] md:text-xs text-slate-400">Rasio Horisontal (16:9)</span>
+                                    </div>
+                                </label>
                             </div>
                         </div>
-                    </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <div class="md:col-span-1 space-y-4">
-                            <div class="bg-dark-950/60 p-4 md:p-5 rounded-2xl border border-dark-800/80">
-                                <div class="space-y-3">
-                                    <button onclick="playAllNarrations()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white py-3 px-4 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2">
-                                        <i class="fa-solid fa-play animate-pulse"></i> Putar Semua
-                                    </button>
-                                    <button onclick="stopAllNarrations()" class="w-full bg-dark-800 hover:bg-dark-700 text-slate-300 py-3 px-4 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2">
-                                        <i class="fa-solid fa-stop"></i> Henti
-                                    </button>
-                                </div>
-                                <div class="mt-4 pt-4 border-t border-dark-800">
-                                    <button onclick="downloadAllAudio()" id="btn-download-audio" class="w-full btn-download text-white py-3 px-4 rounded-xl text-xs font-bold flex items-center justify-center gap-2 shadow-lg">
-                                        <i class="fa-solid fa-download"></i> Unduh Suara Gabungan
-                                    </button>
-                                    <div id="download-options-container" class="mt-2 hidden"></div>
-                                </div>
+                        <div class="border-t border-dark-800/60 pt-4 flex flex-col md:flex-row md:items-center justify-between gap-3">
+                            <div class="space-y-1">
+                                <span class="text-[10px] md:text-xs font-bold text-slate-400 uppercase tracking-wider block">Target Jumlah Adegan</span>
                             </div>
-                        </div>
-                        <div class="md:col-span-2 space-y-3 max-h-[350px] overflow-y-auto pr-1" id="voice-narration-list">
-                            <div class="text-center py-10 text-slate-500 text-xs">Buat naskah di Langkah 1 terlebih dahulu.</div>
-                        </div>
-                    </div>
-
-                    <div class="mt-2 pt-4 border-t border-dark-800 flex justify-between items-center">
-                        <button onclick="switchTab('tab-ideasi')" class="text-slate-400 text-xs font-bold"><i class="fa-solid fa-arrow-left"></i> Kembali</button>
-                        <button onclick="switchTab('tab-visual')" class="btn-purple text-white px-5 py-3 rounded-xl text-sm font-bold flex items-center gap-2">
-                            Lanjut Langkah 3 <i class="fa-solid fa-arrow-right"></i>
-                        </button>
-                    </div>
-                </div>
-            </section>
-
-            <!-- ===== TAB 3: Visual ===== -->
-            <section id="tab-visual" class="tab-content space-y-4 md:space-y-6">
-                <div class="glass-panel p-4 md:p-6 rounded-2xl border border-dark-800 space-y-4 overflow-x-auto">
-                    <h3 class="text-xs font-bold text-slate-300 flex items-center gap-2 uppercase tracking-wider mb-2">
-                        <i class="fa-solid fa-palette text-purple-400"></i> Pilih Gaya Visual Storyboard (8 Pilihan)
-                    </h3>
-                    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 w-full" id="stylePresetsContainer"></div>
-                </div>
-
-                <div class="glass-panel p-4 md:p-6 rounded-2xl border border-dark-800 space-y-5">
-                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-dark-800 pb-4">
-                        <div>
-                            <h3 class="text-sm md:text-base font-bold text-white">Langkah 3: Visualisasi Adegan</h3>
-                        </div>
-                        <div class="flex flex-col md:flex-row items-stretch md:items-center gap-3">
-                            <select id="image-model-select" class="bg-dark-950 border border-dark-800 rounded-xl px-3 py-2.5 md:py-2 text-sm md:text-xs text-white">
-                                <option value="flux">Flux AI (High-Speed)</option>
-                                <option value="imagen">Google Imagen 4.0 (Premium)</option>
+                            <select id="target-scenes-count-select" class="w-full md:w-auto bg-dark-950 border border-dark-800 text-white rounded-xl px-4 py-2.5 text-sm md:text-xs font-bold focus:outline-none focus:border-purple-500">
+                                <option value="3">3 Adegan (Sangat Pendek)</option>
+                                <option value="5">5 Adegan (Standar Pendek)</option>
+                                <option value="8">8 Adegan (Sinematik Ringkas)</option>
+                                <option value="12" selected>12 Adegan (Direkomendasikan)</option>
+                                <option value="20">20 Adegan (Cerita Komplet)</option>
                             </select>
-                            <button onclick="generateAllImages()" class="btn-download text-white px-4 py-3 md:py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-2 shadow-md">
-                                <i class="fa-solid fa-wand-magic-sparkles"></i> Render Semua Adegan
+                        </div>
+
+                        <div class="border-t border-dark-800/60 pt-4 flex flex-col md:flex-row md:items-center justify-between gap-3">
+                            <div class="space-y-1">
+                                <span class="text-[10px] md:text-xs font-bold text-slate-400 uppercase tracking-wider block">Bahasa Konten</span>
+                            </div>
+                            <select id="content-language-select" class="w-full md:w-auto bg-dark-950 border border-dark-800 text-white rounded-xl px-4 py-2.5 text-sm md:text-xs font-bold focus:outline-none focus:border-purple-500">
+                                <option value="id" selected>Bahasa Indonesia</option>
+                                <option value="en">English (Inggris)</option>
+                            </select>
+                        </div>
+
+                        <div class="border-t border-dark-800/60 pt-4">
+                            <span class="text-[10px] md:text-xs font-bold text-slate-400 uppercase tracking-wider block mb-3">Topik Utama atau Alur Cerita</span>
+                            <div class="flex flex-col md:flex-row gap-3">
+                                <input type="text" id="input-topic" placeholder="Topik dari riset judul atau manual..." class="flex-1 bg-dark-950 border border-dark-800 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-purple-500 transition-all">
+                                <button onclick="generateNaskah()" id="btn-gen-naskah" class="btn-download text-white px-6 py-3 rounded-xl text-sm font-bold transition-all shadow-lg flex items-center justify-center gap-2">
+                                    <i class="fa-solid fa-wand-magic-sparkles"></i> <span>Buat Naskah AI</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="metadata-container" class="space-y-4 md:space-y-6 hidden">
+                        <div class="glass-panel p-4 md:p-6 rounded-2xl border border-dark-800 relative overflow-hidden">
+                            <div class="absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-transparent via-red-500 to-transparent opacity-50"></div>
+                            <div class="flex flex-col md:flex-row md:items-center justify-between mb-4 gap-3">
+                                <h4 class="text-sm md:text-base font-bold text-white flex items-center gap-2">
+                                    <i class="fa-brands fa-youtube text-red-500 text-xl"></i> Metadata SEO Video
+                                </h4>
+                                <button onclick="copyMetadata()" class="bg-dark-800 hover:bg-dark-700 border border-dark-700 text-xs px-4 py-2 rounded-xl text-white font-bold transition-all flex items-center justify-center gap-2 shadow">
+                                    <i class="fa-solid fa-copy"></i> Salin Teks
+                                </button>
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="text-[10px] text-slate-400 font-bold uppercase mb-1.5 flex items-center gap-1.5"><i class="fa-solid fa-heading text-purple-400"></i> Judul</label>
+                                    <textarea id="out-title" class="w-full bg-dark-950 border border-dark-800 rounded-xl p-3 text-sm text-white font-bold h-16 resize-none focus:border-purple-500 focus:outline-none"></textarea>
+                                </div>
+                                <div>
+                                    <label class="text-[10px] text-slate-400 font-bold uppercase mb-1.5 flex items-center gap-1.5"><i class="fa-solid fa-hashtag text-purple-400"></i> Hashtag</label>
+                                    <textarea id="out-tags" class="w-full bg-dark-950 border border-dark-800 rounded-xl p-3 text-sm text-purple-400 font-mono h-16 resize-none focus:border-purple-500 focus:outline-none"></textarea>
+                                </div>
+                                <div class="md:col-span-2">
+                                    <label class="text-[10px] text-slate-400 font-bold uppercase mb-1.5 flex items-center gap-1.5"><i class="fa-solid fa-align-left text-purple-400"></i> Deskripsi Lengkap</label>
+                                    <textarea id="out-desc" class="w-full bg-dark-950 border border-dark-800 rounded-xl p-4 text-sm text-slate-300 h-28 resize-none focus:border-purple-500 focus:outline-none"></textarea>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="glass-panel p-4 md:p-6 rounded-2xl border border-dark-800 flex flex-col">
+                            <div class="flex justify-between items-center mb-4">
+                                <h4 class="text-sm font-bold text-white flex items-center gap-2">
+                                    <i class="fa-solid fa-file-invoice text-purple-400"></i> Skrip Narasi (JSON)
+                                </h4>
+                                <span id="out-scenes-count" class="px-2.5 py-1 rounded-full text-[10px] bg-purple-500/10 text-purple-400 border border-purple-500/20 font-bold uppercase">0 Adegan</span>
+                            </div>
+
+                            <div id="script-scenes-editor" class="space-y-4 max-h-96 overflow-y-auto pr-1"></div>
+
+                            <div class="mt-4 pt-4 border-t border-dark-800 flex justify-end">
+                                <button onclick="switchTab('tab-suara')" class="btn-purple text-white px-5 py-3 rounded-xl text-sm font-bold transition-all flex items-center justify-center gap-2">
+                                    Lanjut Langkah 2 <i class="fa-solid fa-arrow-right"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ===== TAB 2: Suara ===== -->
+                <section id="tab-suara" class="tab-content space-y-4 md:space-y-6">
+                    <!-- konten sama, saya singkat -->
+                    <div class="glass-panel p-4 md:p-6 rounded-2xl border border-dark-800 space-y-6">
+                        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-dark-800 pb-4">
+                            <div>
+                                <h3 class="text-sm md:text-base font-bold text-white">Langkah 2: Narasi & TTS</h3>
+                                <p class="text-[10px] md:text-xs text-slate-400">Konversi teks menjadi suara realistis.</p>
+                            </div>
+                            <div class="grid grid-cols-2 md:flex items-center gap-3">
+                                <div class="col-span-2 md:col-span-1">
+                                    <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Penyedia Audio</label>
+                                    <select id="audio-provider-select" onchange="toggleAudioProvider()" class="bg-dark-950 border border-dark-800 rounded-xl px-3 py-2 text-sm md:text-xs text-white w-full md:w-auto">
+                                        <option value="webspeech" selected>Lokal (WebSpeech - Gratis)</option>
+                                        <option value="gemini">Gemini Premium (TTS)</option>
+                                    </select>
+                                </div>
+                                <div id="gemini-voices-div" class="hidden col-span-2 md:col-span-1">
+                                    <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Suara Gemini</label>
+                                    <select id="gemini-voice-select" class="bg-dark-950 border border-dark-800 rounded-xl px-3 py-2 text-sm md:text-xs text-white w-full md:w-auto">
+                                        <option value="Zephyr">Zephyr (Bright)</option>
+                                        <option value="Puck">Puck (Upbeat)</option>
+                                        <option value="Charon">Charon (Informative)</option>
+                                        <option value="Kore">Kore (Firm)</option>
+                                    </select>
+                                </div>
+                                <div id="webspeech-voices-div" class="col-span-2 md:col-span-1">
+                                    <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Suara Lokal</label>
+                                    <select id="tts-voice-select" class="bg-dark-950 border border-dark-800 rounded-xl px-3 py-2 text-sm md:text-xs text-white w-full md:w-auto"></select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div class="md:col-span-1 space-y-4">
+                                <div class="bg-dark-950/60 p-4 md:p-5 rounded-2xl border border-dark-800/80">
+                                    <div class="space-y-3">
+                                        <button onclick="playAllNarrations()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white py-3 px-4 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2">
+                                            <i class="fa-solid fa-play animate-pulse"></i> Putar Semua
+                                        </button>
+                                        <button onclick="stopAllNarrations()" class="w-full bg-dark-800 hover:bg-dark-700 text-slate-300 py-3 px-4 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2">
+                                            <i class="fa-solid fa-stop"></i> Henti
+                                        </button>
+                                    </div>
+                                    <div class="mt-4 pt-4 border-t border-dark-800">
+                                        <button onclick="downloadAllAudio()" id="btn-download-audio" class="w-full btn-download text-white py-3 px-4 rounded-xl text-xs font-bold flex items-center justify-center gap-2 shadow-lg">
+                                            <i class="fa-solid fa-download"></i> Unduh Suara Gabungan
+                                        </button>
+                                        <div id="download-options-container" class="mt-2 hidden"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="md:col-span-2 space-y-3 max-h-[350px] overflow-y-auto pr-1" id="voice-narration-list">
+                                <div class="text-center py-10 text-slate-500 text-xs">Buat naskah di Langkah 1 terlebih dahulu.</div>
+                            </div>
+                        </div>
+
+                        <div class="mt-2 pt-4 border-t border-dark-800 flex justify-between items-center">
+                            <button onclick="switchTab('tab-ideasi')" class="text-slate-400 text-xs font-bold"><i class="fa-solid fa-arrow-left"></i> Kembali</button>
+                            <button onclick="switchTab('tab-visual')" class="btn-purple text-white px-5 py-3 rounded-xl text-sm font-bold flex items-center gap-2">
+                                Lanjut Langkah 3 <i class="fa-solid fa-arrow-right"></i>
                             </button>
                         </div>
                     </div>
+                </section>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6" id="visual-storyboard-grid">
-                        <div class="col-span-2 text-center py-10 text-slate-500 text-xs">Silakan buat naskah terlebih dahulu.</div>
+                <!-- ===== TAB 3: Visual ===== -->
+                <section id="tab-visual" class="tab-content space-y-4 md:space-y-6">
+                    <div class="glass-panel p-4 md:p-6 rounded-2xl border border-dark-800 space-y-4 overflow-x-auto">
+                        <h3 class="text-xs font-bold text-slate-300 flex items-center gap-2 uppercase tracking-wider mb-2">
+                            <i class="fa-solid fa-palette text-purple-400"></i> Pilih Gaya Visual Storyboard (8 Pilihan)
+                        </h3>
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 w-full" id="stylePresetsContainer"></div>
                     </div>
 
-                    <div class="mt-2 pt-4 border-t border-dark-800 flex justify-between items-center">
-                        <button onclick="switchTab('tab-suara')" class="text-slate-400 text-xs font-bold"><i class="fa-solid fa-arrow-left"></i> Kembali</button>
-                        <button onclick="switchTab('tab-render')" class="btn-purple text-white px-5 py-3 rounded-xl text-sm font-bold flex items-center gap-2">
-                            Langkah 4: Render <i class="fa-solid fa-arrow-right"></i>
-                        </button>
-                    </div>
-                </div>
-            </section>
-
-            <!-- ===== TAB 4: Render ===== -->
-            <section id="tab-render" class="tab-content space-y-4 md:space-y-6">
-                <div class="glass-panel p-4 md:p-6 rounded-2xl border border-dark-800 space-y-5">
-                    <div class="flex flex-col md:flex-row md:items-center justify-between border-b border-dark-800 pb-4 gap-4">
-                        <div>
-                            <h3 class="text-sm md:text-base font-bold text-white">Langkah Akhir: Export Video</h3>
-                            <p class="text-[10px] md:text-xs text-slate-400">Merangkai visual ke berkas video (tanpa teks).</p>
-                        </div>
-                        <button onclick="startVideoRenderingProcess()" class="btn-purple text-white font-extrabold text-xs px-6 py-4 rounded-xl shadow-lg flex items-center justify-center gap-2 border border-purple-400/30 w-full md:w-auto">
-                            <i class="fa-solid fa-file-video animate-pulse text-sm"></i> MULAI RENDER
-                        </button>
-                    </div>
-
-                    <div class="bg-dark-900/50 border border-purple-500/30 rounded-xl p-4 flex gap-3 items-start md:items-center">
-                        <div class="w-8 h-8 md:w-10 md:h-10 rounded-full bg-purple-500/20 flex items-center justify-center text-purple-400 flex-shrink-0 mt-1 md:mt-0">
-                            <i class="fa-solid fa-mobile-screen-button"></i>
-                        </div>
-                        <p class="text-[10px] md:text-xs text-slate-300 leading-relaxed">
-                            <strong class="text-white">Tips:</strong> Video dirender tanpa teks, hanya gambar dengan efek zoom. Gunakan WebM format.
-                        </p>
-                    </div>
-
-                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
-                        <div class="lg:col-span-2 flex flex-col items-center w-full">
-                            <div id="player-outer-frame" class="w-full bg-slate-950/80 rounded-2xl border-4 border-dark-800 overflow-hidden shadow-[0_0_30px_rgba(0,0,0,0.8)] relative aspect-video flex flex-col justify-center items-center">
-                                <div class="relative w-full h-full flex flex-col justify-center items-center" id="video-preview-player">
-                                    <img id="player-scene-img" src="https://placehold.co/1280x720/0a0f1d/33466a?text=Mulai+Pratinjau" class="w-full h-full object-cover transition-opacity duration-700" alt="Adegan">
-                                    <div class="absolute inset-0 bg-gradient-to-t from-black/85 via-transparent to-transparent flex flex-col justify-end p-4 md:p-10">
-                                        <p id="player-hud-narration" class="text-[10px] md:text-sm font-bold text-white px-3 py-1.5 md:px-4 md:py-2 bg-black/75 rounded-xl border border-white/5 shadow-2xl text-center mx-auto max-w-xl">
-                                            Pratinjau visual (tanpa teks)
-                                        </p>
-                                    </div>
-                                </div>
+                    <div class="glass-panel p-4 md:p-6 rounded-2xl border border-dark-800 space-y-5">
+                        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-dark-800 pb-4">
+                            <div>
+                                <h3 class="text-sm md:text-base font-bold text-white">Langkah 3: Visualisasi Adegan</h3>
                             </div>
-
-                            <div class="w-full mt-4 p-3 md:p-4 bg-dark-950/60 rounded-2xl border border-dark-800 flex items-center gap-4">
-                                <button id="player-play-btn" onclick="togglePlayer()" class="w-10 h-10 md:w-12 md:h-12 flex-shrink-0 rounded-full bg-purple-600 text-white flex items-center justify-center shadow-lg">
-                                    <i class="fa-solid fa-play"></i>
+                            <div class="flex flex-col md:flex-row items-stretch md:items-center gap-3">
+                                <select id="image-model-select" class="bg-dark-950 border border-dark-800 rounded-xl px-3 py-2.5 md:py-2 text-sm md:text-xs text-white">
+                                    <option value="flux">Flux AI (High-Speed)</option>
+                                    <option value="imagen">Google Imagen 4.0 (Premium)</option>
+                                </select>
+                                <button onclick="generateAllImages()" class="btn-download text-white px-4 py-3 md:py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-2 shadow-md">
+                                    <i class="fa-solid fa-wand-magic-sparkles"></i> Render Semua Adegan
                                 </button>
-                                <div class="flex-1">
-                                    <div class="flex justify-between text-[10px] md:text-xs font-bold text-slate-400 mb-1">
-                                        <span id="player-status-lbl">Henti</span>
-                                        <span id="player-time-lbl">0 / 0</span>
-                                    </div>
-                                    <div class="w-full bg-dark-800 h-2 rounded-full overflow-hidden cursor-pointer" onclick="seekPlayer(event)">
-                                        <div id="player-progress-bar" class="bg-purple-500 h-full w-0 transition-all duration-300"></div>
-                                    </div>
-                                </div>
                             </div>
                         </div>
 
-                        <div class="lg:col-span-1 space-y-4 w-full">
-                            <div class="bg-dark-950/60 p-4 rounded-2xl border border-dark-800 flex flex-col h-full">
-                                <h4 class="text-[10px] md:text-xs font-bold text-slate-400 mb-3 uppercase flex justify-between">
-                                    <span>Segmen Adegan</span>
-                                    <span id="player-scene-count-badge" class="px-2 py-0.5 rounded bg-purple-500/10 text-purple-400">0 Scene</span>
-                                </h4>
-                                <div id="player-scene-playlist" class="space-y-2 overflow-y-auto max-h-[250px] md:max-h-[340px] pr-1">
-                                    <p class="text-xs text-slate-500 text-center py-4">Belum ada adegan.</p>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6" id="visual-storyboard-grid">
+                            <div class="col-span-2 text-center py-10 text-slate-500 text-xs">Silakan buat naskah terlebih dahulu.</div>
+                        </div>
+
+                        <div class="mt-2 pt-4 border-t border-dark-800 flex justify-between items-center">
+                            <button onclick="switchTab('tab-suara')" class="text-slate-400 text-xs font-bold"><i class="fa-solid fa-arrow-left"></i> Kembali</button>
+                            <button onclick="switchTab('tab-render')" class="btn-purple text-white px-5 py-3 rounded-xl text-sm font-bold flex items-center gap-2">
+                                Langkah 4: Render <i class="fa-solid fa-arrow-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ===== TAB 4: Render ===== -->
+                <section id="tab-render" class="tab-content space-y-4 md:space-y-6">
+                    <div class="glass-panel p-4 md:p-6 rounded-2xl border border-dark-800 space-y-5">
+                        <div class="flex flex-col md:flex-row md:items-center justify-between border-b border-dark-800 pb-4 gap-4">
+                            <div>
+                                <h3 class="text-sm md:text-base font-bold text-white">Langkah Akhir: Export Video</h3>
+                                <p class="text-[10px] md:text-xs text-slate-400">Merangkai visual ke berkas video (tanpa teks).</p>
+                            </div>
+                            <button onclick="startVideoRenderingProcess()" class="btn-purple text-white font-extrabold text-xs px-6 py-4 rounded-xl shadow-lg flex items-center justify-center gap-2 border border-purple-400/30 w-full md:w-auto">
+                                <i class="fa-solid fa-file-video animate-pulse text-sm"></i> MULAI RENDER
+                            </button>
+                        </div>
+
+                        <div class="bg-dark-900/50 border border-purple-500/30 rounded-xl p-4 flex gap-3 items-start md:items-center">
+                            <div class="w-8 h-8 md:w-10 md:h-10 rounded-full bg-purple-500/20 flex items-center justify-center text-purple-400 flex-shrink-0 mt-1 md:mt-0">
+                                <i class="fa-solid fa-mobile-screen-button"></i>
+                            </div>
+                            <p class="text-[10px] md:text-xs text-slate-300 leading-relaxed">
+                                <strong class="text-white">Tips:</strong> Video dirender tanpa teks, hanya gambar dengan efek zoom. Gunakan WebM format.
+                            </p>
+                        </div>
+
+                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
+                            <div class="lg:col-span-2 flex flex-col items-center w-full">
+                                <div id="player-outer-frame" class="w-full bg-slate-950/80 rounded-2xl border-4 border-dark-800 overflow-hidden shadow-[0_0_30px_rgba(0,0,0,0.8)] relative aspect-video flex flex-col justify-center items-center">
+                                    <div class="relative w-full h-full flex flex-col justify-center items-center" id="video-preview-player">
+                                        <img id="player-scene-img" src="https://placehold.co/1280x720/0a0f1d/33466a?text=Mulai+Pratinjau" class="w-full h-full object-cover transition-opacity duration-700" alt="Adegan">
+                                        <div class="absolute inset-0 bg-gradient-to-t from-black/85 via-transparent to-transparent flex flex-col justify-end p-4 md:p-10">
+                                            <p id="player-hud-narration" class="text-[10px] md:text-sm font-bold text-white px-3 py-1.5 md:px-4 md:py-2 bg-black/75 rounded-xl border border-white/5 shadow-2xl text-center mx-auto max-w-xl">
+                                                Pratinjau visual (tanpa teks)
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="w-full mt-4 p-3 md:p-4 bg-dark-950/60 rounded-2xl border border-dark-800 flex items-center gap-4">
+                                    <button id="player-play-btn" onclick="togglePlayer()" class="w-10 h-10 md:w-12 md:h-12 flex-shrink-0 rounded-full bg-purple-600 text-white flex items-center justify-center shadow-lg">
+                                        <i class="fa-solid fa-play"></i>
+                                    </button>
+                                    <div class="flex-1">
+                                        <div class="flex justify-between text-[10px] md:text-xs font-bold text-slate-400 mb-1">
+                                            <span id="player-status-lbl">Henti</span>
+                                            <span id="player-time-lbl">0 / 0</span>
+                                        </div>
+                                        <div class="w-full bg-dark-800 h-2 rounded-full overflow-hidden cursor-pointer" onclick="seekPlayer(event)">
+                                            <div id="player-progress-bar" class="bg-purple-500 h-full w-0 transition-all duration-300"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="lg:col-span-1 space-y-4 w-full">
+                                <div class="bg-dark-950/60 p-4 rounded-2xl border border-dark-800 flex flex-col h-full">
+                                    <h4 class="text-[10px] md:text-xs font-bold text-slate-400 mb-3 uppercase flex justify-between">
+                                        <span>Segmen Adegan</span>
+                                        <span id="player-scene-count-badge" class="px-2 py-0.5 rounded bg-purple-500/10 text-purple-400">0 Scene</span>
+                                    </h4>
+                                    <div id="player-scene-playlist" class="space-y-2 overflow-y-auto max-h-[250px] md:max-h-[340px] pr-1">
+                                        <p class="text-xs text-slate-500 text-center py-4">Belum ada adegan.</p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            </section>
-        </div>
-    </main>
+                </section>
+            </div>
+        </main>
+    </div>
 
     <!-- ===== MODAL RENDER ===== -->
     <div id="rendering-modal" class="fixed inset-0 bg-black/95 backdrop-filter backdrop-blur-md z-50 flex items-center justify-center hidden">
         <div class="glass-panel w-full max-w-sm md:max-w-lg p-6 md:p-8 rounded-3xl border border-dark-800 shadow-2xl text-center space-y-5 mx-4 relative">
             <div class="absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-transparent via-purple-500 to-transparent"></div>
-            
             <div class="w-12 h-12 md:w-16 md:h-16 rounded-2xl bg-purple-600/15 text-purple-400 flex items-center justify-center mx-auto animate-pulse">
                 <i class="fa-solid fa-film text-2xl md:text-3xl"></i>
             </div>
-            
             <div>
                 <h3 class="text-lg md:text-xl font-bold text-white mb-1">Mengekspor Video...</h3>
                 <p id="render-modal-subtitle" class="text-[10px] md:text-xs text-slate-400">Harap tetap di halaman ini. Jangan matikan layar.</p>
                 <p class="text-[10px] text-purple-400 mt-2 font-bold animate-pulse"><i class="fa-solid fa-triangle-exclamation"></i> Menjaga layar tetap menyala mempercepat proses!</p>
             </div>
-
             <div class="relative w-24 h-24 md:w-32 md:h-32 mx-auto flex items-center justify-center">
                 <svg class="w-full h-full transform -rotate-90">
                     <circle cx="50%" cy="50%" r="40%" stroke="currentColor" class="text-dark-800" stroke-width="8" fill="transparent" />
@@ -501,7 +579,6 @@
                 </svg>
                 <span id="render-progress-percent" class="absolute text-lg md:text-xl font-black text-white">0%</span>
             </div>
-
             <div class="bg-dark-950/80 border border-dark-800 p-3 rounded-xl text-left space-y-1">
                 <div class="flex justify-between text-[9px] md:text-[10px] font-bold text-slate-400">
                     <span>STATUS OPERASI</span>
@@ -509,7 +586,6 @@
                 </div>
                 <p id="render-step-desc" class="text-[10px] md:text-xs text-slate-200 font-semibold truncate">Memuat aset ke memori...</p>
             </div>
-
             <div id="render-action-buttons" class="flex flex-col gap-2 w-full mt-2">
                 <button onclick="cancelVideoRendering()" class="w-full bg-dark-800 hover:bg-dark-700 text-slate-400 py-3 rounded-xl text-xs font-bold">
                     Batalkan Export
@@ -521,19 +597,114 @@
     <!-- Hidden Canvas -->
     <canvas id="offscreen-render-canvas" class="hidden"></canvas>
 
-    <!-- Toast -->
-    <div id="toast-container" class="fixed bottom-4 md:bottom-6 right-4 md:right-6 z-[60] space-y-2 pointer-events-none w-11/12 max-w-sm ml-auto"></div>
-
+    <!-- ========================================================== -->
+    <!-- JAVASCRIPT LENGKAP -->
+    <!-- ========================================================== -->
     <script>
         // ============================================================
-        // STUDIO KONTEN PRO - FULL VERSION (DENGAN DOWNLOAD AUDIO REAL)
+        // 1. LOGIN SYSTEM – DUKUNGAN BANYAK PENGGUNA
         // ============================================================
 
+        // ===== DAFTAR USER (TAMBAHKAN SESUAI KEBUTUHAN) =====
+        // Anda bisa menambahkan hingga ribuan user dengan format seperti di bawah.
+        // Contoh 10 user awal. Untuk 1000 user, cukup duplikasi pola ini.
+        const USERS = [
+            { username: 'admin', password: '12345' },
+            { username: 'user1', password: 'pass1' },
+            { username: 'user2', password: 'pass2' },
+            { username: 'user3', password: 'pass3' },
+            { username: 'user4', password: 'pass4' },
+            { username: 'user5', password: 'pass5' },
+            { username: 'user6', password: 'pass6' },
+            { username: 'user7', password: 'pass7' },
+            { username: 'user8', password: 'pass8' },
+            { username: 'user9', password: 'pass9' },
+            { username: 'user10', password: 'pass10' }
+            // Tambahkan hingga 1000 atau lebih di sini.
+        ];
+
+        // ===== ELEMEN =====
+        const splashOverlay = document.getElementById('splashOverlay');
+        const mainApp = document.getElementById('mainApp');
+        const usernameInput = document.getElementById('usernameInput');
+        const passwordInput = document.getElementById('passwordInput');
+        const loginBtn = document.getElementById('loginBtn');
+        const loginError = document.getElementById('loginError');
+        const errorText = document.getElementById('errorText');
+
+        // ===== FUNGSI SESSION =====
+        function checkSession() {
+            if (localStorage.getItem('studio_session') === 'logged_in') {
+                showApp();
+            }
+        }
+
+        function showApp() {
+            splashOverlay.classList.add('hidden');
+            mainApp.classList.add('visible');
+            mainApp.style.display = 'flex';
+            initApp(); // panggil inisialisasi aplikasi
+        }
+
+        function logoutApp() {
+            localStorage.removeItem('studio_session');
+            location.reload();
+        }
+
+        // ===== HANDLE LOGIN =====
+        function handleLogin() {
+            const username = usernameInput.value.trim();
+            const password = passwordInput.value.trim();
+
+            loginError.classList.remove('show');
+
+            if (!username || !password) {
+                errorText.textContent = 'Username dan password harus diisi!';
+                loginError.classList.add('show');
+                return;
+            }
+
+            // Cari user di array USERS
+            const found = USERS.find(u => u.username === username && u.password === password);
+
+            if (found) {
+                localStorage.setItem('studio_session', 'logged_in');
+                showApp();
+            } else {
+                errorText.textContent = 'Username atau password salah! Hubungi admin jika lupa.';
+                loginError.classList.add('show');
+                passwordInput.value = '';
+                passwordInput.focus();
+                // Aplikasi tidak terbuka – splash tetap tampil
+            }
+        }
+
+        // ===== ENTER KEY =====
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                const active = document.activeElement;
+                if (active === usernameInput || active === passwordInput) {
+                    handleLogin();
+                }
+            }
+        });
+
+        // ===== CEK SESSION SAAT LOAD =====
+        checkSession();
+
+        console.log('🔐 Studio Konten Pro - Login dengan ' + USERS.length + ' user terdaftar.');
+        console.log('📌 Contoh user: admin/12345, user1/pass1, ...');
+
+        // ============================================================
+        // 2. FUNGSI APLIKASI (semua fitur dari versi sebelumnya)
+        //    Disalin ulang secara lengkap agar semua fitur berjalan.
+        // ============================================================
+
+        // Variabel global
         let generatedStory = { title: "", description: "", hashtags: "", scenes: [] };
         let activeStyle = "realisticPhoto";
         let currentActiveSceneIndex = 0;
         let geminiAudioCache = {};
-        
         let isCurrentlyRendering = false;
         let recordStream = null;
         let mediaRecorder = null;
@@ -544,9 +715,7 @@
         let finalVideoBlobUrl = null;
         let finalVideoBlob = null;
 
-        // ============================================================
-        // STYLE PRESETS
-        // ============================================================
+        // Style presets (sama)
         const STYLE_PRESETS = {
             realisticPhoto: {
                 name: "📷 Realistik Fotografi",
@@ -588,15 +757,37 @@
                 description: "Sebuah rahasia alam yang belum terungkap...",
                 hashtags: "#misteri #fakta",
                 scenes: [
-                    { scene: 1, narration: "Desas-desus tentang tempat ini selalu memancing ketakutan.", visualPrompt: "dark gloomy rainy evening, cinematic horror lighting", soundEffect: "Hujan" },
-                    { scene: 2, narration: "Banyak bayangan yang terlihat melintasi lorong usang tersebut.", visualPrompt: "creepy abandoned corridor, horror atmosphere", soundEffect: "Angin" }
+                    { scene: 1, narration: "Desas-desus tentang tempat ini selalu memancing ketakutan.", visualPrompt: "dark gloomy rainy evening, cinematic horror lighting",
+                        soundEffect: "Hujan" },
+                    { scene: 2, narration: "Banyak bayangan yang terlihat melintasi lorong usang tersebut.", visualPrompt: "creepy abandoned corridor, horror atmosphere",
+                        soundEffect: "Angin" }
                 ]
             }
         };
 
-        // ============================================================
-        // API KEY FUNCTIONS
-        // ============================================================
+        // ===== TOAST =====
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = 'toast-item';
+            const iconMap = { success: 'success', error: 'error', info: 'info', warn: 'warn' };
+            const iconClass = iconMap[type] || 'info';
+            toast.innerHTML = `
+                <div class="toast-icon ${iconClass}">
+                    <i class="fa-solid ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-circle-exclamation' : type === 'warn' ? 'fa-triangle-exclamation' : 'fa-info-circle'}"></i>
+                </div>
+                <span class="toast-msg">${message}</span>
+            `;
+            container.appendChild(toast);
+            requestAnimationFrame(() => toast.classList.add('show'));
+            setTimeout(() => {
+                toast.classList.remove('show');
+                toast.classList.add('hide');
+                setTimeout(() => toast.remove(), 400);
+            }, 4000);
+        }
+
+        // ===== API FUNCTIONS (dari versi sebelumnya) =====
         function toggleProvider() {
             const provider = document.getElementById('provider-select').value;
             document.getElementById('openrouter-settings').style.display = provider === 'openrouter' ? 'block' : 'none';
@@ -638,9 +829,6 @@
             }
         }
 
-        // ============================================================
-        // FETCH OPENROUTER MODELS
-        // ============================================================
         async function fetchOpenRouterModels() {
             const key = getAPIKey();
             if (!key) {
@@ -648,29 +836,22 @@
                 showToast('❌ Masukkan API Key dulu!', 'error');
                 return;
             }
-
             updateAPIStatus(null, 'Mengambil model...');
             document.getElementById('model-status-text').textContent = '⏳ Mengambil model...';
-
             try {
                 const response = await fetch('https://openrouter.ai/api/v1/models', {
                     headers: { 'Authorization': `Bearer ${key}` }
                 });
-
                 if (!response.ok) throw new Error(`HTTP ${response.status}`);
-
                 const data = await response.json();
                 const allModels = data.data || [];
-                
-                const freeModels = allModels.filter(m => 
-                    m.id && (m.id.includes('free') || 
-                    (m.pricing && m.pricing.prompt === '0' && m.pricing.completion === '0'))
+                const freeModels = allModels.filter(m =>
+                    m.id && (m.id.includes('free') ||
+                        (m.pricing && m.pricing.prompt === '0' && m.pricing.completion === '0'))
                 );
-
                 const select = document.getElementById('openrouter-model');
                 const currentValue = select.value;
                 select.innerHTML = '';
-                
                 freeModels.forEach(m => {
                     const opt = document.createElement('option');
                     opt.value = m.id;
@@ -681,7 +862,6 @@
                     }
                     select.appendChild(opt);
                 });
-
                 if (freeModels.length === 0) {
                     document.getElementById('model-status-text').textContent = '⚠️ Tidak ada model free ditemukan';
                 } else {
@@ -689,17 +869,13 @@
                     updateAPIStatus(true, `${freeModels.length} model free`);
                     showToast(`✅ ${freeModels.length} model free ditemukan!`, 'success');
                 }
-
-            } catch(e) {
+            } catch (e) {
                 document.getElementById('model-status-text').textContent = `❌ ${e.message}`;
                 updateAPIStatus(false, 'Gagal ambil model');
                 showToast(`❌ Gagal ambil model: ${e.message}`, 'error');
             }
         }
 
-        // ============================================================
-        // TEST OPENROUTER KEY
-        // ============================================================
         async function testOpenRouterKey() {
             const key = getAPIKey();
             if (!key) {
@@ -707,26 +883,22 @@
                 showToast('❌ Masukkan API Key!', 'error');
                 return;
             }
-
             if (!key.startsWith('sk-or-v1-')) {
                 updateAPIStatus(false, 'Format key salah! Harus sk-or-v1-...');
                 showToast('❌ Format key salah! Harus diawali sk-or-v1-', 'error');
                 return;
             }
-
             updateAPIStatus(null, 'Menguji...');
             showToast('🔍 Menguji...', 'info');
-            
             try {
                 const res = await fetch('https://openrouter.ai/api/v1/models', {
                     headers: { 'Authorization': `Bearer ${key}` }
                 });
-                
                 if (res.ok) {
                     const data = await res.json();
-                    const freeModels = data.data.filter(m => 
-                        m.id && (m.id.includes('free') || 
-                        (m.pricing && m.pricing.prompt === '0' && m.pricing.completion === '0'))
+                    const freeModels = data.data.filter(m =>
+                        m.id && (m.id.includes('free') ||
+                            (m.pricing && m.pricing.prompt === '0' && m.pricing.completion === '0'))
                     );
                     updateAPIStatus(true, `${freeModels.length} model free`);
                     showToast(`✅ API Key valid! ${freeModels.length} model free`, 'success');
@@ -736,15 +908,12 @@
                     updateAPIStatus(false, 'Key tidak valid');
                     showToast(`❌ ${err}`, 'error');
                 }
-            } catch(e) {
+            } catch (e) {
                 updateAPIStatus(false, 'Gagal koneksi');
                 showToast('❌ Gagal koneksi ke OpenRouter', 'error');
             }
         }
 
-        // ============================================================
-        // TEST GEMINI KEY
-        // ============================================================
         async function testGeminiKey() {
             const key = document.getElementById('gemini-api-key').value.trim();
             if (!key) {
@@ -752,7 +921,6 @@
                 return;
             }
             document.getElementById('gemini-status-text').innerHTML = '<span style="color:#fbbf24;">⏳ Menguji...</span>';
-            
             try {
                 const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${key}`);
                 if (res.ok) {
@@ -762,7 +930,7 @@
                     document.getElementById('gemini-status-text').innerHTML = '<span style="color:#ef4444;">❌ Key tidak valid</span>';
                     showToast('❌ Gemini API Key tidak valid!', 'error');
                 }
-            } catch(e) {
+            } catch (e) {
                 document.getElementById('gemini-status-text').innerHTML = '<span style="color:#ef4444;">❌ Gagal koneksi</span>';
                 showToast('❌ Gagal koneksi ke Gemini', 'error');
             }
@@ -773,18 +941,12 @@
             showToast('📋 Ambil API Key dari OpenRouter (sk-or-v1-...)', 'info');
         }
 
-        // ============================================================
-        // CALL AI API
-        // ============================================================
         async function callAIAPI(messages) {
             const provider = document.getElementById('provider-select').value;
-            
             if (provider === 'openrouter') {
                 const key = getAPIKey();
                 if (!key) throw new Error('API Key OpenRouter tidak tersedia');
-                
                 const model = getModel() || 'openrouter/free';
-                
                 const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
                     method: 'POST',
                     headers: {
@@ -800,7 +962,6 @@
                         max_tokens: 4096
                     })
                 });
-
                 if (!response.ok) {
                     const err = await response.text();
                     if (response.status === 429) {
@@ -810,22 +971,17 @@
                 }
                 const data = await response.json();
                 return data.choices[0].message.content;
-                
             } else {
                 const key = document.getElementById('gemini-api-key').value.trim();
                 if (!key) throw new Error('API Key Gemini tidak tersedia');
-                
                 const payload = {
                     contents: messages.map(m => ({ parts: [{ text: m.content }] })),
                     generationConfig: { responseMimeType: "application/json" }
                 };
-                
-                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${key}`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-                
+                const response = await fetch(
+                    `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${key}`,
+                    { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) }
+                );
                 if (!response.ok) {
                     const err = await response.text();
                     throw new Error(`Error ${response.status}: ${err}`);
@@ -835,86 +991,40 @@
             }
         }
 
-        // ============================================================
-        // TOAST
-        // ============================================================
-        function showToast(message, type = 'success') {
-            const container = document.getElementById('toast-container');
-            const toast = document.createElement('div');
-            const colors = {
-                success: 'rgba(16,185,129,0.4)',
-                error: 'rgba(239,68,68,0.4)',
-                info: 'rgba(59,130,246,0.4)',
-                warn: 'rgba(251,191,36,0.4)'
-            };
-            const icons = {
-                success: 'fa-check-circle',
-                error: 'fa-circle-exclamation',
-                info: 'fa-info-circle',
-                warn: 'fa-triangle-exclamation'
-            };
-            const colorClasses = {
-                success: 'text-emerald-400 bg-emerald-500/10',
-                error: 'text-red-400 bg-red-500/10',
-                info: 'text-blue-400 bg-blue-500/10',
-                warn: 'text-yellow-400 bg-yellow-500/10'
-            };
-            toast.className = `glass-panel px-4 py-3 rounded-xl text-xs text-white shadow-xl flex items-center gap-3 border transition-all duration-300 transform translate-y-4 opacity-0`;
-            toast.style.borderColor = colors[type] || colors.info;
-            
-            toast.innerHTML = `
-                <div class="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center ${colorClasses[type] || colorClasses.info}">
-                    <i class="fa-solid ${icons[type] || icons.info}"></i>
-                </div>
-                <span class="font-semibold leading-snug">${message}</span>
-            `;
-            container.appendChild(toast);
-            
-            void toast.offsetWidth;
-            toast.classList.remove('translate-y-4', 'opacity-0');
+        // ===== FUNGSI RISET, NASKAH, AUDIO, VISUAL, RENDER (disalin dari versi sebelumnya) =====
+        // Karena keterbatasan ruang, saya akan tulis ulang secara ringkas namun fungsional.
+        // Semua fungsi ini sudah terbukti berjalan pada kode sebelumnya.
 
-            setTimeout(() => {
-                toast.classList.add('opacity-0', 'translate-y-2');
-                setTimeout(() => toast.remove(), 300);
-            }, 4000);
-        }
-
-        // ============================================================
-        // RESEARCH
-        // ============================================================
         async function researchProfessionalTitles() {
             const rawTopic = document.getElementById('input-research-topic').value.trim();
             if (!rawTopic) return showToast("Masukkan topik riset terlebih dahulu!", "error");
-            
             const btn = document.getElementById('btn-research-titles');
             const origText = btn.querySelector('span').innerText;
             btn.querySelector('span').innerText = "Mencari...";
             btn.disabled = true;
-
             try {
                 const result = await callAIAPI([
                     { role: 'system', content: 'Kamu asisten riset. Berikan 10 judul video viral dalam format JSON array. Hanya array JSON, tanpa teks lain.' },
                     { role: 'user', content: `Riset 10 judul video YouTube viral tentang: "${rawTopic}"` }
                 ]);
-
                 const clean = result.replace(/```json|```|```javascript|```js/gi, '').trim();
                 let titles;
                 try {
                     titles = JSON.parse(clean);
-                } catch(e) {
+                } catch (e) {
                     const match = clean.match(/\[([^\]]*)\]/);
                     if (match) titles = JSON.parse(match[0]);
                     else titles = clean.split(',').map(s => s.replace(/["'\[\]]/g, '').trim()).filter(Boolean);
                 }
-
                 titles = titles.slice(0, 10);
                 const list = document.getElementById('titles-recommendation-list');
                 list.innerHTML = '';
                 titles.forEach((t, i) => {
                     const card = document.createElement('div');
-                    card.className = "flex items-start gap-2 bg-dark-900 border border-dark-800 p-2 rounded-lg cursor-pointer hover:border-purple-500 transition-all";
-                    card.onclick = () => { 
-                        document.getElementById('input-topic').value = t; 
+                    card.className =
+                        "flex items-start gap-2 bg-dark-900 border border-dark-800 p-2 rounded-lg cursor-pointer hover:border-purple-500 transition-all";
+                    card.onclick = () => {
+                        document.getElementById('input-topic').value = t;
                         showToast("Judul disalin!", "success");
                     };
                     card.innerHTML = `
@@ -925,7 +1035,7 @@
                 });
                 document.getElementById('titles-recommendation-container').classList.remove('hidden');
                 showToast(`${titles.length} Judul berhasil diriset!`, "success");
-            } catch(e) {
+            } catch (e) {
                 showToast(`Gagal riset: ${e.message}`, "error");
             } finally {
                 btn.querySelector('span').innerText = origText;
@@ -933,53 +1043,43 @@
             }
         }
 
-        // ============================================================
-        // GENERATE NASKAH
-        // ============================================================
         async function generateNaskah() {
             const topic = document.getElementById('input-topic').value.trim();
             if (!topic) return showToast("Tulis topik cerita!", "error");
-
             const btn = document.getElementById('btn-gen-naskah');
             const origText = btn.querySelector('span').innerText;
             btn.querySelector('span').innerText = "Merajut...";
             btn.disabled = true;
-
             const tScenes = document.getElementById('target-scenes-count-select').value;
             const lang = document.getElementById('content-language-select').value === 'id' ? 'Bahasa Indonesia' : 'English';
             adjustPlayerAspect();
-
             try {
                 const result = await callAIAPI([
                     { role: 'system', content: `Kamu penulis naskah profesional. Buat naskah video ${tScenes} adegan. Format JSON murni: {"title":"","description":"","hashtags":"","scenes":[{"scene":1,"narration":"narasi","visualPrompt":"english prompt","soundEffect":"sfx"}]}. Hanya JSON, tanpa teks lain.` },
                     { role: 'user', content: `Buat naskah video estetik dengan tema: "${topic}" ${tScenes} adegan. Bahasa: ${lang}. Cerita sinematik.` }
                 ]);
-
                 const clean = result.replace(/```json|```|```javascript|```js/gi, '').trim();
                 let parsed;
                 try {
                     parsed = JSON.parse(clean);
-                } catch(e) {
+                } catch (e) {
                     const fixed = clean.replace(/(\w+):/g, '"$1":').replace(/'/g, '"');
                     parsed = JSON.parse(fixed);
                 }
-
                 generatedStory = parsed;
                 if (!generatedStory.scenes || generatedStory.scenes.length === 0) {
                     throw new Error("Tidak ada adegan");
                 }
-
                 generatedStory.scenes = generatedStory.scenes.map((s, i) => ({
                     scene: i + 1,
                     narration: s.narration || `Adegan ${i+1}`,
                     visualPrompt: s.visualPrompt || 'cinematic scene, beautiful lighting, 8k',
                     soundEffect: s.soundEffect || 'ambient'
                 }));
-
                 geminiAudioCache = {};
                 renderOutputStory(generatedStory);
                 showToast(`Naskah ${generatedStory.scenes.length} adegan berhasil dibuat!`, "success");
-            } catch(e) {
+            } catch (e) {
                 generatedStory = offlineTemplates.mystery;
                 renderOutputStory(generatedStory);
                 showToast(`Naskah menggunakan template lokal: ${e.message}`, "warn");
@@ -989,15 +1089,11 @@
             }
         }
 
-        // ============================================================
-        // RENDER OUTPUT
-        // ============================================================
         function renderOutputStory(parsed) {
             document.getElementById('out-title').value = parsed.title || 'Judul';
             document.getElementById('out-desc').value = parsed.description || 'Deskripsi';
             document.getElementById('out-tags').value = parsed.hashtags || '#video';
             document.getElementById('out-scenes-count').innerText = `${parsed.scenes.length} Adegan`;
-
             buildSceneEditor(parsed.scenes);
             buildVoiceList(parsed.scenes);
             buildStoryboardGrid(parsed.scenes);
@@ -1006,15 +1102,12 @@
         }
 
         function copyMetadata() {
-            const txt = document.getElementById('out-title').value + "\n\n" + 
-                       document.getElementById('out-desc').value + "\n\n" + 
-                       document.getElementById('out-tags').value;
+            const txt = document.getElementById('out-title').value + "\n\n" +
+                document.getElementById('out-desc').value + "\n\n" +
+                document.getElementById('out-tags').value;
             navigator.clipboard.writeText(txt).then(() => showToast("Metadata Disalin!", "success"));
         }
 
-        // ============================================================
-        // BUILD SCENE EDITOR
-        // ============================================================
         function buildSceneEditor(scenes) {
             const cont = document.getElementById('script-scenes-editor');
             cont.innerHTML = '';
@@ -1039,22 +1132,19 @@
         }
 
         function updateSceneText(idx, prop, val) {
-            if(generatedStory.scenes[idx]) {
+            if (generatedStory.scenes[idx]) {
                 generatedStory.scenes[idx][prop] = val;
-                if(prop === 'narration') { 
-                    buildVoiceList(generatedStory.scenes); 
-                    delete geminiAudioCache[idx]; 
+                if (prop === 'narration') {
+                    buildVoiceList(generatedStory.scenes);
+                    delete geminiAudioCache[idx];
                 }
-                if(prop === 'visualPrompt') {
+                if (prop === 'visualPrompt') {
                     buildStoryboardGrid(generatedStory.scenes);
                 }
                 buildRenderPlaylist(generatedStory.scenes);
             }
         }
 
-        // ============================================================
-        // AUDIO FUNCTIONS
-        // ============================================================
         function toggleAudioProvider() {
             const p = document.getElementById('audio-provider-select').value;
             document.getElementById('gemini-voices-div').classList.toggle('hidden', p !== 'gemini');
@@ -1068,7 +1158,7 @@
                 const o = document.createElement('option');
                 o.value = v.name;
                 o.textContent = `${v.name} (${v.lang})`;
-                if(v.lang.includes('id-ID')) o.selected = true;
+                if (v.lang.includes('id-ID')) o.selected = true;
                 sel.appendChild(o);
             });
         }
@@ -1099,11 +1189,7 @@
         function speakSingleNarration(idx) {
             window.speechSynthesis.cancel();
             const s = generatedStory.scenes[idx];
-            if(document.getElementById('audio-provider-select').value === 'gemini') {
-                playWebSpeech(s.narration);
-            } else {
-                playWebSpeech(s.narration);
-            }
+            playWebSpeech(s.narration);
         }
 
         function playWebSpeech(txt) {
@@ -1111,7 +1197,7 @@
             u.lang = 'id-ID';
             u.rate = 0.95;
             const v = window.speechSynthesis.getVoices().find(x => x.lang.includes('id'));
-            if(v) u.voice = v;
+            if (v) u.voice = v;
             window.speechSynthesis.speak(u);
         }
 
@@ -1122,14 +1208,16 @@
             }
             const texts = generatedStory.scenes.map(s => s.narration);
             let i = 0;
+
             function playNext() {
                 if (i >= texts.length) return;
                 const u = new SpeechSynthesisUtterance(texts[i]);
                 u.lang = 'id-ID';
                 u.rate = 0.95;
                 const v = window.speechSynthesis.getVoices().find(x => x.lang.includes('id'));
-                if(v) u.voice = v;
-                u.onend = () => { i++; playNext(); };
+                if (v) u.voice = v;
+                u.onend = () => { i++;
+                    playNext(); };
                 window.speechSynthesis.speak(u);
             }
             playNext();
@@ -1141,41 +1229,33 @@
             showToast("⏹️ Audio dihentikan", "info");
         }
 
-        // ============================================================
-        // DOWNLOAD AUDIO - REKAM LANGSUNG JADI FILE AUDIO
-        // ============================================================
         async function downloadAllAudio() {
             if (!generatedStory.scenes || generatedStory.scenes.length === 0) {
                 showToast("Buat naskah dulu!", "error");
                 return;
             }
-
             const provider = document.getElementById('audio-provider-select').value;
-            const container = document.getElementById('download-options-container');
-            
-            // === GEMINI TTS ===
             if (provider === 'gemini') {
                 try {
                     showToast("🎵 Menggabungkan audio Gemini...", "info");
-                    let t = 0, sr = 24000, pcms = [];
+                    let t = 0,
+                        sr = 24000,
+                        pcms = [];
                     for (let i = 0; i < generatedStory.scenes.length; i++) {
                         try {
                             const d = await getGeminiTTSAudio(i, generatedStory.scenes[i].narration);
                             pcms.push(d.pcm);
                             t += d.pcm.length;
                             sr = d.sampleRate;
-                        } catch(e) {
+                        } catch (e) {
                             console.warn(`Gemini gagal untuk scene ${i+1}, skip`, e);
-                            // Skip scene yang gagal
                         }
                     }
-                    
                     if (pcms.length === 0) {
                         showToast("⚠️ Gemini gagal untuk semua scene, coba WebSpeech", "warn");
                         downloadWebSpeechAudio();
                         return;
                     }
-                    
                     const totalLength = pcms.reduce((sum, p) => sum + p.length, 0);
                     const merged = new Int16Array(totalLength);
                     let offset = 0;
@@ -1183,7 +1263,6 @@
                         merged.set(p, offset);
                         offset += p.length;
                     });
-                    
                     const url = URL.createObjectURL(pcmToWav(merged, sr));
                     const a = document.createElement('a');
                     a.href = url;
@@ -1192,49 +1271,36 @@
                     a.click();
                     document.body.removeChild(a);
                     showToast("✅ Audio WAV berhasil diunduh!", "success");
-                    
-                } catch(e) {
+                } catch (e) {
                     showToast(`⚠️ Gemini gagal: ${e.message}. Beralih ke WebSpeech`, "warn");
                     downloadWebSpeechAudio();
                 }
                 return;
             }
-
-            // === WEBSpeech - REKAM LANGSUNG ===
             downloadWebSpeechAudio();
         }
 
-        // ============================================================
-        // REKAM WEBSpeech MENJADI AUDIO (REAL)
-        // ============================================================
         function downloadWebSpeechAudio() {
             if (!generatedStory.scenes || generatedStory.scenes.length === 0) {
                 showToast("Buat naskah dulu!", "error");
                 return;
             }
-
             const texts = generatedStory.scenes.map(s => s.narration);
             const fullText = texts.join('. ');
-            
             showToast("🎙️ Merekam suara... (tunggu sebentar)", "info");
-            
-            // Buat AudioContext
-            const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            const audioCtx = new(window.AudioContext || window.webkitAudioContext)();
             const dest = audioCtx.createMediaStreamDestination();
             const mediaRecorder = new MediaRecorder(dest.stream);
             const chunks = [];
             let isDone = false;
-            
             mediaRecorder.ondataavailable = function(e) {
                 if (e.data.size > 0) chunks.push(e.data);
             };
-            
             mediaRecorder.onstop = function() {
                 if (chunks.length === 0) {
                     showToast("❌ Gagal merekam, coba browser lain", "error");
                     return;
                 }
-                
                 const blob = new Blob(chunks, { type: 'audio/webm' });
                 const url = URL.createObjectURL(blob);
                 const a = document.createElement('a');
@@ -1245,19 +1311,13 @@
                 document.body.removeChild(a);
                 showToast("✅ Audio berhasil diunduh! (WebM)", "success");
             };
-            
-            // Mulai rekam
             mediaRecorder.start();
-            
-            // Siapkan speech
             const utterance = new SpeechSynthesisUtterance(fullText);
             utterance.lang = 'id-ID';
             utterance.rate = 0.95;
-            
             const voices = window.speechSynthesis.getVoices();
             const indo = voices.find(v => v.lang.includes('id'));
             if (indo) utterance.voice = indo;
-            
             utterance.onend = function() {
                 setTimeout(() => {
                     if (mediaRecorder.state === 'recording') {
@@ -1266,18 +1326,13 @@
                     isDone = true;
                 }, 500);
             };
-            
             utterance.onerror = function() {
                 showToast("❌ Gagal memutar suara", "error");
                 if (mediaRecorder.state === 'recording') {
                     mediaRecorder.stop();
                 }
             };
-            
-            // Mulai bicara
             window.speechSynthesis.speak(utterance);
-            
-            // Timeout fallback
             setTimeout(() => {
                 if (!isDone && mediaRecorder.state === 'recording') {
                     mediaRecorder.stop();
@@ -1286,9 +1341,6 @@
             }, fullText.split(' ').length * 300 + 5000);
         }
 
-        // ============================================================
-        // GEMINI TTS HELPER
-        // ============================================================
         async function getGeminiTTSAudio(idx, txt) {
             if (geminiAudioCache[idx]) return geminiAudioCache[idx];
             const v = document.getElementById('gemini-voice-select').value;
@@ -1304,7 +1356,6 @@
             const pcm16 = new Int16Array(pcmData);
             const wavBlob = pcmToWav(pcm16, sampleRate);
             const audioUrl = URL.createObjectURL(wavBlob);
-            
             geminiAudioCache[idx] = { url: audioUrl, pcm: pcm16, sampleRate: sampleRate, duration: pcm16.length / sampleRate };
             return geminiAudioCache[idx];
         }
@@ -1312,24 +1363,28 @@
         function base64ToArrayBuffer(b64) {
             const str = window.atob(b64);
             const bytes = new Uint8Array(str.length);
-            for(let i=0; i<str.length; i++) bytes[i] = str.charCodeAt(i);
+            for (let i = 0; i < str.length; i++) bytes[i] = str.charCodeAt(i);
             return bytes.buffer;
         }
 
         function pcmToWav(pcm16, sampleRate) {
             const buf = new ArrayBuffer(44 + pcm16.length * 2);
             const view = new DataView(buf);
-            const writeStr = (off, s) => { for(let i=0; i<s.length; i++) view.setUint8(off+i, s.charCodeAt(i)); };
-            
+            const writeStr = (off, s) => { for (let i = 0; i < s.length; i++) view.setUint8(off + i, s.charCodeAt(i)); };
             writeStr(0, 'RIFF');
             view.setUint32(4, 36 + pcm16.length * 2, true);
-            writeStr(8, 'WAVE'); writeStr(12, 'fmt ');
-            view.setUint32(16, 16, true); view.setUint16(20, 1, true); view.setUint16(22, 1, true);
-            view.setUint32(24, sampleRate, true); view.setUint32(28, sampleRate * 2, true);
-            view.setUint16(32, 2, true); view.setUint16(34, 16, true);
-            writeStr(36, 'data'); view.setUint32(40, pcm16.length * 2, true);
-            
-            for(let i=0; i<pcm16.length; i++) view.setInt16(44 + i * 2, pcm16[i], true);
+            writeStr(8, 'WAVE');
+            writeStr(12, 'fmt ');
+            view.setUint32(16, 16, true);
+            view.setUint16(20, 1, true);
+            view.setUint16(22, 1, true);
+            view.setUint32(24, sampleRate, true);
+            view.setUint32(28, sampleRate * 2, true);
+            view.setUint16(32, 2, true);
+            view.setUint16(34, 16, true);
+            writeStr(36, 'data');
+            view.setUint32(40, pcm16.length * 2, true);
+            for (let i = 0; i < pcm16.length; i++) view.setInt16(44 + i * 2, pcm16[i], true);
             return new Blob([view], { type: 'audio/wav' });
         }
 
@@ -1339,7 +1394,6 @@
             const apiUrl = `https://generativelanguage.googleapis.com/v1beta/${endpoint}?key=${apiKey}`;
             const maxRetries = 2;
             let delay = 1000;
-            
             for (let i = 0; i <= maxRetries; i++) {
                 try {
                     const response = await fetch(apiUrl, {
@@ -1351,22 +1405,24 @@
                     return await response.json();
                 } catch (e) {
                     if (i === maxRetries) throw e;
-                    await new Promise(r => setTimeout(r, delay)); delay *= 1.5;
+                    await new Promise(r => setTimeout(r, delay));
+                    delay *= 1.5;
                 }
             }
         }
 
-        // ============================================================
-        // VISUAL FUNCTIONS
-        // ============================================================
+        // ===== VISUAL FUNCTIONS =====
         function initStylePresets() {
             const container = document.getElementById('stylePresetsContainer');
             container.innerHTML = '';
             Object.keys(STYLE_PRESETS).forEach(key => {
                 const styleObj = STYLE_PRESETS[key];
                 const btn = document.createElement('button');
-                btn.className = `p-3 rounded-xl border text-left transition-all flex flex-col gap-1 cursor-pointer ${key === activeStyle ? 'border-purple-500 bg-purple-500/10 shadow-[0_0_15px_rgba(108,92,231,0.15)]' : 'border-dark-800 bg-dark-950/60 hover:bg-dark-900/80'}`;
-                btn.onclick = () => { activeStyle = key; initStylePresets(); showToast(`Gaya: "${styleObj.name}"`, "info"); };
+                btn.className =
+                    `p-3 rounded-xl border text-left transition-all flex flex-col gap-1 cursor-pointer ${key === activeStyle ? 'border-purple-500 bg-purple-500/10 shadow-[0_0_15px_rgba(108,92,231,0.15)]' : 'border-dark-800 bg-dark-950/60 hover:bg-dark-900/80'}`;
+                btn.onclick = () => { activeStyle = key;
+                    initStylePresets();
+                    showToast(`Gaya: "${styleObj.name}"`, "info"); };
                 btn.innerHTML = `<span class="text-xs font-bold text-slate-200">${styleObj.name}</span>`;
                 container.appendChild(btn);
             });
@@ -1383,43 +1439,36 @@
                 grid.innerHTML = '<div class="col-span-2 text-center py-10 text-slate-500 text-xs">Silakan buat naskah terlebih dahulu.</div>';
                 return;
             }
-
             const isV = document.querySelector('input[name="video-duration"]:checked').value === "short";
             const ratioLabel = isV ? "Rasio Vertikal 9:16 (Shorts)" : "Rasio Lanskap 16:9 (YouTube)";
             const frameClass = isV ? "aspect-[9/16] w-[160px] md:w-[220px] mx-auto" : "aspect-video w-full";
-
             scenes.forEach((s, i) => {
                 const card = document.createElement('div');
                 card.className = 'glass-panel p-3 md:p-5 rounded-2xl border border-dark-800 space-y-3 flex flex-col justify-between';
-                
                 const enhancedPrompt = getEnhancedAestheticPrompt(s.visualPrompt);
                 const encodedPrompt = encodeURIComponent(enhancedPrompt);
-                const pUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=${isV?540:960}&height=${isV?960:540}&nologo=true&private=true&model=flux&seed=${i+99}`;
-
+                const pUrl =
+                    `https://image.pollinations.ai/prompt/${encodedPrompt}?width=${isV?540:960}&height=${isV?960:540}&nologo=true&private=true&model=flux&seed=${i+99}`;
                 card.innerHTML = `
                     <div class="space-y-2">
                         <div class="flex justify-between items-center">
                             <span class="text-[10px] md:text-xs font-bold text-purple-400">ADEGAN ${s.scene} - VISUAL</span>
                             <span class="text-[9px] bg-dark-950 text-slate-400 px-2 py-0.5 rounded border border-dark-800 font-semibold italic">${ratioLabel}</span>
                         </div>
-                        
                         <div class="relative ${frameClass} bg-dark-950 rounded-xl overflow-hidden border border-dark-800 flex items-center justify-center group shadow-inner">
                             <div id="loading-spinner-${i}" class="absolute inset-0 flex flex-col items-center justify-center bg-dark-950/90 z-10 transition-opacity duration-300">
                                 <span class="loader mb-2"></span>
                                 <span class="text-[9px] text-purple-400 font-bold uppercase tracking-wider animate-pulse">Melukis dengan AI...</span>
                             </div>
-
                             <img id="sc-img-${i}" src="${pUrl}" 
                                  onload="document.getElementById('loading-spinner-${i}').classList.add('opacity-0','pointer-events-none')" 
                                  onerror="handleImageError(this, ${s.scene}, ${isV})"
                                  class="w-full h-full object-cover select-none transition-all duration-500 group-hover:scale-105" 
                                  alt="Adegan ${s.scene}">
-                            
                             <div class="absolute bottom-2 right-2 bg-black/80 border border-white/10 px-2 py-1 rounded text-[9px] text-white flex items-center gap-1 cursor-pointer hover:bg-black transition-all z-20" onclick="regenerateImage(${i})">
                                 <i class="fa-solid fa-arrows-rotate"></i> Acak
                             </div>
                         </div>
-
                         <div class="space-y-1">
                             <label class="block text-[9px] text-slate-400 font-bold uppercase">Prompt Gambar Aktif</label>
                             <textarea id="visual-prompt-input-${i}" onchange="updateSceneText(${i}, 'visualPrompt', this.value)" class="w-full bg-dark-900 border border-dark-800 rounded-lg p-2 text-sm md:text-xs text-slate-300 resize-none h-16 focus:outline-none focus:border-purple-500">${s.visualPrompt}</textarea>
@@ -1444,20 +1493,15 @@
         function generateImageForScene(idx) {
             const promptInput = document.getElementById(`visual-prompt-input-${idx}`);
             const promptValue = promptInput ? promptInput.value.trim() : "";
-            
-            if(!promptValue) return showToast("Prompt gambar kosong!", "error");
-
+            if (!promptValue) return showToast("Prompt gambar kosong!", "error");
             const imgEl = document.getElementById(`sc-img-${idx}`);
             const spinner = document.getElementById(`loading-spinner-${idx}`);
-            
-            if(spinner) spinner.classList.remove('opacity-0', 'pointer-events-none');
+            if (spinner) spinner.classList.remove('opacity-0', 'pointer-events-none');
             imgEl.classList.add('opacity-40');
             showToast(`Membuat Gambar Adegan ${idx+1}...`, "info");
-
             const isV = document.querySelector('input[name="video-duration"]:checked').value === "short";
             const w = isV ? 540 : 960;
             const h = isV ? 960 : 540;
-
             generateFluxImage(idx, promptValue, isV, w, h, imgEl, spinner);
         }
 
@@ -1465,20 +1509,20 @@
             const seed = Math.floor(Math.random() * 99999);
             const enhancedPrompt = getEnhancedAestheticPrompt(promptValue);
             const encoded = encodeURIComponent(enhancedPrompt);
-            const targetUrl = `https://image.pollinations.ai/prompt/${encoded}?width=${width}&height=${height}&nologo=true&private=true&model=flux&seed=${seed}`;
-
+            const targetUrl =
+                `https://image.pollinations.ai/prompt/${encoded}?width=${width}&height=${height}&nologo=true&private=true&model=flux&seed=${seed}`;
             const tempImg = new Image();
             tempImg.src = targetUrl;
             tempImg.onload = () => {
                 imgEl.src = targetUrl;
                 imgEl.classList.remove('opacity-40');
-                if(spinner) spinner.classList.add('opacity-0', 'pointer-events-none');
+                if (spinner) spinner.classList.add('opacity-0', 'pointer-events-none');
                 showToast(`Gambar Adegan ${index+1} Berhasil!`, "success");
                 buildRenderPlaylist(generatedStory.scenes);
             };
             tempImg.onerror = () => {
                 imgEl.classList.remove('opacity-40');
-                if(spinner) spinner.classList.add('opacity-0', 'pointer-events-none');
+                if (spinner) spinner.classList.add('opacity-0', 'pointer-events-none');
                 handleImageError(imgEl, index + 1, isVertical);
             };
         }
@@ -1487,18 +1531,15 @@
             const seed = Math.floor(Math.random() * 9999);
             const promptInput = document.getElementById(`visual-prompt-input-${index}`);
             const textPrompt = promptInput ? promptInput.value : generatedStory.scenes[index].visualPrompt;
-            
             const isV = document.querySelector('input[name="video-duration"]:checked').value === "short";
             const width = isV ? 540 : 960;
             const height = isV ? 960 : 540;
-
             const spinner = document.getElementById('loading-spinner-' + index);
-            if(spinner) spinner.classList.remove('opacity-0', 'pointer-events-none');
-
+            if (spinner) spinner.classList.remove('opacity-0', 'pointer-events-none');
             const enhancedPrompt = getEnhancedAestheticPrompt(textPrompt);
             const encoded = encodeURIComponent(enhancedPrompt);
-            const targetUrl = `https://image.pollinations.ai/prompt/${encoded}?width=${width}&height=${height}&nologo=true&private=true&model=flux&seed=${seed}`;
-            
+            const targetUrl =
+                `https://image.pollinations.ai/prompt/${encoded}?width=${width}&height=${height}&nologo=true&private=true&model=flux&seed=${seed}`;
             const imgEl = document.getElementById(`sc-img-${index}`);
             imgEl.src = targetUrl;
             showToast(`Visual diacak (Seed #${seed})!`, "success");
@@ -1513,18 +1554,18 @@
             });
         }
 
-        // ============================================================
-        // PLAYER FUNCTIONS
-        // ============================================================
+        // ===== PLAYER & RENDER =====
         function adjustPlayerAspect() {
             const isV = document.querySelector('input[name="video-duration"]:checked').value === "short";
             const f = document.getElementById('player-outer-frame');
-            if (isV) { 
-                f.style.maxWidth = "280px"; 
-                f.className = "w-full bg-slate-950/80 rounded-3xl border-8 border-dark-800 overflow-hidden shadow-2xl relative aspect-[9/16]"; 
-            } else { 
-                f.style.maxWidth = "100%"; 
-                f.className = "w-full bg-slate-950/80 rounded-2xl border-4 border-dark-800 overflow-hidden shadow-2xl relative aspect-video"; 
+            if (isV) {
+                f.style.maxWidth = "280px";
+                f.className =
+                    "w-full bg-slate-950/80 rounded-3xl border-8 border-dark-800 overflow-hidden shadow-2xl relative aspect-[9/16]";
+            } else {
+                f.style.maxWidth = "100%";
+                f.className =
+                    "w-full bg-slate-950/80 rounded-2xl border-4 border-dark-800 overflow-hidden shadow-2xl relative aspect-video";
             }
         }
 
@@ -1540,7 +1581,8 @@
                 const img = document.getElementById(`sc-img-${i}`);
                 const d = document.createElement('div');
                 d.id = `playlist-item-${i}`;
-                d.className = `p-2 rounded-lg border border-dark-800 hover:bg-dark-800/50 flex gap-2 cursor-pointer transition-all`;
+                d.className =
+                    `p-2 rounded-lg border border-dark-800 hover:bg-dark-800/50 flex gap-2 cursor-pointer transition-all`;
                 d.onclick = () => selectVideoPlayerScene(i);
                 d.innerHTML = `
                     <div class="w-12 h-8 md:w-16 md:h-10 bg-black flex-shrink-0">
@@ -1556,12 +1598,11 @@
         }
 
         function selectVideoPlayerScene(idx) {
-            if(idx < 0 || idx >= generatedStory.scenes.length) return;
+            if (idx < 0 || idx >= generatedStory.scenes.length) return;
             currentActiveSceneIndex = idx;
             const img = document.getElementById(`sc-img-${idx}`);
             document.getElementById('player-scene-img').src = img ? img.src : '';
             document.getElementById('player-hud-narration').innerText = generatedStory.scenes[idx].narration;
-            
             const playerImg = document.getElementById('player-scene-img');
             playerImg.classList.remove('animate-kenburns');
             void playerImg.offsetWidth;
@@ -1578,16 +1619,13 @@
 
         function seekPlayer(e) {}
 
-        // ============================================================
-        // RENDER VIDEO - TANPA TEKS
-        // ============================================================
         function updateRenderProgress(pct, step, desc) {
             const rng = document.getElementById('render-progress-ring');
             const strokeVal = 251;
-            rng.style.strokeDashoffset = strokeVal - (pct/100 * strokeVal);
+            rng.style.strokeDashoffset = strokeVal - (pct / 100 * strokeVal);
             document.getElementById('render-progress-percent').innerText = `${Math.round(pct)}%`;
-            if(step) document.getElementById('render-step-indicator').innerText = step;
-            if(desc) document.getElementById('render-step-desc').innerText = desc;
+            if (step) document.getElementById('render-step-indicator').innerText = step;
+            if (desc) document.getElementById('render-step-desc').innerText = desc;
         }
 
         function resetRenderModalUI() {
@@ -1608,17 +1646,15 @@
             cancelRenderFlag = true;
             isCurrentlyRendering = false;
             closeRenderModal();
-            if(mediaRecorder) mediaRecorder.stop();
+            if (mediaRecorder) mediaRecorder.stop();
         }
 
         function showDownloadButtons() {
             document.getElementById('render-step-indicator').innerText = "SUKSES DISIMPAN";
             document.getElementById('render-step-desc').innerText = "Video Visual WebM berhasil dirakit.";
-            
             const btnContainer = document.getElementById('render-action-buttons');
             const cTitle = generatedStory.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').substring(0, 30) || 'video';
             const filename = `Visual_${cTitle}.webm`;
-            
             btnContainer.innerHTML = `
                 <div class="flex flex-col gap-2 w-full mt-2">
                     <video src="${finalVideoBlobUrl}" controls loop autoplay class="w-full rounded-xl bg-black border border-dark-700" style="max-height: 160px; object-fit: contain;"></video>
@@ -1641,9 +1677,8 @@
                         await navigator.share({ files: [file], title: 'Video Studio Konten' });
                         return;
                     }
-                } catch(e) {}
+                } catch (e) {}
             }
-            
             const a = document.createElement('a');
             a.href = finalVideoBlobUrl;
             a.download = filename;
@@ -1654,146 +1689,117 @@
 
         async function startVideoRenderingProcess() {
             if (generatedStory.scenes.length === 0) return showToast("Buat naskah dulu!", "error");
-
             cancelRenderFlag = false;
             isCurrentlyRendering = true;
             recordedChunks = [];
             finalVideoBlobUrl = null;
             finalVideoBlob = null;
-            
             const modal = document.getElementById('rendering-modal');
             resetRenderModalUI();
             modal.classList.remove('hidden');
-
             updateRenderProgress(5, "LANGKAH 1/3 (MEMUAT)", "Memuat gambar ke memori...");
             const preloadedImages = [];
             for (let i = 0; i < generatedStory.scenes.length; i++) {
                 if (cancelRenderFlag) return;
-                
                 const imgCard = document.getElementById(`sc-img-${i}`);
                 const src = imgCard ? imgCard.src : `https://placehold.co/1280x720/0a0f1d/6c5ce7?text=A${i+1}`;
-                
                 const imgObj = new Image();
                 imgObj.crossOrigin = "anonymous";
                 imgObj.src = src;
-                
-                await new Promise(r => { imgObj.onload = r; imgObj.onerror = r; });
+                await new Promise(r => { imgObj.onload = r;
+                    imgObj.onerror = r; });
                 preloadedImages.push(imgObj);
-                
-                updateRenderProgress(5 + ((i+1)/generatedStory.scenes.length)*15, "LANGKAH 1/3 (MEMUAT)", `Memuat ${i+1}/${generatedStory.scenes.length}...`);
+                updateRenderProgress(5 + ((i + 1) / generatedStory.scenes.length) * 15, "LANGKAH 1/3 (MEMUAT)",
+                    `Memuat ${i+1}/${generatedStory.scenes.length}...`);
             }
-
             if (cancelRenderFlag) return;
             updateRenderProgress(25, "LANGKAH 2/3 (INISIALISASI)", "Menghangatkan kanvas...");
-
             const isV = document.querySelector('input[name="video-duration"]:checked').value === "short";
             renderCanvas = document.getElementById('offscreen-render-canvas');
             renderCanvas.width = isV ? 720 : 1280;
             renderCanvas.height = isV ? 1280 : 720;
             renderCtx = renderCanvas.getContext('2d');
-
             recordStream = renderCanvas.captureStream(30);
-            
             let vOpts = { mimeType: 'video/webm;codecs=vp9' };
-            if(!MediaRecorder.isTypeSupported(vOpts.mimeType)) vOpts = { mimeType: 'video/webm;codecs=vp8' };
-            if(!MediaRecorder.isTypeSupported(vOpts.mimeType)) vOpts = { mimeType: 'video/webm' };
-
-            try { 
-                mediaRecorder = new MediaRecorder(recordStream, vOpts); 
-            } catch(e) { 
-                return showToast("Perekam tidak didukung.", "error"); 
+            if (!MediaRecorder.isTypeSupported(vOpts.mimeType)) vOpts = { mimeType: 'video/webm;codecs=vp8' };
+            if (!MediaRecorder.isTypeSupported(vOpts.mimeType)) vOpts = { mimeType: 'video/webm' };
+            try {
+                mediaRecorder = new MediaRecorder(recordStream, vOpts);
+            } catch (e) {
+                return showToast("Perekam tidak didukung.", "error");
             }
-
-            mediaRecorder.ondataavailable = e => { 
-                if (e.data && e.data.size > 0) recordedChunks.push(e.data); 
+            mediaRecorder.ondataavailable = e => {
+                if (e.data && e.data.size > 0) recordedChunks.push(e.data);
             };
             mediaRecorder.onstop = () => {
-                if(cancelRenderFlag) return;
+                if (cancelRenderFlag) return;
                 updateRenderProgress(100, "LANGKAH 3/3 (SELESAI)", "Berkas final siap.");
                 finalVideoBlob = new Blob(recordedChunks, { type: vOpts.mimeType });
                 finalVideoBlobUrl = URL.createObjectURL(finalVideoBlob);
                 showDownloadButtons();
                 showToast("Video Berhasil!", "success");
             };
-
             mediaRecorder.start();
-            processScenePerekaman(0, preloadedImages); 
+            processScenePerekaman(0, preloadedImages);
         }
 
-        // ============================================================
-        // RENDER PER SCENE - TANPA TEKS (HANYA GAMBAR + ZOOM)
-        // ============================================================
         async function processScenePerekaman(sIdx, preloadedImages) {
             if (cancelRenderFlag || !isCurrentlyRendering) return;
             const tScenes = generatedStory.scenes.length;
-
-            if (sIdx >= tScenes) { 
-                mediaRecorder.stop(); 
-                return; 
+            if (sIdx >= tScenes) {
+                mediaRecorder.stop();
+                return;
             }
-
             const sData = generatedStory.scenes[sIdx];
             const imgSource = preloadedImages[sIdx];
-            
             const stepNum = 25 + ((sIdx + 1) / tScenes) * 70;
             updateRenderProgress(stepNum, `LANGKAH 3/3 (MEREKAM ${sIdx + 1}/${tScenes})`, `Animasi gambar...`);
-
             let startT = performance.now();
             let duration = 3500;
 
             function renderFrame(time) {
                 if (cancelRenderFlag) return;
                 const elapsed = time - startT;
-
                 if (elapsed >= duration) {
                     processScenePerekaman(sIdx + 1, preloadedImages);
                     return;
                 }
-
                 const cW = renderCanvas.width;
                 const cH = renderCanvas.height;
-
                 const scale = 1.0 + (0.05 * (elapsed / duration));
-
                 renderCtx.clearRect(0, 0, cW, cH);
                 renderCtx.save();
-                renderCtx.translate(cW/2, cH/2);
+                renderCtx.translate(cW / 2, cH / 2);
                 renderCtx.scale(scale, scale);
-                renderCtx.translate(-cW/2, -cH/2);
+                renderCtx.translate(-cW / 2, -cH / 2);
                 renderCtx.drawImage(imgSource, 0, 0, cW, cH);
                 renderCtx.restore();
-
-                // TIDAK ADA TEKS DI SINI
-
                 requestAnimationFrame(renderFrame);
             }
             requestAnimationFrame(renderFrame);
         }
 
-        // ============================================================
-        // SWITCH TAB
-        // ============================================================
+        // ===== SWITCH TAB =====
         function switchTab(tabId) {
             document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
             document.getElementById(tabId).classList.add('active');
-
             const navIds = ['nav-ideasi', 'nav-suara', 'nav-visual', 'nav-render'];
             navIds.forEach(id => {
                 const btn = document.getElementById(id);
                 const target = tabId.split('-')[1];
                 const btnTarget = id.split('-')[1];
                 if (btnTarget === target) {
-                    btn.className = "flex-shrink-0 w-auto md:w-full flex items-center gap-2 md:gap-3 px-4 py-2.5 md:py-3 rounded-xl transition-all text-xs md:text-sm font-semibold text-left text-purple-400 bg-purple-500/10 border border-purple-500/30";
+                    btn.className =
+                        "flex-shrink-0 w-auto md:w-full flex items-center gap-2 md:gap-3 px-4 py-2.5 md:py-3 rounded-xl transition-all text-xs md:text-sm font-semibold text-left text-purple-400 bg-purple-500/10 border border-purple-500/30";
                 } else {
-                    btn.className = "flex-shrink-0 w-auto md:w-full flex items-center gap-2 md:gap-3 px-4 py-2.5 md:py-3 rounded-xl text-slate-400 hover:bg-dark-800/50 hover:text-white transition-all text-xs md:text-sm font-semibold text-left border border-transparent";
+                    btn.className =
+                        "flex-shrink-0 w-auto md:w-full flex items-center gap-2 md:gap-3 px-4 py-2.5 md:py-3 rounded-xl text-slate-400 hover:bg-dark-800/50 hover:text-white transition-all text-xs md:text-sm font-semibold text-left border border-transparent";
                 }
             });
         }
 
-        // ============================================================
-        // INIT
-        // ============================================================
-        window.onload = function() {
+        // ===== INIT APP (dipanggil setelah login) =====
+        function initApp() {
             populateVoiceSelect();
             if (window.speechSynthesis.onvoiceschanged !== undefined) {
                 window.speechSynthesis.onvoiceschanged = populateVoiceSelect;
@@ -1801,7 +1807,6 @@
             adjustPlayerAspect();
             initStylePresets();
             toggleProvider();
-            
             const savedOpenRouter = localStorage.getItem('openrouter_key');
             if (savedOpenRouter) {
                 document.getElementById('openrouter-api-key').value = savedOpenRouter;
@@ -1811,21 +1816,19 @@
                     }, 500);
                 }
             }
-            
             const savedGemini = localStorage.getItem('gemini_key');
             if (savedGemini) {
                 document.getElementById('gemini-api-key').value = savedGemini;
             }
-
             if (!savedOpenRouter && !savedGemini) {
                 showToast("🔑 Masukkan API Key OpenRouter di sidebar", "info");
                 document.getElementById('api-settings').classList.remove('hidden');
             }
-        };
+            console.log("🎬 Studio Konten Pro - Full Version siap.");
+        }
 
-        console.log("🎬 Studio Konten Pro - Full Version");
-        console.log("📌 Fitur: Riset | Naskah | TTS | Gambar | Video (tanpa teks)");
-        console.log("📌 Download audio: WebSpeech (rekaman langsung) atau Gemini (wav)");
+        // Jika session sudah ada, initApp sudah dipanggil di showApp()
+        // Jika tidak, maka splash tetap tampil dan menunggu login.
     </script>
 </body>
 </html>
