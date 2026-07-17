@@ -169,7 +169,7 @@
                     </div>
                     <div>
                         <h1 class="text-sm font-extrabold text-white leading-tight">Studio Konten</h1>
-                        <p class="text-[9px] text-purple-400 font-bold tracking-widest uppercase">OPENROUTER AI</p>
+                        <p class="text-[9px] text-purple-400 font-bold tracking-widest uppercase">by Kreatorpedia</p>
                     </div>
                 </div>
                 <button onclick="logoutApp()" class="md:hidden text-slate-400 hover:text-white text-sm transition-all">
@@ -236,10 +236,11 @@
                                 <i class="fa-regular fa-eye"></i>
                             </button>
                         </div>
-                        <div class="flex gap-2 mt-1">
+                        <div class="flex gap-2 mt-1 flex-wrap">
                             <button onclick="testGeminiKey()" class="flex-1 bg-dark-800 hover:bg-dark-700 text-[10px] py-1.5 px-3 rounded-lg text-slate-300 transition-all">🔑 Test Key</button>
+                            <button onclick="geminiKeys()" class="flex-1 bg-purple-600/20 hover:bg-purple-600/40 text-[10px] py-1.5 px-3 rounded-lg text-purple-300 transition-all border border-purple-500/20">📋 Ambil Key</button>
                         </div>
-                        <div id="gemini-status-text" class="text-[9px] text-slate-500 text-center mt-1">Atau gunakan Gemini API</div>
+                        <div id="gemini-status-text" class="text-[9px] text-slate-500 text-center mt-1">Masukkan API Key Gemini</div>
                     </div>
                 </div>
             </div>
@@ -254,7 +255,7 @@
                 </div>
                 <div class="flex items-center gap-3">
                     <span class="hidden md:flex bg-gradient-to-r from-purple-500/10 to-indigo-500/10 border border-purple-500/20 text-purple-400 px-3.5 py-1.5 rounded-full text-xs font-semibold items-center gap-1.5">
-                        <i class="fa-solid fa-circle-nodes"></i> OpenRouter AI
+                        <i class="fa-solid fa-circle-nodes"></i> by Kreatorpedia
                     </span>
                     <button onclick="logoutApp()" class="text-slate-400 hover:text-white text-sm transition-all hidden md:block" title="Logout">
                         <i class="fa-solid fa-sign-out-alt"></i>
@@ -466,7 +467,7 @@
                             </div>
                         </div>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6" id="visual-storyboard-grid">
-                            <div class="col-span-2 text-center py-10 text-slate-500 text-xs">Silakan buat naskah terlebih dahulu, lalu klik "Render Semua Adegan".</div>
+                            <div class="col-span-2 text-center py-10 text-slate-500 text-xs">Silakan buat naskah terlebih dahulu.</div>
                         </div>
                         <div class="mt-2 pt-4 border-t border-dark-800 flex justify-between items-center">
                             <button onclick="switchTab('tab-suara')" class="text-slate-400 text-xs font-bold"><i class="fa-solid fa-arrow-left"></i> Kembali</button>
@@ -580,7 +581,7 @@
     <canvas id="offscreen-render-canvas" class="hidden"></canvas>
 
     <!-- ========================================================== -->
-    <!-- JAVASCRIPT LENGKAP -->
+    <!-- JAVASCRIPT LENGKAP (Login + Semua Fitur) -->
     <!-- ========================================================== -->
     <script>
         // ============================================================
@@ -878,7 +879,7 @@
                         select.appendChild(opt);
                     });
                     document.getElementById('model-status-text').textContent = '⚠️ Tidak ada model free dari API, gunakan fallback';
-                    updateAPIStatus(true, 'Fallback models');
+                    updateAPIStatus(true, 'Valid (fallback)');
                     showToast('⚠️ Gunakan model fallback (API tidak mengembalikan free model)', 'warn');
                 } else {
                     freeModels.forEach(m => {
@@ -892,7 +893,7 @@
                         select.appendChild(opt);
                     });
                     document.getElementById('model-status-text').textContent = `✅ ${freeModels.length} model free tersedia`;
-                    updateAPIStatus(true, `${freeModels.length} model free`);
+                    updateAPIStatus(true, 'Valid');
                     showToast(`✅ ${freeModels.length} model free ditemukan!`, 'success');
                 }
             } catch (e) {
@@ -936,8 +937,8 @@
                         m.id && (m.id.includes('free') ||
                             (m.pricing && m.pricing.prompt === '0' && m.pricing.completion === '0'))
                     );
-                    updateAPIStatus(true, `${freeModels.length} model free`);
-                    showToast(`✅ API Key valid! ${freeModels.length} model free`, 'success');
+                    updateAPIStatus(true, 'Valid');
+                    showToast(`✅ API Key valid!`, 'success');
                     await fetchOpenRouterModels();
                 } else {
                     const err = await res.text();
@@ -960,10 +961,10 @@
             try {
                 const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${key}`);
                 if (res.ok) {
-                    document.getElementById('gemini-status-text').innerHTML = '<span style="color:#10b981;">✅ Gemini API valid!</span>';
+                    document.getElementById('gemini-status-text').innerHTML = '<span style="color:#10b981;">✅ Valid</span>';
                     showToast('✅ Gemini API Key valid!', 'success');
                 } else {
-                    document.getElementById('gemini-status-text').innerHTML = '<span style="color:#ef4444;">❌ Key tidak valid</span>';
+                    document.getElementById('gemini-status-text').innerHTML = '<span style="color:#ef4444;">❌ Tidak valid</span>';
                     showToast('❌ Gemini API Key tidak valid!', 'error');
                 }
             } catch (e) {
@@ -975,6 +976,11 @@
         function openRouterKeys() {
             window.open('https://openrouter.ai/keys', '_blank');
             showToast('📋 Ambil API Key dari OpenRouter (sk-or-v1-...)', 'info');
+        }
+
+        function geminiKeys() {
+            window.open('https://aistudio.google.com/app/apikey', '_blank');
+            showToast('📋 Ambil API Key dari Google AI Studio', 'info');
         }
 
         async function callAIAPI(messages) {
@@ -1138,8 +1144,7 @@
             document.getElementById('out-scenes-count').innerText = `${parsed.scenes.length} Adegan`;
             buildSceneEditor(parsed.scenes);
             buildVoiceList(parsed.scenes);
-            // buildStoryboardGrid dipanggil dengan parameter ketiga = false (tidak auto-load)
-            buildStoryboardGrid(parsed.scenes, false);
+            buildStoryboardGrid(parsed.scenes);
             buildRenderPlaylist(parsed.scenes);
             document.getElementById('metadata-container').classList.remove('hidden');
         }
@@ -1182,7 +1187,7 @@
                     delete geminiAudioCache[idx];
                 }
                 if (prop === 'visualPrompt') {
-                    // update tampilan jika sudah ada gambar, tapi tidak otomatis generate ulang
+                    buildStoryboardGrid(generatedStory.scenes);
                 }
                 buildRenderPlaylist(generatedStory.scenes);
             }
@@ -1308,6 +1313,7 @@
                 return;
             }
 
+            // --- GEMINI TTS: unduh WAV ---
             try {
                 showToast("🎵 Menggabungkan audio Gemini...", "info");
                 let sr = 24000,
@@ -1415,7 +1421,7 @@
             }
         }
 
-        // ----- Fungsi Visual (dengan parameter autoLoad) -----
+        // ----- Fungsi Visual (serentak, tanpa berurutan) -----
         function initStylePresets() {
             const container = document.getElementById('stylePresetsContainer');
             container.innerHTML = '';
@@ -1436,23 +1442,23 @@
             return `${p}, ${STYLE_PRESETS[activeStyle]?.promptAddon || ""}, masterpiece, 8k, no watermark, textless`;
         }
 
-        // buildStoryboardGrid dengan parameter autoLoad = false (default)
-        function buildStoryboardGrid(scenes, autoLoad = false) {
+        function buildStoryboardGrid(scenes) {
             const grid = document.getElementById('visual-storyboard-grid');
             grid.innerHTML = '';
             if (!scenes || scenes.length === 0) {
-                grid.innerHTML = '<div class="col-span-2 text-center py-10 text-slate-500 text-xs">Silakan buat naskah terlebih dahulu, lalu klik "Render Semua Adegan".</div>';
+                grid.innerHTML = '<div class="col-span-2 text-center py-10 text-slate-500 text-xs">Silakan buat naskah terlebih dahulu.</div>';
                 return;
             }
             const isV = document.querySelector('input[name="video-duration"]:checked').value === "short";
             const ratioLabel = isV ? "Rasio Vertikal 9:16 (Shorts)" : "Rasio Lanskap 16:9 (YouTube)";
             const frameClass = isV ? "aspect-[9/16] w-[160px] md:w-[220px] mx-auto" : "aspect-video w-full";
-
             scenes.forEach((s, i) => {
                 const card = document.createElement('div');
                 card.className = 'glass-panel p-3 md:p-5 rounded-2xl border border-dark-800 space-y-3 flex flex-col justify-between';
-                // Tampilkan placeholder tanpa src yang memicu load otomatis
-                const placeholderSrc = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='540' height='540' viewBox='0 0 540 540'%3E%3Crect width='540' height='540' fill='%230a0f1d'/%3E%3Ctext x='50%25' y='50%25' font-family='Arial' font-size='24' fill='%236c5ce7' text-anchor='middle' dominant-baseline='central'%3EAdegan ${s.scene}%3C/text%3E%3C/svg%3E`;
+                const enhancedPrompt = getEnhancedAestheticPrompt(s.visualPrompt);
+                const encodedPrompt = encodeURIComponent(enhancedPrompt);
+                const pUrl =
+                    `https://image.pollinations.ai/prompt/${encodedPrompt}?width=${isV?540:960}&height=${isV?960:540}&nologo=true&private=true&model=flux&seed=${i+99}`;
                 card.innerHTML = `
                     <div class="space-y-2">
                         <div class="flex justify-between items-center">
@@ -1460,13 +1466,15 @@
                             <span class="text-[9px] bg-dark-950 text-slate-400 px-2 py-0.5 rounded border border-dark-800 font-semibold italic">${ratioLabel}</span>
                         </div>
                         <div class="relative ${frameClass} bg-dark-950 rounded-xl overflow-hidden border border-dark-800 flex items-center justify-center group shadow-inner">
-                            <div id="loading-spinner-${i}" class="absolute inset-0 flex flex-col items-center justify-center bg-dark-950/90 z-10 transition-opacity duration-300 hidden">
+                            <div id="loading-spinner-${i}" class="absolute inset-0 flex flex-col items-center justify-center bg-dark-950/90 z-10 transition-opacity duration-300">
                                 <span class="loader mb-2"></span>
                                 <span class="text-[9px] text-purple-400 font-bold uppercase tracking-wider animate-pulse">Melukis dengan AI...</span>
                             </div>
-                            <img id="sc-img-${i}" src="${placeholderSrc}" 
+                            <img id="sc-img-${i}" src="${pUrl}" 
+                                 onload="document.getElementById('loading-spinner-${i}').classList.add('opacity-0','pointer-events-none')" 
+                                 onerror="handleImageError(this, ${s.scene}, ${isV})"
                                  class="w-full h-full object-cover select-none transition-all duration-500 group-hover:scale-105" 
-                                 alt="Adegan ${s.scene} placeholder">
+                                 alt="Adegan ${s.scene}">
                             <div class="absolute bottom-2 right-2 bg-black/80 border border-white/10 px-2 py-1 rounded text-[9px] text-white flex items-center gap-1 cursor-pointer hover:bg-black transition-all z-20" onclick="regenerateImage(${i})">
                                 <i class="fa-solid fa-arrows-rotate"></i> Acak
                             </div>
@@ -1492,75 +1500,44 @@
             imgEl.src = `https://placehold.co/${w}x${h}/0a0f1d/6c5ce7?text=Adegan+${sceneNum}`;
         }
 
-        // --- generateImageForScene mengembalikan Promise ---
+        // generateImageForScene (tanpa Promise, langsung)
         function generateImageForScene(idx) {
-            return new Promise((resolve) => {
-                const promptInput = document.getElementById(`visual-prompt-input-${idx}`);
-                const promptValue = promptInput ? promptInput.value.trim() : "";
-                if (!promptValue) {
-                    showToast(`⚠️ Prompt Adegan ${idx+1} kosong, lewati.`, "warn");
-                    resolve();
-                    return;
-                }
-                const imgEl = document.getElementById(`sc-img-${idx}`);
-                const spinner = document.getElementById(`loading-spinner-${idx}`);
-                if (spinner) spinner.classList.remove('hidden');
-                imgEl.classList.add('opacity-40');
-                showToast(`🎨 Render Adegan ${idx+1}...`, "info");
-
-                const isV = document.querySelector('input[name="video-duration"]:checked').value === "short";
-                const w = isV ? 540 : 960;
-                const h = isV ? 960 : 540;
-
-                generateFluxImage(idx, promptValue, isV, w, h, imgEl, spinner)
-                    .then(() => resolve())
-                    .catch(() => resolve());
-            });
+            const promptInput = document.getElementById(`visual-prompt-input-${idx}`);
+            const promptValue = promptInput ? promptInput.value.trim() : "";
+            if (!promptValue) return showToast("Prompt gambar kosong!", "error");
+            const imgEl = document.getElementById(`sc-img-${idx}`);
+            const spinner = document.getElementById(`loading-spinner-${idx}`);
+            if (spinner) spinner.classList.remove('opacity-0', 'pointer-events-none');
+            imgEl.classList.add('opacity-40');
+            showToast(`Membuat Gambar Adegan ${idx+1}...`, "info");
+            const isV = document.querySelector('input[name="video-duration"]:checked').value === "short";
+            const w = isV ? 540 : 960;
+            const h = isV ? 960 : 540;
+            generateFluxImage(idx, promptValue, isV, w, h, imgEl, spinner);
         }
 
-        // --- generateFluxImage mengembalikan Promise ---
         function generateFluxImage(index, promptValue, isVertical, width, height, imgEl, spinner) {
-            return new Promise((resolve) => {
-                const seed = Math.floor(Math.random() * 99999);
-                const enhancedPrompt = getEnhancedAestheticPrompt(promptValue);
-                const encoded = encodeURIComponent(enhancedPrompt);
-                const targetUrl =
-                    `https://image.pollinations.ai/prompt/${encoded}?width=${width}&height=${height}&nologo=true&private=true&model=flux&seed=${seed}`;
-                const tempImg = new Image();
-                tempImg.crossOrigin = "anonymous";
-                tempImg.src = targetUrl;
-
-                let resolved = false;
-                const done = (err) => {
-                    if (resolved) return;
-                    resolved = true;
-                    if (err) {
-                        imgEl.classList.remove('opacity-40');
-                        if (spinner) spinner.classList.add('hidden');
-                        handleImageError(imgEl, index + 1, isVertical);
-                        showToast(`⚠️ Adegan ${index+1} gagal, gunakan placeholder`, "warn");
-                    }
-                    resolve();
-                };
-
-                tempImg.onload = () => {
-                    imgEl.src = targetUrl;
-                    imgEl.classList.remove('opacity-40');
-                    if (spinner) spinner.classList.add('hidden');
-                    showToast(`✅ Adegan ${index+1} selesai!`, "success");
-                    buildRenderPlaylist(generatedStory.scenes);
-                    done();
-                };
-                tempImg.onerror = () => {
-                    done(true);
-                };
-                // Timeout 20 detik
-                setTimeout(() => {
-                    if (!resolved) {
-                        done(true);
-                    }
-                }, 20000);
-            });
+            const seed = Math.floor(Math.random() * 99999);
+            const enhancedPrompt = getEnhancedAestheticPrompt(promptValue);
+            const encoded = encodeURIComponent(enhancedPrompt);
+            const targetUrl =
+                `https://image.pollinations.ai/prompt/${encoded}?width=${width}&height=${height}&nologo=true&private=true&model=flux&seed=${seed}`;
+            const tempImg = new Image();
+            tempImg.crossOrigin = "anonymous";
+            tempImg.src = targetUrl;
+            tempImg.onload = () => {
+                imgEl.src = targetUrl;
+                imgEl.classList.remove('opacity-40');
+                if (spinner) spinner.classList.add('opacity-0', 'pointer-events-none');
+                showToast(`Gambar Adegan ${index+1} Berhasil!`, "success");
+                buildRenderPlaylist(generatedStory.scenes);
+            };
+            tempImg.onerror = () => {
+                imgEl.classList.remove('opacity-40');
+                if (spinner) spinner.classList.add('opacity-0', 'pointer-events-none');
+                handleImageError(imgEl, index + 1, isVertical);
+                showToast(`⚠️ Adegan ${index+1} gagal, gunakan placeholder`, "warn");
+            };
         }
 
         function regenerateImage(index) {
@@ -1571,36 +1548,28 @@
             const width = isV ? 540 : 960;
             const height = isV ? 960 : 540;
             const spinner = document.getElementById('loading-spinner-' + index);
-            if (spinner) spinner.classList.remove('hidden');
+            if (spinner) spinner.classList.remove('opacity-0', 'pointer-events-none');
             const enhancedPrompt = getEnhancedAestheticPrompt(textPrompt);
             const encoded = encodeURIComponent(enhancedPrompt);
             const targetUrl =
                 `https://image.pollinations.ai/prompt/${encoded}?width=${width}&height=${height}&nologo=true&private=true&model=flux&seed=${seed}`;
             const imgEl = document.getElementById(`sc-img-${index}`);
             imgEl.src = targetUrl;
-            showToast(`🔄 Visual diacak (Seed #${seed})`, "info");
-            // hilangkan spinner setelah load
-            imgEl.onload = () => { if (spinner) spinner.classList.add('hidden'); };
-            imgEl.onerror = () => { if (spinner) spinner.classList.add('hidden'); };
+            showToast(`Visual diacak (Seed #${seed})!`, "success");
         }
 
-        // --- generateAllImages berurutan ---
-        async function generateAllImages() {
+        // generateAllImages – serentak (paralel)
+        function generateAllImages() {
             if (!generatedStory.scenes || generatedStory.scenes.length === 0) {
                 showToast("Buat naskah dulu!", "error");
                 return;
             }
-            const btn = document.getElementById('btn-render-all');
-            if (btn) btn.disabled = true;
-            showToast(`🎬 Memulai render ${generatedStory.scenes.length} adegan secara berurutan...`, "info");
-
-            for (let i = 0; i < generatedStory.scenes.length; i++) {
-                await generateImageForScene(i);
-                await new Promise(r => setTimeout(r, 300));
-            }
-
-            if (btn) btn.disabled = false;
-            showToast("✅ Semua adegan selesai dirender!", "success");
+            showToast(`Memulai render ${generatedStory.scenes.length} adegan...`, "info");
+            generatedStory.scenes.forEach((_, i) => {
+                setTimeout(() => {
+                    generateImageForScene(i);
+                }, i * 1200);
+            });
         }
 
         // ----- Player & Render (sama) -----
