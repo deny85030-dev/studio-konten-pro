@@ -18,11 +18,11 @@
             position: fixed;
             left: 0;
             top: 0;
-            width: 240px;
+            width: 260px;
             height: 100vh;
             background: #0d1423;
             border-right: 1px solid #1a2a4a;
-            padding: 20px 16px;
+            padding: 16px;
             display: flex;
             flex-direction: column;
             z-index: 100;
@@ -32,9 +32,9 @@
             display: flex;
             align-items: center;
             gap: 12px;
-            padding-bottom: 16px;
+            padding-bottom: 14px;
             border-bottom: 1px solid #1a2a4a;
-            margin-bottom: 16px;
+            margin-bottom: 14px;
         }
         .sidebar .logo .icon {
             width: 40px;
@@ -53,14 +53,14 @@
         .sidebar nav {
             display: flex;
             flex-direction: column;
-            gap: 4px;
+            gap: 3px;
             flex: 1;
         }
         .sidebar nav button {
             background: transparent;
             border: none;
             color: #667799;
-            padding: 10px 14px;
+            padding: 9px 12px;
             border-radius: 10px;
             text-align: left;
             font-size: 13px;
@@ -82,8 +82,8 @@
         /* ===== API SECTION ===== */
         .api-section {
             border-top: 1px solid #1a2a4a;
-            padding-top: 14px;
-            margin-top: 14px;
+            padding-top: 12px;
+            margin-top: 12px;
         }
         .api-section .label {
             font-size: 10px;
@@ -95,7 +95,7 @@
             align-items: center;
             gap: 8px;
             cursor: pointer;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
         }
         .api-section .label .dot {
             width: 8px;
@@ -110,7 +110,7 @@
         .api-section .settings {
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            gap: 6px;
         }
         .api-section .settings input {
             width: 100%;
@@ -119,12 +119,24 @@
             border: 1px solid #1a2a4a;
             border-radius: 8px;
             color: #e8edf5;
-            font-size: 12px;
+            font-size: 11px;
             outline: none;
             font-family: monospace;
         }
         .api-section .settings input:focus { border-color: #6c5ce7; }
         .api-section .settings input::placeholder { color: #445566; }
+        
+        .api-section .settings select {
+            width: 100%;
+            padding: 6px 10px;
+            background: #0d1423;
+            border: 1px solid #1a2a4a;
+            border-radius: 8px;
+            color: #e8edf5;
+            font-size: 11px;
+            outline: none;
+        }
+        .api-section .settings select:focus { border-color: #6c5ce7; }
         
         .api-section .settings .btn-row {
             display: flex;
@@ -132,10 +144,10 @@
         }
         .api-section .settings .btn-row button {
             flex: 1;
-            padding: 6px 10px;
+            padding: 5px 8px;
             border: none;
             border-radius: 8px;
-            font-size: 11px;
+            font-size: 10px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.2s;
@@ -156,15 +168,16 @@
             font-size: 10px;
             color: #667799;
             text-align: center;
-            padding: 4px 0;
+            padding: 3px 0;
         }
         .api-status-text .valid { color: #10b981; }
         .api-status-text .invalid { color: #ef4444; }
+        .api-status-text .loading { color: #fbbf24; }
 
         /* ===== MAIN ===== */
         .main {
-            margin-left: 240px;
-            padding: 24px 32px 40px;
+            margin-left: 260px;
+            padding: 20px 28px 40px;
             min-height: 100vh;
         }
 
@@ -173,21 +186,21 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding-bottom: 16px;
+            padding-bottom: 14px;
             border-bottom: 1px solid #1a2a4a;
-            margin-bottom: 24px;
+            margin-bottom: 20px;
             flex-wrap: wrap;
-            gap: 10px;
+            gap: 8px;
         }
-        .header h2 { font-size: 20px; }
-        .header p { font-size: 13px; color: #667799; }
+        .header h2 { font-size: 19px; }
+        .header p { font-size: 12px; color: #667799; }
         .header .badge {
             background: rgba(108, 92, 231, 0.15);
             border: 1px solid rgba(108, 92, 231, 0.2);
             color: #a855f7;
-            padding: 6px 16px;
+            padding: 4px 14px;
             border-radius: 20px;
-            font-size: 11px;
+            font-size: 10px;
             font-weight: 600;
             white-space: nowrap;
         }
@@ -204,17 +217,17 @@
         .card {
             background: #141b2d;
             border: 1px solid #1a2a4a;
-            border-radius: 16px;
-            padding: 20px 24px;
-            margin-bottom: 20px;
+            border-radius: 14px;
+            padding: 18px 22px;
+            margin-bottom: 18px;
         }
         .card .card-title {
-            font-size: 12px;
+            font-size: 11px;
             font-weight: 700;
             color: #667799;
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            margin-bottom: 12px;
+            margin-bottom: 10px;
             display: flex;
             align-items: center;
             gap: 8px;
@@ -226,9 +239,9 @@
             background: #0d1423;
             border: 1px solid #1a2a4a;
             border-radius: 10px;
-            padding: 10px 14px;
+            padding: 9px 12px;
             color: #e8edf5;
-            font-size: 14px;
+            font-size: 13px;
             outline: none;
             transition: border-color 0.3s;
             width: 100%;
@@ -237,28 +250,28 @@
         textarea {
             resize: vertical;
             font-family: 'Courier New', monospace;
-            font-size: 13px;
-            min-height: 50px;
+            font-size: 12px;
+            min-height: 44px;
         }
         .input-group {
             display: flex;
-            gap: 10px;
+            gap: 8px;
         }
         .input-group > * { flex: 1; }
 
         /* ===== BUTTONS ===== */
         .btn {
-            padding: 10px 20px;
+            padding: 9px 18px;
             border: none;
             border-radius: 10px;
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s;
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
+            gap: 6px;
             white-space: nowrap;
         }
         .btn-primary {
@@ -277,31 +290,31 @@
             color: #667799;
         }
         .btn-secondary:hover { background: #2a3a5a; color: #c8d0e0; }
-        .btn-sm { padding: 6px 14px; font-size: 11px; }
+        .btn-sm { padding: 5px 12px; font-size: 10px; }
         .btn-block { width: 100%; }
 
         /* ===== ROW ===== */
-        .row { display: flex; gap: 16px; flex-wrap: wrap; }
-        .row > * { flex: 1; min-width: 180px; }
+        .row { display: flex; gap: 14px; flex-wrap: wrap; }
+        .row > * { flex: 1; min-width: 160px; }
 
         /* ===== TITLES ===== */
         .titles-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 8px;
-            margin-top: 10px;
+            gap: 6px;
+            margin-top: 8px;
         }
         .title-item {
             background: #0d1423;
             border: 1px solid #1a2a4a;
             border-radius: 8px;
-            padding: 8px 12px;
-            font-size: 13px;
+            padding: 6px 10px;
+            font-size: 12px;
             cursor: pointer;
             transition: all 0.2s;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
             color: #c8d0e0;
         }
         .title-item:hover { border-color: #6c5ce7; background: #1a1a3a; }
@@ -309,9 +322,9 @@
             background: rgba(108, 92, 231, 0.2);
             color: #a855f7;
             font-weight: 700;
-            font-size: 10px;
-            padding: 2px 8px;
-            border-radius: 12px;
+            font-size: 9px;
+            padding: 1px 7px;
+            border-radius: 10px;
             flex-shrink: 0;
         }
 
@@ -319,43 +332,44 @@
         .scene-editor {
             display: flex;
             flex-direction: column;
-            gap: 12px;
-            max-height: 400px;
+            gap: 10px;
+            max-height: 380px;
             overflow-y: auto;
             padding-right: 4px;
         }
         .scene-item {
             background: #0d1423;
             border: 1px solid #1a2a4a;
-            border-radius: 12px;
-            padding: 14px 16px;
+            border-radius: 10px;
+            padding: 12px 14px;
         }
         .scene-item .scene-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 8px;
-            padding-bottom: 6px;
+            margin-bottom: 6px;
+            padding-bottom: 4px;
             border-bottom: 1px solid #1a2a4a;
         }
-        .scene-item .scene-header .num { font-size: 12px; font-weight: 700; color: #a855f7; }
+        .scene-item .scene-header .num { font-size: 11px; font-weight: 700; color: #a855f7; }
         .scene-item label {
-            font-size: 9px;
+            font-size: 8px;
             font-weight: 700;
             color: #667799;
             text-transform: uppercase;
             letter-spacing: 0.5px;
             display: block;
-            margin-bottom: 3px;
+            margin-bottom: 2px;
         }
-        .scene-item textarea { min-height: 40px; font-size: 13px; padding: 8px 12px; border-radius: 8px; }
+        .scene-item textarea { min-height: 36px; font-size: 12px; padding: 6px 10px; border-radius: 8px; }
+        .scene-item input { font-size: 12px; padding: 6px 10px; border-radius: 8px; }
 
         /* ===== AUDIO ===== */
         .audio-list {
             display: flex;
             flex-direction: column;
-            gap: 8px;
-            max-height: 350px;
+            gap: 6px;
+            max-height: 320px;
             overflow-y: auto;
         }
         .audio-item {
@@ -365,14 +379,14 @@
             background: #0d1423;
             border: 1px solid #1a2a4a;
             border-radius: 10px;
-            padding: 10px 14px;
+            padding: 8px 12px;
         }
         .audio-item .info { flex: 1; min-width: 0; }
-        .audio-item .info .num { font-size: 10px; font-weight: 700; color: #a855f7; }
-        .audio-item .info .text { font-size: 13px; color: #c8d0e0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .audio-item .info .num { font-size: 9px; font-weight: 700; color: #a855f7; }
+        .audio-item .info .text { font-size: 12px; color: #c8d0e0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .audio-item .play-btn {
-            width: 32px;
-            height: 32px;
+            width: 28px;
+            height: 28px;
             border-radius: 50%;
             border: none;
             background: rgba(108, 92, 231, 0.2);
@@ -387,12 +401,12 @@
         .visual-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 16px;
+            gap: 14px;
         }
         .visual-item {
             background: #0d1423;
             border: 1px solid #1a2a4a;
-            border-radius: 12px;
+            border-radius: 10px;
             overflow: hidden;
         }
         .visual-item .img-wrap {
@@ -421,8 +435,8 @@
             pointer-events: none;
         }
         .visual-item .img-wrap .spinner-overlay .loader {
-            width: 24px;
-            height: 24px;
+            width: 22px;
+            height: 22px;
             border: 3px solid rgba(255,255,255,0.1);
             border-top: 3px solid #6c5ce7;
             border-radius: 50%;
@@ -430,23 +444,23 @@
         }
         @keyframes spin { 100% { transform: rotate(360deg); } }
         .visual-item .img-wrap .spinner-overlay span {
-            font-size: 10px;
+            font-size: 9px;
             color: #a855f7;
-            margin-top: 8px;
+            margin-top: 6px;
         }
         .visual-item .visual-footer {
-            padding: 10px 14px;
+            padding: 8px 12px;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
-        .visual-item .visual-footer .num { font-size: 11px; font-weight: 700; color: #a855f7; }
-        .visual-item .visual-footer .actions { display: flex; gap: 6px; }
+        .visual-item .visual-footer .num { font-size: 10px; font-weight: 700; color: #a855f7; }
+        .visual-item .visual-footer .actions { display: flex; gap: 4px; }
         .visual-item .visual-footer .actions button {
-            padding: 4px 10px;
+            padding: 3px 8px;
             border: none;
             border-radius: 6px;
-            font-size: 10px;
+            font-size: 9px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.2s;
@@ -458,7 +472,7 @@
         /* ===== PLAYER ===== */
         .player-wrap {
             background: #080c18;
-            border-radius: 16px;
+            border-radius: 14px;
             border: 2px solid #1a2a4a;
             overflow: hidden;
             position: relative;
@@ -474,12 +488,12 @@
             bottom: 0;
             left: 0;
             right: 0;
-            padding: 16px 24px 24px;
+            padding: 14px 20px 20px;
             background: linear-gradient(transparent, rgba(0,0,0,0.9));
         }
         .player-wrap .overlay p {
             color: white;
-            font-size: 18px;
+            font-size: 16px;
             font-weight: 700;
             text-align: center;
             text-shadow: 0 2px 20px rgba(0,0,0,0.9);
@@ -488,12 +502,12 @@
         .player-controls {
             display: flex;
             align-items: center;
-            gap: 16px;
-            margin-top: 12px;
+            gap: 14px;
+            margin-top: 10px;
         }
         .player-controls .ctrl-btn {
-            width: 40px;
-            height: 40px;
+            width: 36px;
+            height: 36px;
             border-radius: 50%;
             border: none;
             background: #6c5ce7;
@@ -515,11 +529,11 @@
         .player-controls .progress-wrap .info {
             display: flex;
             justify-content: space-between;
-            font-size: 10px;
+            font-size: 9px;
             color: #667799;
         }
         .player-controls .progress-wrap .bar {
-            height: 4px;
+            height: 3px;
             background: #1a2a4a;
             border-radius: 4px;
             overflow: hidden;
@@ -535,17 +549,17 @@
         /* ===== PLAYLIST ===== */
         .playlist {
             display: flex;
-            gap: 10px;
+            gap: 8px;
             overflow-x: auto;
-            padding: 4px 0 8px;
+            padding: 4px 0 6px;
         }
         .playlist-item {
             flex-shrink: 0;
-            width: 120px;
+            width: 100px;
             background: #0d1423;
             border: 1px solid #1a2a4a;
-            border-radius: 10px;
-            padding: 8px;
+            border-radius: 8px;
+            padding: 6px;
             cursor: pointer;
             transition: all 0.2s;
         }
@@ -553,7 +567,7 @@
         .playlist-item .thumb {
             aspect-ratio: 16/9;
             background: #080c18;
-            border-radius: 6px;
+            border-radius: 4px;
             overflow: hidden;
         }
         .playlist-item .thumb img {
@@ -562,35 +576,35 @@
             object-fit: cover;
         }
         .playlist-item .name {
-            font-size: 10px;
+            font-size: 9px;
             color: #667799;
-            margin-top: 4px;
+            margin-top: 3px;
             text-align: center;
         }
 
         /* ===== TOAST ===== */
         .toast-container {
             position: fixed;
-            bottom: 24px;
-            right: 24px;
+            bottom: 20px;
+            right: 20px;
             z-index: 200;
             display: flex;
             flex-direction: column;
-            gap: 8px;
-            max-width: 380px;
+            gap: 6px;
+            max-width: 360px;
             width: 100%;
             pointer-events: none;
         }
         .toast {
             background: #141b2d;
             border: 1px solid #1a2a4a;
-            border-radius: 12px;
-            padding: 12px 16px;
-            font-size: 13px;
+            border-radius: 10px;
+            padding: 10px 14px;
+            font-size: 12px;
             font-weight: 500;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
             pointer-events: auto;
             animation: slideUp 0.4s ease;
             box-shadow: 0 10px 40px rgba(0,0,0,0.6);
@@ -620,31 +634,31 @@
         .modal {
             background: #141b2d;
             border: 1px solid #1a2a4a;
-            border-radius: 24px;
-            padding: 32px 40px;
-            max-width: 420px;
+            border-radius: 20px;
+            padding: 28px 32px;
+            max-width: 380px;
             width: 100%;
             text-align: center;
         }
         .modal .icon {
-            width: 56px;
-            height: 56px;
-            border-radius: 16px;
+            width: 48px;
+            height: 48px;
+            border-radius: 14px;
             background: rgba(108, 92, 231, 0.15);
             color: #a855f7;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 24px;
-            margin: 0 auto 12px;
+            font-size: 20px;
+            margin: 0 auto 10px;
         }
-        .modal h3 { font-size: 18px; margin-bottom: 4px; }
-        .modal p { font-size: 13px; color: #667799; margin-bottom: 16px; }
+        .modal h3 { font-size: 17px; margin-bottom: 3px; }
+        .modal p { font-size: 12px; color: #667799; margin-bottom: 14px; }
         .modal .ring-wrap {
             position: relative;
-            width: 80px;
-            height: 80px;
-            margin: 0 auto 16px;
+            width: 70px;
+            height: 70px;
+            margin: 0 auto 14px;
         }
         .modal .ring-wrap svg {
             width: 100%;
@@ -653,26 +667,26 @@
         }
         .modal .ring-wrap svg circle {
             fill: none;
-            stroke-width: 6;
+            stroke-width: 5;
         }
         .modal .ring-wrap svg .bg { stroke: #1a2a4a; }
-        .modal .ring-wrap svg .fill { stroke: #6c5ce7; stroke-dasharray: 251; stroke-dashoffset: 251; transition: stroke-dashoffset 0.5s; stroke-linecap: round; }
+        .modal .ring-wrap svg .fill { stroke: #6c5ce7; stroke-dasharray: 220; stroke-dashoffset: 220; transition: stroke-dashoffset 0.5s; stroke-linecap: round; }
         .modal .ring-wrap .pct {
             position: absolute;
             inset: 0;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 20px;
+            font-size: 17px;
             font-weight: 700;
         }
         .modal .btn-close {
             background: #1a2a4a;
             color: #667799;
             border: none;
-            padding: 10px;
+            padding: 8px;
             border-radius: 10px;
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 600;
             cursor: pointer;
             width: 100%;
@@ -686,32 +700,33 @@
                 width: 100%;
                 height: auto;
                 position: relative;
-                padding: 10px 16px;
+                padding: 10px 14px;
                 flex-direction: row;
                 flex-wrap: wrap;
                 border-bottom: 1px solid #1a2a4a;
                 border-right: none;
-                gap: 6px;
+                gap: 4px;
             }
             .sidebar .logo { padding: 0; border: none; margin: 0; }
-            .sidebar .logo h1 { font-size: 14px; }
+            .sidebar .logo h1 { font-size: 13px; }
             .sidebar nav { flex-direction: row; flex: none; gap: 2px; }
-            .sidebar nav button { padding: 6px 10px; font-size: 11px; }
+            .sidebar nav button { padding: 5px 8px; font-size: 10px; }
             .sidebar nav button span { display: none; }
-            .api-section { flex: 1; min-width: 150px; border-top: none; padding-top: 0; margin-top: 0; }
-            .api-section .label { margin-bottom: 4px; font-size: 9px; }
-            .api-section .settings input { font-size: 10px; padding: 4px 8px; }
-            .main { margin-left: 0; padding: 16px; }
-            .header { flex-direction: column; align-items: flex-start; gap: 6px; }
-            .header h2 { font-size: 17px; }
+            .api-section { flex: 1; min-width: 140px; border-top: none; padding-top: 0; margin-top: 0; }
+            .api-section .label { margin-bottom: 3px; font-size: 8px; }
+            .api-section .settings input { font-size: 9px; padding: 4px 6px; }
+            .api-section .settings select { font-size: 9px; padding: 4px 6px; }
+            .main { margin-left: 0; padding: 14px; }
+            .header { flex-direction: column; align-items: flex-start; gap: 4px; }
+            .header h2 { font-size: 16px; }
             .row { flex-direction: column; }
             .titles-grid { grid-template-columns: 1fr; }
             .visual-grid { grid-template-columns: 1fr; }
             .input-group { flex-direction: column; }
-            .player-wrap .overlay p { font-size: 14px; }
-            .playlist-item { width: 80px; }
-            .modal { padding: 24px; }
-            .toast-container { max-width: 90%; bottom: 16px; right: 16px; }
+            .player-wrap .overlay p { font-size: 12px; }
+            .playlist-item { width: 70px; }
+            .modal { padding: 20px; }
+            .toast-container { max-width: 90%; bottom: 12px; right: 12px; }
         }
     </style>
 </head>
@@ -744,19 +759,27 @@
             </button>
         </nav>
 
-        <!-- API SECTION - JELAS TERLIHAT -->
+        <!-- API SECTION - DENGAN MODEL DARI AKUN ANDA -->
         <div class="api-section">
             <div class="label">
                 <span class="dot off" id="apiDot"></span>
-                🔑 API Key (WAJIB)
+                🔑 API Key & Model
             </div>
             <div class="settings">
                 <input type="password" id="apiKey" placeholder="sk-or-v1-...">
+                
+                <select id="modelSelect">
+                    <!-- Akan diisi otomatis dari fetchModels() -->
+                    <option value="openrouter/free">🧠 openrouter/free (free)</option>
+                </select>
+                
                 <div class="btn-row">
                     <button class="test-btn" onclick="testAPI()">🔑 Test</button>
                     <button class="get-btn" onclick="openKeyPage()">📋 Ambil Key</button>
+                    <button class="test-btn" onclick="fetchModels()">📦 Refresh Model</button>
                 </div>
                 <div class="api-status-text" id="apiStatus">⏳ Masukkan API Key</div>
+                <div class="api-status-text" id="modelStatus" style="font-size:9px;color:#667799;"></div>
             </div>
         </div>
     </aside>
@@ -789,7 +812,7 @@
                         <i class="fas fa-chart-line"></i> Riset 10 Judul
                     </button>
                 </div>
-                <div id="titlesContainer" style="display:none; margin-top:12px;">
+                <div id="titlesContainer" style="display:none; margin-top:10px;">
                     <div class="titles-grid" id="titlesGrid"></div>
                 </div>
             </div>
@@ -799,19 +822,19 @@
                 <div class="card-title"><i class="fas fa-wand-magic-sparkles"></i> Buat Naskah</div>
                 <div class="row">
                     <div>
-                        <label style="font-size:11px;color:#667799;font-weight:600;">Format Video</label>
-                        <div style="display:flex;gap:10px;margin-top:4px;">
-                            <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;">
+                        <label style="font-size:10px;color:#667799;font-weight:600;">Format Video</label>
+                        <div style="display:flex;gap:8px;margin-top:3px;">
+                            <label style="display:flex;align-items:center;gap:4px;font-size:12px;cursor:pointer;">
                                 <input type="radio" name="format" value="short" checked> Shorts
                             </label>
-                            <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;">
+                            <label style="display:flex;align-items:center;gap:4px;font-size:12px;cursor:pointer;">
                                 <input type="radio" name="format" value="long"> YouTube
                             </label>
                         </div>
                     </div>
                     <div>
-                        <label style="font-size:11px;color:#667799;font-weight:600;">Jumlah Adegan</label>
-                        <select id="sceneCount" style="margin-top:4px;">
+                        <label style="font-size:10px;color:#667799;font-weight:600;">Jumlah Adegan</label>
+                        <select id="sceneCount" style="margin-top:3px;">
                             <option value="3">3 Adegan</option>
                             <option value="5">5 Adegan</option>
                             <option value="8">8 Adegan</option>
@@ -819,7 +842,7 @@
                         </select>
                     </div>
                 </div>
-                <div style="margin-top:12px;">
+                <div style="margin-top:10px;">
                     <div class="input-group">
                         <input type="text" id="inputTopic" placeholder="Topik cerita...">
                         <button class="btn btn-success" onclick="generateNaskah()" id="btnGenerate">
@@ -835,24 +858,24 @@
                 <!-- Metadata -->
                 <div class="card">
                     <div class="card-title"><i class="fab fa-youtube" style="color:#ef4444;"></i> Metadata</div>
-                    <div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap;">
+                    <div style="display:flex;gap:6px;margin-bottom:8px;flex-wrap:wrap;">
                         <button class="btn btn-secondary btn-sm" onclick="copyMetadata()"><i class="fas fa-copy"></i> Salin</button>
                     </div>
                     <div class="row">
-                        <div><label style="font-size:10px;color:#667799;font-weight:700;text-transform:uppercase;">Judul</label><textarea id="outTitle" rows="2" style="margin-top:4px;"></textarea></div>
-                        <div><label style="font-size:10px;color:#667799;font-weight:700;text-transform:uppercase;">Hashtag</label><textarea id="outTags" rows="2" style="margin-top:4px;color:#a855f7;"></textarea></div>
+                        <div><label style="font-size:9px;color:#667799;font-weight:700;text-transform:uppercase;">Judul</label><textarea id="outTitle" rows="2" style="margin-top:3px;"></textarea></div>
+                        <div><label style="font-size:9px;color:#667799;font-weight:700;text-transform:uppercase;">Hashtag</label><textarea id="outTags" rows="2" style="margin-top:3px;color:#a855f7;"></textarea></div>
                     </div>
-                    <div style="margin-top:8px;">
-                        <label style="font-size:10px;color:#667799;font-weight:700;text-transform:uppercase;">Deskripsi</label>
-                        <textarea id="outDesc" rows="3" style="margin-top:4px;"></textarea>
+                    <div style="margin-top:6px;">
+                        <label style="font-size:9px;color:#667799;font-weight:700;text-transform:uppercase;">Deskripsi</label>
+                        <textarea id="outDesc" rows="3" style="margin-top:3px;"></textarea>
                     </div>
                 </div>
 
                 <!-- Script -->
                 <div class="card">
-                    <div class="card-title"><i class="fas fa-file-lines"></i> Skrip Narasi <span id="sceneBadge" style="margin-left:auto;font-size:10px;background:#1a2a4a;padding:2px 12px;border-radius:12px;">0 Adegan</span></div>
+                    <div class="card-title"><i class="fas fa-file-lines"></i> Skrip Narasi <span id="sceneBadge" style="margin-left:auto;font-size:9px;background:#1a2a4a;padding:2px 10px;border-radius:10px;">0 Adegan</span></div>
                     <div class="scene-editor" id="scriptEditor"></div>
-                    <div style="margin-top:12px;padding-top:12px;border-top:1px solid #1a2a4a;display:flex;justify-content:flex-end;">
+                    <div style="margin-top:10px;padding-top:10px;border-top:1px solid #1a2a4a;display:flex;justify-content:flex-end;">
                         <button class="btn btn-primary" onclick="switchTab('tab-suara')">Lanjut ke Suara <i class="fas fa-arrow-right"></i></button>
                     </div>
                 </div>
@@ -865,14 +888,14 @@
         <div class="tab" id="tab-suara">
             <div class="card">
                 <div class="card-title"><i class="fas fa-microphone"></i> Text-to-Speech</div>
-                <div style="display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap;">
+                <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;">
                     <button class="btn btn-success btn-sm" onclick="playAllAudio()"><i class="fas fa-play"></i> Putar Semua</button>
                     <button class="btn btn-secondary btn-sm" onclick="stopAllAudio()"><i class="fas fa-stop"></i> Stop</button>
                 </div>
                 <div class="audio-list" id="audioList">
-                    <div style="text-align:center;padding:30px 0;color:#667799;font-size:13px;">Buat naskah dulu di Langkah 1</div>
+                    <div style="text-align:center;padding:25px 0;color:#667799;font-size:12px;">Buat naskah dulu di Langkah 1</div>
                 </div>
-                <div style="margin-top:12px;padding-top:12px;border-top:1px solid #1a2a4a;display:flex;justify-content:space-between;">
+                <div style="margin-top:10px;padding-top:10px;border-top:1px solid #1a2a4a;display:flex;justify-content:space-between;">
                     <button class="btn btn-secondary btn-sm" onclick="switchTab('tab-ide')"><i class="fas fa-arrow-left"></i> Kembali</button>
                     <button class="btn btn-primary" onclick="switchTab('tab-visual')">Lanjut ke Visual <i class="fas fa-arrow-right"></i></button>
                 </div>
@@ -885,13 +908,13 @@
         <div class="tab" id="tab-visual">
             <div class="card">
                 <div class="card-title"><i class="fas fa-image"></i> Storyboard Visual</div>
-                <div style="display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap;">
+                <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;">
                     <button class="btn btn-success btn-sm" onclick="generateAllImages()"><i class="fas fa-wand-magic-sparkles"></i> Render Semua</button>
                 </div>
                 <div class="visual-grid" id="visualGrid">
-                    <div style="grid-column:span 2;text-align:center;padding:30px 0;color:#667799;font-size:13px;">Buat naskah dulu di Langkah 1</div>
+                    <div style="grid-column:span 2;text-align:center;padding:25px 0;color:#667799;font-size:12px;">Buat naskah dulu di Langkah 1</div>
                 </div>
-                <div style="margin-top:12px;padding-top:12px;border-top:1px solid #1a2a4a;display:flex;justify-content:space-between;">
+                <div style="margin-top:10px;padding-top:10px;border-top:1px solid #1a2a4a;display:flex;justify-content:space-between;">
                     <button class="btn btn-secondary btn-sm" onclick="switchTab('tab-suara')"><i class="fas fa-arrow-left"></i> Kembali</button>
                     <button class="btn btn-primary" onclick="switchTab('tab-render')">Render Video <i class="fas fa-arrow-right"></i></button>
                 </div>
@@ -904,7 +927,7 @@
         <div class="tab" id="tab-render">
             <div class="card">
                 <div class="card-title"><i class="fas fa-film"></i> Render Video</div>
-                <button class="btn btn-primary btn-block" onclick="startRender()" id="btnRender" style="margin-bottom:16px;">
+                <button class="btn btn-primary btn-block" onclick="startRender()" id="btnRender" style="margin-bottom:14px;">
                     <i class="fas fa-play"></i> Mulai Render
                 </button>
 
@@ -929,14 +952,14 @@
                 </div>
 
                 <!-- Playlist -->
-                <div style="margin-top:16px;">
-                    <div style="font-size:10px;color:#667799;font-weight:700;text-transform:uppercase;margin-bottom:8px;">Daftar Adegan</div>
+                <div style="margin-top:14px;">
+                    <div style="font-size:9px;color:#667799;font-weight:700;text-transform:uppercase;margin-bottom:6px;">Daftar Adegan</div>
                     <div class="playlist" id="playlistContainer">
-                        <div style="width:100%;text-align:center;padding:16px 0;color:#667799;font-size:13px;">Belum ada adegan</div>
+                        <div style="width:100%;text-align:center;padding:14px 0;color:#667799;font-size:12px;">Belum ada adegan</div>
                     </div>
                 </div>
 
-                <div style="margin-top:12px;padding-top:12px;border-top:1px solid #1a2a4a;display:flex;justify-content:space-between;">
+                <div style="margin-top:10px;padding-top:10px;border-top:1px solid #1a2a4a;display:flex;justify-content:space-between;">
                     <button class="btn btn-secondary btn-sm" onclick="switchTab('tab-visual')"><i class="fas fa-arrow-left"></i> Kembali</button>
                     <button class="btn btn-secondary btn-sm" onclick="switchTab('tab-ide')">Ke Awal <i class="fas fa-arrow-right"></i></button>
                 </div>
@@ -960,8 +983,8 @@
             <p id="modalStatus">Memproses...</p>
             <div class="ring-wrap">
                 <svg viewBox="0 0 100 100">
-                    <circle class="bg" cx="50" cy="50" r="40"/>
-                    <circle class="fill" id="modalRing" cx="50" cy="50" r="40"/>
+                    <circle class="bg" cx="50" cy="50" r="35"/>
+                    <circle class="fill" id="modalRing" cx="50" cy="50" r="35"/>
                 </svg>
                 <div class="pct" id="modalPct">0%</div>
             </div>
@@ -973,6 +996,11 @@
     <!-- CANVAS -->
     <!-- ========================================================== -->
     <canvas id="renderCanvas" style="display:none;"></canvas>
+
+    <!-- ========================================================== -->
+    <!-- FONT AWESOME -->
+    <!-- ========================================================== -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <!-- ========================================================== -->
     <!-- SCRIPT -->
@@ -989,14 +1017,19 @@
         let mediaRecorder = null;
         let recordedChunks = [];
         let speechSynth = window.speechSynthesis;
+        let availableModels = [];
 
         // ============================================================
-        // API KEY - DIPERBAIKI
+        // API KEY
         // ============================================================
         function getAPIKey() {
             const key = document.getElementById('apiKey').value.trim();
             if (key) localStorage.setItem('openrouter_key', key);
             return key;
+        }
+
+        function getModel() {
+            return document.getElementById('modelSelect').value;
         }
 
         function updateAPIStatus(valid, msg) {
@@ -1005,12 +1038,81 @@
             if (valid) {
                 dot.className = 'dot on';
                 status.innerHTML = `<span class="valid">✅ ${msg || 'Valid'}</span>`;
+            } else if (valid === null) {
+                dot.className = 'dot off';
+                status.innerHTML = `<span class="loading">⏳ ${msg || 'Loading...'}</span>`;
             } else {
                 dot.className = 'dot off';
                 status.innerHTML = `<span class="invalid">❌ ${msg || 'Tidak valid'}</span>`;
             }
         }
 
+        // ============================================================
+        // FETCH MODELS - DARI AKUN ANDA
+        // ============================================================
+        async function fetchModels() {
+            const key = getAPIKey();
+            if (!key) {
+                updateAPIStatus(false, 'Masukkan API Key dulu!');
+                showToast('❌ Masukkan API Key dulu!', 'error');
+                return;
+            }
+
+            updateAPIStatus(null, 'Mengambil model...');
+            document.getElementById('modelStatus').textContent = '⏳ Mengambil model...';
+
+            try {
+                const response = await fetch('https://openrouter.ai/api/v1/models', {
+                    headers: { 'Authorization': `Bearer ${key}` }
+                });
+
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+                const data = await response.json();
+                const allModels = data.data || [];
+                
+                // Model free
+                const freeModels = allModels.filter(m => 
+                    m.id && (m.id.includes('free') || 
+                    (m.pricing && m.pricing.prompt === '0' && m.pricing.completion === '0'))
+                );
+
+                availableModels = freeModels;
+                
+                // Update dropdown
+                const select = document.getElementById('modelSelect');
+                const currentValue = select.value;
+                select.innerHTML = '';
+                
+                freeModels.forEach(m => {
+                    const opt = document.createElement('option');
+                    opt.value = m.id;
+                    const label = m.id.replace(':free', '').replace(/-/g, ' ').substring(0, 45);
+                    opt.textContent = `🧠 ${label} (free)`;
+                    if (m.id === currentValue || m.id === 'openrouter/free') {
+                        opt.selected = true;
+                    }
+                    select.appendChild(opt);
+                });
+
+                if (freeModels.length === 0) {
+                    document.getElementById('modelStatus').textContent = '⚠️ Tidak ada model free ditemukan';
+                } else {
+                    document.getElementById('modelStatus').textContent = `✅ ${freeModels.length} model free tersedia`;
+                    updateAPIStatus(true, `${freeModels.length} model free`);
+                    showToast(`✅ ${freeModels.length} model free ditemukan!`, 'success');
+                }
+
+            } catch(e) {
+                document.getElementById('modelStatus').textContent = `❌ ${e.message}`;
+                updateAPIStatus(false, 'Gagal ambil model');
+                showToast(`❌ Gagal ambil model: ${e.message}`, 'error');
+            }
+        }
+
+        // ============================================================
+        // TEST API
+        // ============================================================
         async function testAPI() {
             const key = getAPIKey();
             if (!key) {
@@ -1019,22 +1121,31 @@
                 return;
             }
 
-            // Validasi format key
             if (!key.startsWith('sk-or-v1-')) {
                 updateAPIStatus(false, 'Format key salah! Harus sk-or-v1-...');
                 showToast('❌ Format key salah! Harus diawali sk-or-v1-', 'error');
                 return;
             }
 
+            updateAPIStatus(null, 'Menguji...');
             showToast('🔍 Menguji...', 'info');
+            
             try {
                 const res = await fetch('https://openrouter.ai/api/v1/models', {
                     headers: { 'Authorization': `Bearer ${key}` }
                 });
                 
                 if (res.ok) {
-                    updateAPIStatus(true, 'OpenRouter siap!');
-                    showToast('✅ API Key valid!', 'success');
+                    const data = await res.json();
+                    const freeModels = data.data.filter(m => 
+                        m.id && (m.id.includes('free') || 
+                        (m.pricing && m.pricing.prompt === '0' && m.pricing.completion === '0'))
+                    );
+                    updateAPIStatus(true, `${freeModels.length} model free`);
+                    showToast(`✅ API Key valid! ${freeModels.length} model free`, 'success');
+                    
+                    // Auto fetch models
+                    await fetchModels();
                 } else {
                     const err = await res.text();
                     updateAPIStatus(false, 'Key tidak valid');
@@ -1104,6 +1215,9 @@
             const key = getAPIKey();
             if (!key) throw new Error('API Key tidak tersedia');
 
+            const model = getModel();
+            if (!model) throw new Error('Pilih model terlebih dahulu');
+
             const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
                 method: 'POST',
                 headers: {
@@ -1113,7 +1227,7 @@
                     'X-Title': 'Studio Konten Pro'
                 },
                 body: JSON.stringify({
-                    model: 'meta-llama/llama-3.3-70b-instruct:free',
+                    model: model,
                     messages: messages,
                     temperature: 0.8,
                     max_tokens: 4096
@@ -1122,6 +1236,9 @@
 
             if (!response.ok) {
                 const err = await response.text();
+                if (response.status === 429) {
+                    throw new Error('Rate limit! Tunggu 10 detik lalu coba lagi.');
+                }
                 throw new Error(`Error ${response.status}: ${err}`);
             }
             return await response.json();
@@ -1260,7 +1377,7 @@
                     </div>
                     <label>Narasi</label>
                     <textarea onchange="updateScene(${i},'narration',this.value)" rows="2">${s.narration}</textarea>
-                    <label style="margin-top:6px;">Visual Prompt</label>
+                    <label style="margin-top:4px;">Visual Prompt</label>
                     <input type="text" id="prompt-${i}" onchange="updateScene(${i},'visualPrompt',this.value)" value="${s.visualPrompt}">
                 `;
                 editor.appendChild(div);
@@ -1295,7 +1412,7 @@
             const container = document.getElementById('audioList');
             container.innerHTML = '';
             if (!story.scenes || story.scenes.length === 0) {
-                container.innerHTML = '<div style="text-align:center;padding:30px 0;color:#667799;font-size:13px;">Buat naskah dulu di Langkah 1</div>';
+                container.innerHTML = '<div style="text-align:center;padding:25px 0;color:#667799;font-size:12px;">Buat naskah dulu di Langkah 1</div>';
                 return;
             }
             story.scenes.forEach((s, i) => {
@@ -1357,7 +1474,7 @@
             const grid = document.getElementById('visualGrid');
             grid.innerHTML = '';
             if (!story.scenes || story.scenes.length === 0) {
-                grid.innerHTML = '<div style="grid-column:span 2;text-align:center;padding:30px 0;color:#667799;font-size:13px;">Buat naskah dulu di Langkah 1</div>';
+                grid.innerHTML = '<div style="grid-column:span 2;text-align:center;padding:25px 0;color:#667799;font-size:12px;">Buat naskah dulu di Langkah 1</div>';
                 return;
             }
 
@@ -1432,7 +1549,7 @@
             const container = document.getElementById('playlistContainer');
             container.innerHTML = '';
             if (!story.scenes || story.scenes.length === 0) {
-                container.innerHTML = '<div style="width:100%;text-align:center;padding:16px 0;color:#667799;font-size:13px;">Belum ada adegan</div>';
+                container.innerHTML = '<div style="width:100%;text-align:center;padding:14px 0;color:#667799;font-size:12px;">Belum ada adegan</div>';
                 return;
             }
 
@@ -1657,7 +1774,7 @@
 
         function updateModalProgress(pct) {
             const ring = document.getElementById('modalRing');
-            const circumference = 251;
+            const circumference = 220;
             ring.style.strokeDashoffset = circumference - (pct / 100) * circumference;
             document.getElementById('modalPct').textContent = `${Math.round(pct)}%`;
         }
@@ -1693,10 +1810,11 @@
             const saved = localStorage.getItem('openrouter_key');
             if (saved) {
                 document.getElementById('apiKey').value = saved;
-                // Cek format key
                 if (saved.startsWith('sk-or-v1-')) {
-                    updateAPIStatus(true, 'Key tersimpan');
-                    setTimeout(testAPI, 500);
+                    updateAPIStatus(null, 'Mengambil model...');
+                    setTimeout(() => {
+                        testAPI();
+                    }, 500);
                 } else {
                     updateAPIStatus(false, 'Format key salah! Harus sk-or-v1-...');
                 }
@@ -1709,8 +1827,9 @@
                 window.speechSynthesis.onvoiceschanged = () => {};
             }
 
-            console.log('🎬 Studio Konten Pro siap!');
-            console.log('📌 API Key harus diawali: sk-or-v1-');
+            console.log('🎬 Studio Konten Pro - FINAL VERSION');
+            console.log('📌 Fitur: Riset | Naskah | TTS | Gambar | Video');
+            console.log('📌 Model akan otomatis diambil dari akun Anda');
         };
     </script>
 
