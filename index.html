@@ -1,1056 +1,647 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="id" class="dark">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🎬 Studio Konten Pro</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Studio Konten Pro</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Cinzel:wght@700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: { 
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                        cinzel: ['Cinzel', 'serif']
+                    },
+                    colors: {
+                        brand: { 
+                            50: '#f0fdf4', 100: '#dcfce7', 500: '#10b981',
+                            600: '#059669', 700: '#047857', 900: '#064e3b', 950: '#022c22'
+                        },
+                        dark: { 
+                            950: '#05070f', 900: '#090d16', 800: '#111827',
+                            700: '#1f2937', 600: '#374151'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: 'Segoe UI', system-ui, sans-serif;
-            background: #0a0e1a;
-            color: #e8edf5;
-            min-height: 100vh;
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            background-color: #05070f; 
+            color: #f8fafc; 
         }
+        ::-webkit-scrollbar { width: 5px; height: 5px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #1f2937; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #374151; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        .tab-content { display: none; animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
+        .tab-content.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .glass-panel { background: rgba(9, 13, 22, 0.75); backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.03); }
+        .loader { border: 3px solid rgba(255,255,255,0.1); border-top: 3px solid #10b981; border-radius: 50%; width: 22px; height: 22px; animation: spin 0.8s linear infinite; display: inline-block; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        @keyframes kenBurns { 0% { transform: scale(1) translate(0, 0); } 50% { transform: scale(1.08) translate(-0.5%, 0.5%); } 100% { transform: scale(1.03) translate(0.5%, -0.5%); } }
+        .animate-kenburns { animation: kenBurns 12s ease-in-out infinite alternate; }
 
-        /* ===== SIDEBAR ===== */
-        .sidebar {
-            position: fixed;
-            left: 0;
-            top: 0;
-            width: 260px;
-            height: 100vh;
+        .api-key-input {
             background: #0d1423;
-            border-right: 1px solid #1a2a4a;
-            padding: 16px;
-            display: flex;
-            flex-direction: column;
-            z-index: 100;
-            overflow-y: auto;
-        }
-        .sidebar .logo {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding-bottom: 14px;
-            border-bottom: 1px solid #1a2a4a;
-            margin-bottom: 14px;
-        }
-        .sidebar .logo .icon {
-            width: 40px;
-            height: 40px;
-            background: linear-gradient(135deg, #6c5ce7, #a855f7);
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-            flex-shrink: 0;
-        }
-        .sidebar .logo h1 { font-size: 16px; font-weight: 700; }
-        .sidebar .logo small { display: block; font-size: 9px; color: #6c5ce7; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; }
-
-        .sidebar nav {
-            display: flex;
-            flex-direction: column;
-            gap: 3px;
-            flex: 1;
-        }
-        .sidebar nav button {
-            background: transparent;
-            border: none;
-            color: #667799;
-            padding: 9px 12px;
+            border: 1px solid #1a2a4a;
             border-radius: 10px;
-            text-align: left;
-            font-size: 13px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            gap: 10px;
+            padding: 8px 12px;
+            color: #e8edf5;
+            font-size: 11px;
+            font-family: monospace;
+            width: 100%;
+            outline: none;
         }
-        .sidebar nav button:hover { background: #1a2a4a; color: #c8d0e0; }
-        .sidebar nav button.active {
-            background: rgba(108, 92, 231, 0.15);
-            color: #a855f7;
-            border: 1px solid rgba(108, 92, 231, 0.2);
-        }
-        .sidebar nav button i { width: 18px; }
-
-        /* ===== API SECTION ===== */
-        .api-section {
-            border-top: 1px solid #1a2a4a;
-            padding-top: 12px;
-            margin-top: 12px;
-        }
-        .api-section .label {
-            font-size: 10px;
-            font-weight: 700;
-            color: #667799;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            cursor: pointer;
-            margin-bottom: 6px;
-        }
-        .api-section .label .dot {
+        .api-key-input:focus { border-color: #6c5ce7; }
+        .api-status-dot {
             width: 8px;
             height: 8px;
             border-radius: 50%;
             display: inline-block;
             flex-shrink: 0;
         }
-        .api-section .label .dot.on { background: #10b981; }
-        .api-section .label .dot.off { background: #ef4444; }
+        .api-status-dot.on { background: #10b981; }
+        .api-status-dot.off { background: #ef4444; }
+        .api-status-dot.testing { background: #fbbf24; animation: pulse 0.8s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
         
-        .api-section .settings {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
-        .api-section .settings input {
-            width: 100%;
-            padding: 8px 12px;
-            background: #0d1423;
-            border: 1px solid #1a2a4a;
-            border-radius: 8px;
-            color: #e8edf5;
-            font-size: 11px;
-            outline: none;
-            font-family: monospace;
-        }
-        .api-section .settings input:focus { border-color: #6c5ce7; }
-        .api-section .settings input::placeholder { color: #445566; }
-        
-        .api-section .settings select {
-            width: 100%;
-            padding: 6px 10px;
-            background: #0d1423;
-            border: 1px solid #1a2a4a;
-            border-radius: 8px;
-            color: #e8edf5;
-            font-size: 11px;
-            outline: none;
-        }
-        .api-section .settings select:focus { border-color: #6c5ce7; }
-        
-        .api-section .settings .btn-row {
-            display: flex;
-            gap: 6px;
-        }
-        .api-section .settings .btn-row button {
-            flex: 1;
-            padding: 5px 8px;
-            border: none;
-            border-radius: 8px;
-            font-size: 10px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        .api-section .settings .btn-row .test-btn {
-            background: #1a2a4a;
-            color: #667799;
-        }
-        .api-section .settings .btn-row .test-btn:hover { background: #2a3a5a; color: #c8d0e0; }
-        .api-section .settings .btn-row .get-btn {
-            background: rgba(108, 92, 231, 0.15);
-            color: #a855f7;
-            border: 1px solid rgba(108, 92, 231, 0.2);
-        }
-        .api-section .settings .btn-row .get-btn:hover { background: rgba(108, 92, 231, 0.25); }
-        
-        .api-status-text {
-            font-size: 10px;
-            color: #667799;
-            text-align: center;
-            padding: 3px 0;
-        }
-        .api-status-text .valid { color: #10b981; }
-        .api-status-text .invalid { color: #ef4444; }
-        .api-status-text .loading { color: #fbbf24; }
-
-        /* ===== MAIN ===== */
-        .main {
-            margin-left: 260px;
-            padding: 20px 28px 40px;
-            min-height: 100vh;
-        }
-
-        /* ===== HEADER ===== */
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding-bottom: 14px;
-            border-bottom: 1px solid #1a2a4a;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-            gap: 8px;
-        }
-        .header h2 { font-size: 19px; }
-        .header p { font-size: 12px; color: #667799; }
-        .header .badge {
-            background: rgba(108, 92, 231, 0.15);
-            border: 1px solid rgba(108, 92, 231, 0.2);
-            color: #a855f7;
-            padding: 4px 14px;
-            border-radius: 20px;
-            font-size: 10px;
-            font-weight: 600;
-            white-space: nowrap;
-        }
-
-        /* ===== TABS ===== */
-        .tab { display: none; animation: fadeIn 0.3s ease; }
-        .tab.active { display: block; }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(8px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* ===== CARDS ===== */
-        .card {
-            background: #141b2d;
-            border: 1px solid #1a2a4a;
-            border-radius: 14px;
-            padding: 18px 22px;
-            margin-bottom: 18px;
-        }
-        .card .card-title {
-            font-size: 11px;
-            font-weight: 700;
-            color: #667799;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .card .card-title i { color: #6c5ce7; }
-
-        /* ===== INPUTS ===== */
-        input, select, textarea {
-            background: #0d1423;
-            border: 1px solid #1a2a4a;
-            border-radius: 10px;
-            padding: 9px 12px;
-            color: #e8edf5;
-            font-size: 13px;
-            outline: none;
-            transition: border-color 0.3s;
-            width: 100%;
-        }
-        input:focus, select:focus, textarea:focus { border-color: #6c5ce7; }
-        textarea {
-            resize: vertical;
-            font-family: 'Courier New', monospace;
-            font-size: 12px;
-            min-height: 44px;
-        }
-        .input-group {
-            display: flex;
-            gap: 8px;
-        }
-        .input-group > * { flex: 1; }
-
-        /* ===== BUTTONS ===== */
-        .btn {
-            padding: 9px 18px;
-            border: none;
-            border-radius: 10px;
-            font-size: 12px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-            white-space: nowrap;
-        }
-        .btn-primary {
-            background: linear-gradient(135deg, #6c5ce7, #a855f7);
-            color: white;
-        }
-        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(108, 92, 231, 0.3); }
-        .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
-        .btn-success {
+        .btn-download {
             background: linear-gradient(135deg, #10b981, #059669);
-            color: white;
+            transition: all 0.3s;
         }
-        .btn-success:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(16, 185, 129, 0.3); }
-        .btn-secondary {
-            background: #1a2a4a;
-            color: #667799;
+        .btn-download:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(16, 185, 129, 0.35);
         }
-        .btn-secondary:hover { background: #2a3a5a; color: #c8d0e0; }
-        .btn-sm { padding: 5px 12px; font-size: 10px; }
-        .btn-block { width: 100%; }
-
-        /* ===== ROW ===== */
-        .row { display: flex; gap: 14px; flex-wrap: wrap; }
-        .row > * { flex: 1; min-width: 160px; }
-
-        /* ===== TITLES ===== */
-        .titles-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 6px;
-            margin-top: 8px;
+        .btn-purple {
+            background: linear-gradient(135deg, #6c5ce7, #a855f7);
+            transition: all 0.3s;
         }
-        .title-item {
-            background: #0d1423;
-            border: 1px solid #1a2a4a;
-            border-radius: 8px;
-            padding: 6px 10px;
-            font-size: 12px;
-            cursor: pointer;
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            color: #c8d0e0;
-        }
-        .title-item:hover { border-color: #6c5ce7; background: #1a1a3a; }
-        .title-item .num {
-            background: rgba(108, 92, 231, 0.2);
-            color: #a855f7;
-            font-weight: 700;
-            font-size: 9px;
-            padding: 1px 7px;
-            border-radius: 10px;
-            flex-shrink: 0;
-        }
-
-        /* ===== SCENE ===== */
-        .scene-editor {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            max-height: 380px;
-            overflow-y: auto;
-            padding-right: 4px;
-        }
-        .scene-item {
-            background: #0d1423;
-            border: 1px solid #1a2a4a;
-            border-radius: 10px;
-            padding: 12px 14px;
-        }
-        .scene-item .scene-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 6px;
-            padding-bottom: 4px;
-            border-bottom: 1px solid #1a2a4a;
-        }
-        .scene-item .scene-header .num { font-size: 11px; font-weight: 700; color: #a855f7; }
-        .scene-item label {
-            font-size: 8px;
-            font-weight: 700;
-            color: #667799;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            display: block;
-            margin-bottom: 2px;
-        }
-        .scene-item textarea { min-height: 36px; font-size: 12px; padding: 6px 10px; border-radius: 8px; }
-        .scene-item input { font-size: 12px; padding: 6px 10px; border-radius: 8px; }
-
-        /* ===== AUDIO ===== */
-        .audio-list {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            max-height: 320px;
-            overflow-y: auto;
-        }
-        .audio-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: #0d1423;
-            border: 1px solid #1a2a4a;
-            border-radius: 10px;
-            padding: 8px 12px;
-        }
-        .audio-item .info { flex: 1; min-width: 0; }
-        .audio-item .info .num { font-size: 9px; font-weight: 700; color: #a855f7; }
-        .audio-item .info .text { font-size: 12px; color: #c8d0e0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .audio-item .play-btn {
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
-            border: none;
-            background: rgba(108, 92, 231, 0.2);
-            color: #a855f7;
-            cursor: pointer;
-            transition: all 0.2s;
-            flex-shrink: 0;
-        }
-        .audio-item .play-btn:hover { background: rgba(108, 92, 231, 0.4); }
-
-        /* ===== VISUAL ===== */
-        .visual-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 14px;
-        }
-        .visual-item {
-            background: #0d1423;
-            border: 1px solid #1a2a4a;
-            border-radius: 10px;
-            overflow: hidden;
-        }
-        .visual-item .img-wrap {
-            position: relative;
-            aspect-ratio: 16/9;
-            background: #080c18;
-            overflow: hidden;
-        }
-        .visual-item .img-wrap img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        .visual-item .img-wrap .spinner-overlay {
-            position: absolute;
-            inset: 0;
-            background: rgba(8, 12, 24, 0.85);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            transition: opacity 0.4s;
-        }
-        .visual-item .img-wrap .spinner-overlay.hidden {
-            opacity: 0;
-            pointer-events: none;
-        }
-        .visual-item .img-wrap .spinner-overlay .loader {
-            width: 22px;
-            height: 22px;
-            border: 3px solid rgba(255,255,255,0.1);
-            border-top: 3px solid #6c5ce7;
-            border-radius: 50%;
-            animation: spin 0.7s linear infinite;
-        }
-        @keyframes spin { 100% { transform: rotate(360deg); } }
-        .visual-item .img-wrap .spinner-overlay span {
-            font-size: 9px;
-            color: #a855f7;
-            margin-top: 6px;
-        }
-        .visual-item .visual-footer {
-            padding: 8px 12px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .visual-item .visual-footer .num { font-size: 10px; font-weight: 700; color: #a855f7; }
-        .visual-item .visual-footer .actions { display: flex; gap: 4px; }
-        .visual-item .visual-footer .actions button {
-            padding: 3px 8px;
-            border: none;
-            border-radius: 6px;
-            font-size: 9px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-            background: #1a2a4a;
-            color: #667799;
-        }
-        .visual-item .visual-footer .actions button:hover { background: #2a3a5a; color: #c8d0e0; }
-
-        /* ===== PLAYER ===== */
-        .player-wrap {
-            background: #080c18;
-            border-radius: 14px;
-            border: 2px solid #1a2a4a;
-            overflow: hidden;
-            position: relative;
-            aspect-ratio: 16/9;
-        }
-        .player-wrap img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        .player-wrap .overlay {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            padding: 14px 20px 20px;
-            background: linear-gradient(transparent, rgba(0,0,0,0.9));
-        }
-        .player-wrap .overlay p {
-            color: white;
-            font-size: 16px;
-            font-weight: 700;
-            text-align: center;
-            text-shadow: 0 2px 20px rgba(0,0,0,0.9);
-        }
-
-        .player-controls {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            margin-top: 10px;
-        }
-        .player-controls .ctrl-btn {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            border: none;
-            background: #6c5ce7;
-            color: white;
-            cursor: pointer;
-            transition: all 0.2s;
-            flex-shrink: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .player-controls .ctrl-btn:hover { transform: scale(1.05); }
-        .player-controls .progress-wrap {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            gap: 2px;
-        }
-        .player-controls .progress-wrap .info {
-            display: flex;
-            justify-content: space-between;
-            font-size: 9px;
-            color: #667799;
-        }
-        .player-controls .progress-wrap .bar {
-            height: 3px;
-            background: #1a2a4a;
-            border-radius: 4px;
-            overflow: hidden;
-        }
-        .player-controls .progress-wrap .bar .fill {
-            height: 100%;
-            background: linear-gradient(90deg, #6c5ce7, #a855f7);
-            border-radius: 4px;
-            width: 0%;
-            transition: width 0.3s;
-        }
-
-        /* ===== PLAYLIST ===== */
-        .playlist {
-            display: flex;
-            gap: 8px;
-            overflow-x: auto;
-            padding: 4px 0 6px;
-        }
-        .playlist-item {
-            flex-shrink: 0;
-            width: 100px;
-            background: #0d1423;
-            border: 1px solid #1a2a4a;
-            border-radius: 8px;
-            padding: 6px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        .playlist-item:hover { border-color: #6c5ce7; }
-        .playlist-item .thumb {
-            aspect-ratio: 16/9;
-            background: #080c18;
-            border-radius: 4px;
-            overflow: hidden;
-        }
-        .playlist-item .thumb img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        .playlist-item .name {
-            font-size: 9px;
-            color: #667799;
-            margin-top: 3px;
-            text-align: center;
-        }
-
-        /* ===== TOAST ===== */
-        .toast-container {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            z-index: 200;
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            max-width: 360px;
-            width: 100%;
-            pointer-events: none;
-        }
-        .toast {
-            background: #141b2d;
-            border: 1px solid #1a2a4a;
-            border-radius: 10px;
-            padding: 10px 14px;
-            font-size: 12px;
-            font-weight: 500;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            pointer-events: auto;
-            animation: slideUp 0.4s ease;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.6);
-        }
-        .toast.success { border-color: rgba(16, 185, 129, 0.3); color: #10b981; }
-        .toast.error { border-color: rgba(239, 68, 68, 0.3); color: #ef4444; }
-        .toast.info { border-color: rgba(59, 130, 246, 0.3); color: #3b82f6; }
-        .toast.warning { border-color: rgba(251, 191, 36, 0.3); color: #fbbf24; }
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(20px) scale(0.95); }
-            to { opacity: 1; transform: translateY(0) scale(1); }
-        }
-
-        /* ===== MODAL ===== */
-        .modal-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.85);
-            backdrop-filter: blur(8px);
-            z-index: 150;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
-        .modal-overlay.open { display: flex; }
-        .modal {
-            background: #141b2d;
-            border: 1px solid #1a2a4a;
-            border-radius: 20px;
-            padding: 28px 32px;
-            max-width: 380px;
-            width: 100%;
-            text-align: center;
-        }
-        .modal .icon {
-            width: 48px;
-            height: 48px;
-            border-radius: 14px;
-            background: rgba(108, 92, 231, 0.15);
-            color: #a855f7;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-            margin: 0 auto 10px;
-        }
-        .modal h3 { font-size: 17px; margin-bottom: 3px; }
-        .modal p { font-size: 12px; color: #667799; margin-bottom: 14px; }
-        .modal .ring-wrap {
-            position: relative;
-            width: 70px;
-            height: 70px;
-            margin: 0 auto 14px;
-        }
-        .modal .ring-wrap svg {
-            width: 100%;
-            height: 100%;
-            transform: rotate(-90deg);
-        }
-        .modal .ring-wrap svg circle {
-            fill: none;
-            stroke-width: 5;
-        }
-        .modal .ring-wrap svg .bg { stroke: #1a2a4a; }
-        .modal .ring-wrap svg .fill { stroke: #6c5ce7; stroke-dasharray: 220; stroke-dashoffset: 220; transition: stroke-dashoffset 0.5s; stroke-linecap: round; }
-        .modal .ring-wrap .pct {
-            position: absolute;
-            inset: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 17px;
-            font-weight: 700;
-        }
-        .modal .btn-close {
-            background: #1a2a4a;
-            color: #667799;
-            border: none;
-            padding: 8px;
-            border-radius: 10px;
-            font-size: 12px;
-            font-weight: 600;
-            cursor: pointer;
-            width: 100%;
-            transition: all 0.2s;
-        }
-        .modal .btn-close:hover { background: #2a3a5a; color: #c8d0e0; }
-
-        /* ===== RESPONSIVE ===== */
-        @media (max-width: 768px) {
-            .sidebar {
-                width: 100%;
-                height: auto;
-                position: relative;
-                padding: 10px 14px;
-                flex-direction: row;
-                flex-wrap: wrap;
-                border-bottom: 1px solid #1a2a4a;
-                border-right: none;
-                gap: 4px;
-            }
-            .sidebar .logo { padding: 0; border: none; margin: 0; }
-            .sidebar .logo h1 { font-size: 13px; }
-            .sidebar nav { flex-direction: row; flex: none; gap: 2px; }
-            .sidebar nav button { padding: 5px 8px; font-size: 10px; }
-            .sidebar nav button span { display: none; }
-            .api-section { flex: 1; min-width: 140px; border-top: none; padding-top: 0; margin-top: 0; }
-            .api-section .label { margin-bottom: 3px; font-size: 8px; }
-            .api-section .settings input { font-size: 9px; padding: 4px 6px; }
-            .api-section .settings select { font-size: 9px; padding: 4px 6px; }
-            .main { margin-left: 0; padding: 14px; }
-            .header { flex-direction: column; align-items: flex-start; gap: 4px; }
-            .header h2 { font-size: 16px; }
-            .row { flex-direction: column; }
-            .titles-grid { grid-template-columns: 1fr; }
-            .visual-grid { grid-template-columns: 1fr; }
-            .input-group { flex-direction: column; }
-            .player-wrap .overlay p { font-size: 12px; }
-            .playlist-item { width: 70px; }
-            .modal { padding: 20px; }
-            .toast-container { max-width: 90%; bottom: 12px; right: 12px; }
+        .btn-purple:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(108, 92, 231, 0.35);
         }
     </style>
 </head>
-<body>
+<body class="flex flex-col md:flex-row h-screen w-full overflow-hidden select-none">
 
-    <!-- ========================================================== -->
-    <!-- SIDEBAR -->
-    <!-- ========================================================== -->
-    <aside class="sidebar">
-        <div class="logo">
-            <div class="icon">🎬</div>
-            <div>
-                <h1>Studio Konten</h1>
-                <small>Pro Version</small>
+    <!-- ===== SIDEBAR ===== -->
+    <aside class="w-full md:w-64 bg-dark-950 border-b md:border-b-0 md:border-r border-dark-800 flex flex-col z-20 shadow-2xl flex-shrink-0">
+        <div class="p-4 md:p-5 border-b border-dark-800 flex items-center justify-between md:justify-start gap-3">
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 md:w-10 md:h-10 rounded-xl bg-gradient-to-br from-purple-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-purple-500/20">
+                    <i class="fa-solid fa-wand-magic-sparkles text-white text-sm md:text-lg animate-pulse"></i>
+                </div>
+                <div>
+                    <h1 class="text-sm font-extrabold text-white leading-tight">Studio Konten</h1>
+                    <p class="text-[9px] text-purple-400 font-bold tracking-widest uppercase">OPENROUTER AI</p>
+                </div>
             </div>
         </div>
 
-        <nav>
-            <button class="active" onclick="switchTab('tab-ide')" id="nav-ide">
-                <i class="fas fa-lightbulb"></i> <span>1. Ide</span>
+        <nav class="flex-none md:flex-1 p-2 md:p-4 flex flex-row md:flex-col gap-2 overflow-x-auto md:overflow-y-auto no-scrollbar border-b border-dark-800 md:border-none">
+            <button onclick="switchTab('tab-ideasi')" id="nav-ideasi" class="flex-shrink-0 w-auto md:w-full flex items-center gap-2 md:gap-3 px-4 py-2.5 md:py-3 rounded-xl transition-all text-xs md:text-sm font-semibold text-left text-purple-400 bg-purple-500/10 border border-purple-500/30">
+                <i class="fa-solid fa-lightbulb w-4 md:w-5 text-center text-base md:text-lg"></i> 1. Ide & Naskah
             </button>
-            <button onclick="switchTab('tab-suara')" id="nav-suara">
-                <i class="fas fa-microphone"></i> <span>2. Suara</span>
+            <button onclick="switchTab('tab-suara')" id="nav-suara" class="flex-shrink-0 w-auto md:w-full flex items-center gap-2 md:gap-3 px-4 py-2.5 md:py-3 rounded-xl text-slate-400 hover:bg-dark-800/50 hover:text-white transition-all text-xs md:text-sm font-semibold text-left border border-transparent">
+                <i class="fa-solid fa-microphone-lines w-4 md:w-5 text-center text-base md:text-lg"></i> 2. Suara TTS
             </button>
-            <button onclick="switchTab('tab-visual')" id="nav-visual">
-                <i class="fas fa-image"></i> <span>3. Visual</span>
+            <button onclick="switchTab('tab-visual')" id="nav-visual" class="flex-shrink-0 w-auto md:w-full flex items-center gap-2 md:gap-3 px-4 py-2.5 md:py-3 rounded-xl text-slate-400 hover:bg-dark-800/50 hover:text-white transition-all text-xs md:text-sm font-semibold text-left border border-transparent">
+                <i class="fa-solid fa-image w-4 md:w-5 text-center text-base md:text-lg"></i> 3. Storyboard
             </button>
-            <button onclick="switchTab('tab-render')" id="nav-render">
-                <i class="fas fa-film"></i> <span>4. Render</span>
+            <button onclick="switchTab('tab-render')" id="nav-render" class="flex-shrink-0 w-auto md:w-full flex items-center gap-2 md:gap-3 px-4 py-2.5 md:py-3 rounded-xl text-slate-400 hover:bg-dark-800/50 hover:text-white transition-all text-xs md:text-sm font-semibold text-left border border-transparent">
+                <i class="fa-solid fa-film w-4 md:w-5 text-center text-base md:text-lg"></i> 4. Render Video
             </button>
         </nav>
 
-        <!-- API SECTION - DENGAN MODEL DARI AKUN ANDA -->
-        <div class="api-section">
-            <div class="label">
-                <span class="dot off" id="apiDot"></span>
-                🔑 API Key & Model
-            </div>
-            <div class="settings">
-                <input type="password" id="apiKey" placeholder="sk-or-v1-...">
-                
-                <select id="modelSelect">
-                    <!-- Akan diisi otomatis dari fetchModels() -->
-                    <option value="openrouter/free">🧠 openrouter/free (free)</option>
-                </select>
-                
-                <div class="btn-row">
-                    <button class="test-btn" onclick="testAPI()">🔑 Test</button>
-                    <button class="get-btn" onclick="openKeyPage()">📋 Ambil Key</button>
-                    <button class="test-btn" onclick="fetchModels()">📦 Refresh Model</button>
+        <!-- ===== API SETTINGS ===== -->
+        <div class="p-3 md:p-4 md:border-t border-dark-800 flex flex-col gap-2 bg-dark-900/30">
+            <div class="flex items-center justify-between cursor-pointer md:cursor-default" onclick="document.getElementById('api-settings').classList.toggle('hidden')">
+                <div class="flex items-center gap-2">
+                    <span class="api-status-dot off" id="apiStatusDot"></span>
+                    <p class="text-[10px] font-bold text-white uppercase tracking-wider">⚡ API Settings</p>
                 </div>
-                <div class="api-status-text" id="apiStatus">⏳ Masukkan API Key</div>
-                <div class="api-status-text" id="modelStatus" style="font-size:9px;color:#667799;"></div>
+                <i class="fa-solid fa-chevron-down text-slate-400 text-xs md:hidden"></i>
+            </div>
+            <div id="api-settings" class="flex flex-col gap-2 mt-1">
+                <select id="provider-select" onchange="toggleProvider()" class="bg-dark-950 border border-dark-800 rounded-lg text-[10px] p-2 text-slate-300 focus:outline-none focus:border-purple-500 w-full">
+                    <option value="openrouter">🌐 OpenRouter (FREE) - REKOMENDASI</option>
+                    <option value="gemini">🔵 Google Gemini</option>
+                </select>
+
+                <div id="openrouter-settings">
+                    <input type="password" id="openrouter-api-key" placeholder="Masukkan OpenRouter API Key (sk-or-v1-...)" class="api-key-input">
+                    <select id="openrouter-model" class="api-key-input mt-1">
+                        <option value="openrouter/free">🧠 openrouter/free</option>
+                    </select>
+                    <div class="flex gap-2 mt-1">
+                        <button onclick="testOpenRouterKey()" class="flex-1 bg-dark-800 hover:bg-dark-700 text-[10px] py-1.5 px-3 rounded-lg text-slate-300 transition-all">🔑 Test Key</button>
+                        <button onclick="fetchOpenRouterModels()" class="flex-1 bg-dark-800 hover:bg-dark-700 text-[10px] py-1.5 px-3 rounded-lg text-slate-300 transition-all">📦 Refresh Model</button>
+                        <button onclick="openRouterKeys()" class="flex-1 bg-purple-600/20 hover:bg-purple-600/40 text-[10px] py-1.5 px-3 rounded-lg text-purple-300 transition-all border border-purple-500/20">📋 Ambil Key</button>
+                    </div>
+                    <div id="api-status-text" class="text-[9px] text-slate-500 text-center mt-1">Masukkan API Key OpenRouter</div>
+                    <div id="model-status-text" class="text-[8px] text-slate-600 text-center"></div>
+                </div>
+
+                <div id="gemini-settings" class="hidden">
+                    <input type="password" id="gemini-api-key" placeholder="Masukkan Gemini API Key..." class="api-key-input">
+                    <div class="flex gap-2 mt-1">
+                        <button onclick="testGeminiKey()" class="flex-1 bg-dark-800 hover:bg-dark-700 text-[10px] py-1.5 px-3 rounded-lg text-slate-300 transition-all">🔑 Test Key</button>
+                    </div>
+                    <div id="gemini-status-text" class="text-[9px] text-slate-500 text-center mt-1">Atau gunakan Gemini API</div>
+                </div>
             </div>
         </div>
     </aside>
 
-    <!-- ========================================================== -->
-    <!-- MAIN -->
-    <!-- ========================================================== -->
-    <main class="main">
-
-        <!-- HEADER -->
-        <div class="header">
-            <div>
-                <h2 id="pageTitle">🎯 Ideasi & Naskah</h2>
-                <p id="pageSub">OpenRouter AI + Pollinations Image + Web Speech</p>
+    <!-- ===== MAIN CONTENT ===== -->
+    <main class="flex-1 relative bg-dark-900 overflow-y-auto flex flex-col h-full">
+        <header class="sticky top-0 z-10 glass-panel px-4 md:px-8 py-3 md:py-4 flex justify-between items-center border-b border-dark-800/50">
+            <div class="pr-2">
+                <h2 id="header-title" class="text-sm md:text-base font-bold text-white">Ideasi & Naskah Cerita</h2>
+                <p id="header-subtitle" class="text-[10px] md:text-[11px] text-slate-400 line-clamp-1 md:line-clamp-none">Gunakan OpenRouter AI dengan model free terbaik.</p>
             </div>
-            <span class="badge"><i class="fas fa-circle-nodes"></i> OpenRouter AI</span>
-        </div>
-
-        <!-- ========================================================== -->
-        <!-- TAB 1: IDE -->
-        <!-- ========================================================== -->
-        <div class="tab active" id="tab-ide">
-
-            <!-- Research -->
-            <div class="card">
-                <div class="card-title"><i class="fas fa-search"></i> Riset Judul (AI)</div>
-                <div class="input-group">
-                    <input type="text" id="inputResearch" placeholder="Contoh: rahasia gunung padang..." style="flex:1;">
-                    <button class="btn btn-primary" onclick="researchTitles()" id="btnResearch">
-                        <i class="fas fa-chart-line"></i> Riset 10 Judul
-                    </button>
-                </div>
-                <div id="titlesContainer" style="display:none; margin-top:10px;">
-                    <div class="titles-grid" id="titlesGrid"></div>
-                </div>
+            <div class="hidden md:flex items-center gap-3">
+                <span class="bg-gradient-to-r from-purple-500/10 to-indigo-500/10 border border-purple-500/20 text-purple-400 px-3.5 py-1.5 rounded-full text-xs font-semibold flex items-center gap-1.5">
+                    <i class="fa-solid fa-circle-nodes"></i> OpenRouter AI
+                </span>
             </div>
+        </header>
 
-            <!-- Generate -->
-            <div class="card">
-                <div class="card-title"><i class="fas fa-wand-magic-sparkles"></i> Buat Naskah</div>
-                <div class="row">
-                    <div>
-                        <label style="font-size:10px;color:#667799;font-weight:600;">Format Video</label>
-                        <div style="display:flex;gap:8px;margin-top:3px;">
-                            <label style="display:flex;align-items:center;gap:4px;font-size:12px;cursor:pointer;">
-                                <input type="radio" name="format" value="short" checked> Shorts
+        <div class="p-4 md:p-8 max-w-5xl mx-auto pb-24 w-full flex-1">
+            
+            <!-- ===== TAB 1: Ideasi ===== -->
+            <section id="tab-ideasi" class="tab-content active space-y-4 md:space-y-6">
+                
+                <div class="glass-panel p-4 md:p-6 rounded-2xl border border-dark-800/80 shadow-xl space-y-4">
+                    <div class="flex justify-between items-center">
+                        <div class="flex items-center gap-2">
+                            <i class="fa-solid fa-magnifying-glass-chart text-purple-400 text-base md:text-lg"></i>
+                            <h3 class="text-[10px] md:text-xs font-bold text-slate-300 uppercase tracking-wider">Riset Judul (AI)</h3>
+                        </div>
+                    </div>
+                    <div class="flex flex-col md:flex-row gap-3">
+                        <input type="text" id="input-research-topic" placeholder="Contoh: rahasia gunung padang..." class="flex-1 bg-dark-950 border border-dark-800 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-purple-500 transition-all">
+                        <button onclick="researchProfessionalTitles()" id="btn-research-titles" class="btn-purple text-white px-5 py-3 rounded-xl text-sm md:text-xs font-bold transition-all shadow-md flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-chart-line"></i> <span>Riset 10 Judul</span>
+                        </button>
+                    </div>
+                    <div id="titles-recommendation-container" class="hidden p-4 bg-dark-950/60 rounded-xl border border-dark-800 space-y-3">
+                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
+                            <i class="fa-solid fa-list-ol text-purple-400"></i> Rekomendasi 10 Judul:
+                        </p>
+                        <div id="titles-recommendation-list" class="grid grid-cols-1 md:grid-cols-2 gap-2"></div>
+                    </div>
+                </div>
+
+                <div class="glass-panel p-4 md:p-6 rounded-2xl border border-dark-800/80 shadow-xl space-y-5">
+                    <div class="flex flex-col gap-3">
+                        <span class="text-[10px] md:text-xs font-bold text-slate-400 uppercase tracking-wider">Format Konten Video</span>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
+                            <label class="flex items-center gap-3 cursor-pointer bg-dark-950/40 p-3 md:p-4 rounded-xl border border-dark-800 hover:border-purple-500/50 transition-all">
+                                <input type="radio" name="video-duration" value="short" checked class="w-4 h-4 text-purple-500 accent-purple-500"> 
+                                <div class="flex flex-col">
+                                    <span class="text-xs md:text-sm font-bold text-white">Cerita Pendek (Shorts/TikTok)</span>
+                                    <span class="text-[10px] md:text-xs text-slate-400">Rasio Vertikal (9:16)</span>
+                                </div>
                             </label>
-                            <label style="display:flex;align-items:center;gap:4px;font-size:12px;cursor:pointer;">
-                                <input type="radio" name="format" value="long"> YouTube
+                            <label class="flex items-center gap-3 cursor-pointer bg-dark-950/40 p-3 md:p-4 rounded-xl border border-dark-800 hover:border-purple-500/50 transition-all">
+                                <input type="radio" name="video-duration" value="long" class="w-4 h-4 text-purple-500 accent-purple-500"> 
+                                <div class="flex flex-col">
+                                    <span class="text-xs md:text-sm font-bold text-white">Cerita Panjang (YouTube)</span>
+                                    <span class="text-[10px] md:text-xs text-slate-400">Rasio Horisontal (16:9)</span>
+                                </div>
                             </label>
                         </div>
                     </div>
-                    <div>
-                        <label style="font-size:10px;color:#667799;font-weight:600;">Jumlah Adegan</label>
-                        <select id="sceneCount" style="margin-top:3px;">
-                            <option value="3">3 Adegan</option>
-                            <option value="5">5 Adegan</option>
-                            <option value="8">8 Adegan</option>
-                            <option value="12" selected>12 Adegan</option>
+
+                    <div class="border-t border-dark-800/60 pt-4 flex flex-col md:flex-row md:items-center justify-between gap-3">
+                        <div class="space-y-1">
+                            <span class="text-[10px] md:text-xs font-bold text-slate-400 uppercase tracking-wider block">Target Jumlah Adegan</span>
+                        </div>
+                        <select id="target-scenes-count-select" class="w-full md:w-auto bg-dark-950 border border-dark-800 text-white rounded-xl px-4 py-2.5 text-sm md:text-xs font-bold focus:outline-none focus:border-purple-500">
+                            <option value="3">3 Adegan (Sangat Pendek)</option>
+                            <option value="5">5 Adegan (Standar Pendek)</option>
+                            <option value="8">8 Adegan (Sinematik Ringkas)</option>
+                            <option value="12" selected>12 Adegan (Direkomendasikan)</option>
+                            <option value="20">20 Adegan (Cerita Komplet)</option>
                         </select>
                     </div>
+
+                    <div class="border-t border-dark-800/60 pt-4 flex flex-col md:flex-row md:items-center justify-between gap-3">
+                        <div class="space-y-1">
+                            <span class="text-[10px] md:text-xs font-bold text-slate-400 uppercase tracking-wider block">Bahasa Konten</span>
+                        </div>
+                        <select id="content-language-select" class="w-full md:w-auto bg-dark-950 border border-dark-800 text-white rounded-xl px-4 py-2.5 text-sm md:text-xs font-bold focus:outline-none focus:border-purple-500">
+                            <option value="id" selected>Bahasa Indonesia</option>
+                            <option value="en">English (Inggris)</option>
+                        </select>
+                    </div>
+
+                    <div class="border-t border-dark-800/60 pt-4">
+                        <span class="text-[10px] md:text-xs font-bold text-slate-400 uppercase tracking-wider block mb-3">Topik Utama atau Alur Cerita</span>
+                        <div class="flex flex-col md:flex-row gap-3">
+                            <input type="text" id="input-topic" placeholder="Topik dari riset judul atau manual..." class="flex-1 bg-dark-950 border border-dark-800 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-purple-500 transition-all">
+                            <button onclick="generateNaskah()" id="btn-gen-naskah" class="btn-download text-white px-6 py-3 rounded-xl text-sm font-bold transition-all shadow-lg flex items-center justify-center gap-2">
+                                <i class="fa-solid fa-wand-magic-sparkles"></i> <span>Buat Naskah AI</span>
+                            </button>
+                        </div>
+                    </div>
                 </div>
-                <div style="margin-top:10px;">
-                    <div class="input-group">
-                        <input type="text" id="inputTopic" placeholder="Topik cerita...">
-                        <button class="btn btn-success" onclick="generateNaskah()" id="btnGenerate">
-                            <i class="fas fa-wand-magic-sparkles"></i> Buat Naskah
+
+                <div id="metadata-container" class="space-y-4 md:space-y-6 hidden">
+                    <div class="glass-panel p-4 md:p-6 rounded-2xl border border-dark-800 relative overflow-hidden">
+                        <div class="absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-transparent via-red-500 to-transparent opacity-50"></div>
+                        <div class="flex flex-col md:flex-row md:items-center justify-between mb-4 gap-3">
+                            <h4 class="text-sm md:text-base font-bold text-white flex items-center gap-2">
+                                <i class="fa-brands fa-youtube text-red-500 text-xl"></i> Metadata SEO Video
+                            </h4>
+                            <button onclick="copyMetadata()" class="bg-dark-800 hover:bg-dark-700 border border-dark-700 text-xs px-4 py-2 rounded-xl text-white font-bold transition-all flex items-center justify-center gap-2 shadow">
+                                <i class="fa-solid fa-copy"></i> Salin Teks
+                            </button>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="text-[10px] text-slate-400 font-bold uppercase mb-1.5 flex items-center gap-1.5"><i class="fa-solid fa-heading text-purple-400"></i> Judul</label>
+                                <textarea id="out-title" class="w-full bg-dark-950 border border-dark-800 rounded-xl p-3 text-sm text-white font-bold h-16 resize-none focus:border-purple-500 focus:outline-none"></textarea>
+                            </div>
+                            <div>
+                                <label class="text-[10px] text-slate-400 font-bold uppercase mb-1.5 flex items-center gap-1.5"><i class="fa-solid fa-hashtag text-purple-400"></i> Hashtag</label>
+                                <textarea id="out-tags" class="w-full bg-dark-950 border border-dark-800 rounded-xl p-3 text-sm text-purple-400 font-mono h-16 resize-none focus:border-purple-500 focus:outline-none"></textarea>
+                            </div>
+                            <div class="md:col-span-2">
+                                <label class="text-[10px] text-slate-400 font-bold uppercase mb-1.5 flex items-center gap-1.5"><i class="fa-solid fa-align-left text-purple-400"></i> Deskripsi Lengkap</label>
+                                <textarea id="out-desc" class="w-full bg-dark-950 border border-dark-800 rounded-xl p-4 text-sm text-slate-300 h-28 resize-none focus:border-purple-500 focus:outline-none"></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="glass-panel p-4 md:p-6 rounded-2xl border border-dark-800 flex flex-col">
+                        <div class="flex justify-between items-center mb-4">
+                            <h4 class="text-sm font-bold text-white flex items-center gap-2">
+                                <i class="fa-solid fa-file-invoice text-purple-400"></i> Skrip Narasi (JSON)
+                            </h4>
+                            <span id="out-scenes-count" class="px-2.5 py-1 rounded-full text-[10px] bg-purple-500/10 text-purple-400 border border-purple-500/20 font-bold uppercase">0 Adegan</span>
+                        </div>
+                        
+                        <div id="script-scenes-editor" class="space-y-4 max-h-96 overflow-y-auto pr-1"></div>
+
+                        <div class="mt-4 pt-4 border-t border-dark-800 flex justify-end">
+                            <button onclick="switchTab('tab-suara')" class="btn-purple text-white px-5 py-3 rounded-xl text-sm font-bold transition-all flex items-center justify-center gap-2">
+                                Lanjut Langkah 2 <i class="fa-solid fa-arrow-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ===== TAB 2: Suara ===== -->
+            <section id="tab-suara" class="tab-content space-y-4 md:space-y-6">
+                <div class="glass-panel p-4 md:p-6 rounded-2xl border border-dark-800 space-y-6">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-dark-800 pb-4">
+                        <div>
+                            <h3 class="text-sm md:text-base font-bold text-white">Langkah 2: Narasi & TTS</h3>
+                            <p class="text-[10px] md:text-xs text-slate-400">Konversi teks menjadi suara realistis.</p>
+                        </div>
+                        <div class="grid grid-cols-2 md:flex items-center gap-3">
+                            <div class="col-span-2 md:col-span-1">
+                                <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Penyedia Audio</label>
+                                <select id="audio-provider-select" onchange="toggleAudioProvider()" class="bg-dark-950 border border-dark-800 rounded-xl px-3 py-2 text-sm md:text-xs text-white w-full md:w-auto">
+                                    <option value="webspeech" selected>Lokal (WebSpeech - Gratis)</option>
+                                    <option value="gemini">Gemini Premium (TTS)</option>
+                                </select>
+                            </div>
+                            <div id="gemini-voices-div" class="hidden col-span-2 md:col-span-1">
+                                <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Suara Gemini</label>
+                                <select id="gemini-voice-select" class="bg-dark-950 border border-dark-800 rounded-xl px-3 py-2 text-sm md:text-xs text-white w-full md:w-auto">
+                                    <option value="Zephyr">Zephyr (Bright)</option>
+                                    <option value="Puck">Puck (Upbeat)</option>
+                                    <option value="Charon">Charon (Informative)</option>
+                                    <option value="Kore">Kore (Firm)</option>
+                                </select>
+                            </div>
+                            <div id="webspeech-voices-div" class="col-span-2 md:col-span-1">
+                                <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Suara Lokal</label>
+                                <select id="tts-voice-select" class="bg-dark-950 border border-dark-800 rounded-xl px-3 py-2 text-sm md:text-xs text-white w-full md:w-auto"></select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="md:col-span-1 space-y-4">
+                            <div class="bg-dark-950/60 p-4 md:p-5 rounded-2xl border border-dark-800/80">
+                                <div class="space-y-3">
+                                    <button onclick="playAllNarrations()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white py-3 px-4 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2">
+                                        <i class="fa-solid fa-play animate-pulse"></i> Putar Semua
+                                    </button>
+                                    <button onclick="stopAllNarrations()" class="w-full bg-dark-800 hover:bg-dark-700 text-slate-300 py-3 px-4 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2">
+                                        <i class="fa-solid fa-stop"></i> Henti
+                                    </button>
+                                </div>
+                                <div class="mt-4 pt-4 border-t border-dark-800">
+                                    <button onclick="downloadAllAudio()" id="btn-download-audio" class="w-full btn-download text-white py-3 px-4 rounded-xl text-xs font-bold flex items-center justify-center gap-2 shadow-lg">
+                                        <i class="fa-solid fa-download"></i> Unduh Suara Gabungan
+                                    </button>
+                                    <div id="download-options-container" class="mt-2 hidden"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="md:col-span-2 space-y-3 max-h-[350px] overflow-y-auto pr-1" id="voice-narration-list">
+                            <div class="text-center py-10 text-slate-500 text-xs">Buat naskah di Langkah 1 terlebih dahulu.</div>
+                        </div>
+                    </div>
+
+                    <div class="mt-2 pt-4 border-t border-dark-800 flex justify-between items-center">
+                        <button onclick="switchTab('tab-ideasi')" class="text-slate-400 text-xs font-bold"><i class="fa-solid fa-arrow-left"></i> Kembali</button>
+                        <button onclick="switchTab('tab-visual')" class="btn-purple text-white px-5 py-3 rounded-xl text-sm font-bold flex items-center gap-2">
+                            Lanjut Langkah 3 <i class="fa-solid fa-arrow-right"></i>
                         </button>
                     </div>
                 </div>
-            </div>
+            </section>
 
-            <!-- Output -->
-            <div id="outputContainer" style="display:none;">
-
-                <!-- Metadata -->
-                <div class="card">
-                    <div class="card-title"><i class="fab fa-youtube" style="color:#ef4444;"></i> Metadata</div>
-                    <div style="display:flex;gap:6px;margin-bottom:8px;flex-wrap:wrap;">
-                        <button class="btn btn-secondary btn-sm" onclick="copyMetadata()"><i class="fas fa-copy"></i> Salin</button>
-                    </div>
-                    <div class="row">
-                        <div><label style="font-size:9px;color:#667799;font-weight:700;text-transform:uppercase;">Judul</label><textarea id="outTitle" rows="2" style="margin-top:3px;"></textarea></div>
-                        <div><label style="font-size:9px;color:#667799;font-weight:700;text-transform:uppercase;">Hashtag</label><textarea id="outTags" rows="2" style="margin-top:3px;color:#a855f7;"></textarea></div>
-                    </div>
-                    <div style="margin-top:6px;">
-                        <label style="font-size:9px;color:#667799;font-weight:700;text-transform:uppercase;">Deskripsi</label>
-                        <textarea id="outDesc" rows="3" style="margin-top:3px;"></textarea>
-                    </div>
+            <!-- ===== TAB 3: Visual ===== -->
+            <section id="tab-visual" class="tab-content space-y-4 md:space-y-6">
+                <div class="glass-panel p-4 md:p-6 rounded-2xl border border-dark-800 space-y-4 overflow-x-auto">
+                    <h3 class="text-xs font-bold text-slate-300 flex items-center gap-2 uppercase tracking-wider mb-2">
+                        <i class="fa-solid fa-palette text-purple-400"></i> Pilih Gaya Visual Storyboard (8 Pilihan)
+                    </h3>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 w-full" id="stylePresetsContainer"></div>
                 </div>
 
-                <!-- Script -->
-                <div class="card">
-                    <div class="card-title"><i class="fas fa-file-lines"></i> Skrip Narasi <span id="sceneBadge" style="margin-left:auto;font-size:9px;background:#1a2a4a;padding:2px 10px;border-radius:10px;">0 Adegan</span></div>
-                    <div class="scene-editor" id="scriptEditor"></div>
-                    <div style="margin-top:10px;padding-top:10px;border-top:1px solid #1a2a4a;display:flex;justify-content:flex-end;">
-                        <button class="btn btn-primary" onclick="switchTab('tab-suara')">Lanjut ke Suara <i class="fas fa-arrow-right"></i></button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- ========================================================== -->
-        <!-- TAB 2: SUARA -->
-        <!-- ========================================================== -->
-        <div class="tab" id="tab-suara">
-            <div class="card">
-                <div class="card-title"><i class="fas fa-microphone"></i> Text-to-Speech</div>
-                <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;">
-                    <button class="btn btn-success btn-sm" onclick="playAllAudio()"><i class="fas fa-play"></i> Putar Semua</button>
-                    <button class="btn btn-secondary btn-sm" onclick="stopAllAudio()"><i class="fas fa-stop"></i> Stop</button>
-                </div>
-                <div class="audio-list" id="audioList">
-                    <div style="text-align:center;padding:25px 0;color:#667799;font-size:12px;">Buat naskah dulu di Langkah 1</div>
-                </div>
-                <div style="margin-top:10px;padding-top:10px;border-top:1px solid #1a2a4a;display:flex;justify-content:space-between;">
-                    <button class="btn btn-secondary btn-sm" onclick="switchTab('tab-ide')"><i class="fas fa-arrow-left"></i> Kembali</button>
-                    <button class="btn btn-primary" onclick="switchTab('tab-visual')">Lanjut ke Visual <i class="fas fa-arrow-right"></i></button>
-                </div>
-            </div>
-        </div>
-
-        <!-- ========================================================== -->
-        <!-- TAB 3: VISUAL -->
-        <!-- ========================================================== -->
-        <div class="tab" id="tab-visual">
-            <div class="card">
-                <div class="card-title"><i class="fas fa-image"></i> Storyboard Visual</div>
-                <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;">
-                    <button class="btn btn-success btn-sm" onclick="generateAllImages()"><i class="fas fa-wand-magic-sparkles"></i> Render Semua</button>
-                </div>
-                <div class="visual-grid" id="visualGrid">
-                    <div style="grid-column:span 2;text-align:center;padding:25px 0;color:#667799;font-size:12px;">Buat naskah dulu di Langkah 1</div>
-                </div>
-                <div style="margin-top:10px;padding-top:10px;border-top:1px solid #1a2a4a;display:flex;justify-content:space-between;">
-                    <button class="btn btn-secondary btn-sm" onclick="switchTab('tab-suara')"><i class="fas fa-arrow-left"></i> Kembali</button>
-                    <button class="btn btn-primary" onclick="switchTab('tab-render')">Render Video <i class="fas fa-arrow-right"></i></button>
-                </div>
-            </div>
-        </div>
-
-        <!-- ========================================================== -->
-        <!-- TAB 4: RENDER -->
-        <!-- ========================================================== -->
-        <div class="tab" id="tab-render">
-            <div class="card">
-                <div class="card-title"><i class="fas fa-film"></i> Render Video</div>
-                <button class="btn btn-primary btn-block" onclick="startRender()" id="btnRender" style="margin-bottom:14px;">
-                    <i class="fas fa-play"></i> Mulai Render
-                </button>
-
-                <!-- Player -->
-                <div class="player-wrap">
-                    <img id="playerImg" src="https://placehold.co/1280x720/0d1423/334466?text=Studio+Konten+Pro">
-                    <div class="overlay">
-                        <p id="playerText">Siapkan naskah & gambar dulu</p>
-                    </div>
-                </div>
-
-                <!-- Controls -->
-                <div class="player-controls">
-                    <button class="ctrl-btn" onclick="togglePlayer()" id="playerBtn"><i class="fas fa-play"></i></button>
-                    <div class="progress-wrap">
-                        <div class="info">
-                            <span id="playerStatus">Berhenti</span>
-                            <span id="playerTime">0 / 0</span>
+                <div class="glass-panel p-4 md:p-6 rounded-2xl border border-dark-800 space-y-5">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-dark-800 pb-4">
+                        <div>
+                            <h3 class="text-sm md:text-base font-bold text-white">Langkah 3: Visualisasi Adegan</h3>
                         </div>
-                        <div class="bar"><div class="fill" id="playerProgress"></div></div>
+                        <div class="flex flex-col md:flex-row items-stretch md:items-center gap-3">
+                            <select id="image-model-select" class="bg-dark-950 border border-dark-800 rounded-xl px-3 py-2.5 md:py-2 text-sm md:text-xs text-white">
+                                <option value="flux">Flux AI (High-Speed)</option>
+                                <option value="imagen">Google Imagen 4.0 (Premium)</option>
+                            </select>
+                            <button onclick="generateAllImages()" class="btn-download text-white px-4 py-3 md:py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-2 shadow-md">
+                                <i class="fa-solid fa-wand-magic-sparkles"></i> Render Semua Adegan
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6" id="visual-storyboard-grid">
+                        <div class="col-span-2 text-center py-10 text-slate-500 text-xs">Silakan buat naskah terlebih dahulu.</div>
+                    </div>
+
+                    <div class="mt-2 pt-4 border-t border-dark-800 flex justify-between items-center">
+                        <button onclick="switchTab('tab-suara')" class="text-slate-400 text-xs font-bold"><i class="fa-solid fa-arrow-left"></i> Kembali</button>
+                        <button onclick="switchTab('tab-render')" class="btn-purple text-white px-5 py-3 rounded-xl text-sm font-bold flex items-center gap-2">
+                            Langkah 4: Render <i class="fa-solid fa-arrow-right"></i>
+                        </button>
                     </div>
                 </div>
+            </section>
 
-                <!-- Playlist -->
-                <div style="margin-top:14px;">
-                    <div style="font-size:9px;color:#667799;font-weight:700;text-transform:uppercase;margin-bottom:6px;">Daftar Adegan</div>
-                    <div class="playlist" id="playlistContainer">
-                        <div style="width:100%;text-align:center;padding:14px 0;color:#667799;font-size:12px;">Belum ada adegan</div>
+            <!-- ===== TAB 4: Render ===== -->
+            <section id="tab-render" class="tab-content space-y-4 md:space-y-6">
+                <div class="glass-panel p-4 md:p-6 rounded-2xl border border-dark-800 space-y-5">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between border-b border-dark-800 pb-4 gap-4">
+                        <div>
+                            <h3 class="text-sm md:text-base font-bold text-white">Langkah Akhir: Export Video</h3>
+                            <p class="text-[10px] md:text-xs text-slate-400">Merangkai visual ke berkas video (tanpa teks).</p>
+                        </div>
+                        <button onclick="startVideoRenderingProcess()" class="btn-purple text-white font-extrabold text-xs px-6 py-4 rounded-xl shadow-lg flex items-center justify-center gap-2 border border-purple-400/30 w-full md:w-auto">
+                            <i class="fa-solid fa-file-video animate-pulse text-sm"></i> MULAI RENDER
+                        </button>
+                    </div>
+
+                    <div class="bg-dark-900/50 border border-purple-500/30 rounded-xl p-4 flex gap-3 items-start md:items-center">
+                        <div class="w-8 h-8 md:w-10 md:h-10 rounded-full bg-purple-500/20 flex items-center justify-center text-purple-400 flex-shrink-0 mt-1 md:mt-0">
+                            <i class="fa-solid fa-mobile-screen-button"></i>
+                        </div>
+                        <p class="text-[10px] md:text-xs text-slate-300 leading-relaxed">
+                            <strong class="text-white">Tips:</strong> Video dirender tanpa teks, hanya gambar dengan efek zoom. Gunakan WebM format.
+                        </p>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
+                        <div class="lg:col-span-2 flex flex-col items-center w-full">
+                            <div id="player-outer-frame" class="w-full bg-slate-950/80 rounded-2xl border-4 border-dark-800 overflow-hidden shadow-[0_0_30px_rgba(0,0,0,0.8)] relative aspect-video flex flex-col justify-center items-center">
+                                <div class="relative w-full h-full flex flex-col justify-center items-center" id="video-preview-player">
+                                    <img id="player-scene-img" src="https://placehold.co/1280x720/0a0f1d/33466a?text=Mulai+Pratinjau" class="w-full h-full object-cover transition-opacity duration-700" alt="Adegan">
+                                    <div class="absolute inset-0 bg-gradient-to-t from-black/85 via-transparent to-transparent flex flex-col justify-end p-4 md:p-10">
+                                        <p id="player-hud-narration" class="text-[10px] md:text-sm font-bold text-white px-3 py-1.5 md:px-4 md:py-2 bg-black/75 rounded-xl border border-white/5 shadow-2xl text-center mx-auto max-w-xl">
+                                            Pratinjau visual (tanpa teks)
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="w-full mt-4 p-3 md:p-4 bg-dark-950/60 rounded-2xl border border-dark-800 flex items-center gap-4">
+                                <button id="player-play-btn" onclick="togglePlayer()" class="w-10 h-10 md:w-12 md:h-12 flex-shrink-0 rounded-full bg-purple-600 text-white flex items-center justify-center shadow-lg">
+                                    <i class="fa-solid fa-play"></i>
+                                </button>
+                                <div class="flex-1">
+                                    <div class="flex justify-between text-[10px] md:text-xs font-bold text-slate-400 mb-1">
+                                        <span id="player-status-lbl">Henti</span>
+                                        <span id="player-time-lbl">0 / 0</span>
+                                    </div>
+                                    <div class="w-full bg-dark-800 h-2 rounded-full overflow-hidden cursor-pointer" onclick="seekPlayer(event)">
+                                        <div id="player-progress-bar" class="bg-purple-500 h-full w-0 transition-all duration-300"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="lg:col-span-1 space-y-4 w-full">
+                            <div class="bg-dark-950/60 p-4 rounded-2xl border border-dark-800 flex flex-col h-full">
+                                <h4 class="text-[10px] md:text-xs font-bold text-slate-400 mb-3 uppercase flex justify-between">
+                                    <span>Segmen Adegan</span>
+                                    <span id="player-scene-count-badge" class="px-2 py-0.5 rounded bg-purple-500/10 text-purple-400">0 Scene</span>
+                                </h4>
+                                <div id="player-scene-playlist" class="space-y-2 overflow-y-auto max-h-[250px] md:max-h-[340px] pr-1">
+                                    <p class="text-xs text-slate-500 text-center py-4">Belum ada adegan.</p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-
-                <div style="margin-top:10px;padding-top:10px;border-top:1px solid #1a2a4a;display:flex;justify-content:space-between;">
-                    <button class="btn btn-secondary btn-sm" onclick="switchTab('tab-visual')"><i class="fas fa-arrow-left"></i> Kembali</button>
-                    <button class="btn btn-secondary btn-sm" onclick="switchTab('tab-ide')">Ke Awal <i class="fas fa-arrow-right"></i></button>
-                </div>
-            </div>
+            </section>
         </div>
-
     </main>
 
-    <!-- ========================================================== -->
-    <!-- TOAST -->
-    <!-- ========================================================== -->
-    <div class="toast-container" id="toastContainer"></div>
-
-    <!-- ========================================================== -->
-    <!-- MODAL -->
-    <!-- ========================================================== -->
-    <div class="modal-overlay" id="modalOverlay">
-        <div class="modal">
-            <div class="icon"><i class="fas fa-film"></i></div>
-            <h3>Mengekspor Video...</h3>
-            <p id="modalStatus">Memproses...</p>
-            <div class="ring-wrap">
-                <svg viewBox="0 0 100 100">
-                    <circle class="bg" cx="50" cy="50" r="35"/>
-                    <circle class="fill" id="modalRing" cx="50" cy="50" r="35"/>
-                </svg>
-                <div class="pct" id="modalPct">0%</div>
+    <!-- ===== MODAL RENDER ===== -->
+    <div id="rendering-modal" class="fixed inset-0 bg-black/95 backdrop-filter backdrop-blur-md z-50 flex items-center justify-center hidden">
+        <div class="glass-panel w-full max-w-sm md:max-w-lg p-6 md:p-8 rounded-3xl border border-dark-800 shadow-2xl text-center space-y-5 mx-4 relative">
+            <div class="absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-transparent via-purple-500 to-transparent"></div>
+            
+            <div class="w-12 h-12 md:w-16 md:h-16 rounded-2xl bg-purple-600/15 text-purple-400 flex items-center justify-center mx-auto animate-pulse">
+                <i class="fa-solid fa-film text-2xl md:text-3xl"></i>
             </div>
-            <button class="btn-close" onclick="cancelRender()">Batalkan</button>
+            
+            <div>
+                <h3 class="text-lg md:text-xl font-bold text-white mb-1">Mengekspor Video...</h3>
+                <p id="render-modal-subtitle" class="text-[10px] md:text-xs text-slate-400">Harap tetap di halaman ini. Jangan matikan layar.</p>
+                <p class="text-[10px] text-purple-400 mt-2 font-bold animate-pulse"><i class="fa-solid fa-triangle-exclamation"></i> Menjaga layar tetap menyala mempercepat proses!</p>
+            </div>
+
+            <div class="relative w-24 h-24 md:w-32 md:h-32 mx-auto flex items-center justify-center">
+                <svg class="w-full h-full transform -rotate-90">
+                    <circle cx="50%" cy="50%" r="40%" stroke="currentColor" class="text-dark-800" stroke-width="8" fill="transparent" />
+                    <circle id="render-progress-ring" cx="50%" cy="50%" r="40%" stroke="currentColor" class="text-purple-500 transition-all duration-300" stroke-dasharray="251" stroke-dashoffset="251" stroke-linecap="round" stroke-width="8" fill="transparent" />
+                </svg>
+                <span id="render-progress-percent" class="absolute text-lg md:text-xl font-black text-white">0%</span>
+            </div>
+
+            <div class="bg-dark-950/80 border border-dark-800 p-3 rounded-xl text-left space-y-1">
+                <div class="flex justify-between text-[9px] md:text-[10px] font-bold text-slate-400">
+                    <span>STATUS OPERASI</span>
+                    <span id="render-step-indicator" class="text-purple-400">PROSES</span>
+                </div>
+                <p id="render-step-desc" class="text-[10px] md:text-xs text-slate-200 font-semibold truncate">Memuat aset ke memori...</p>
+            </div>
+
+            <div id="render-action-buttons" class="flex flex-col gap-2 w-full mt-2">
+                <button onclick="cancelVideoRendering()" class="w-full bg-dark-800 hover:bg-dark-700 text-slate-400 py-3 rounded-xl text-xs font-bold">
+                    Batalkan Export
+                </button>
+            </div>
         </div>
     </div>
 
-    <!-- ========================================================== -->
-    <!-- CANVAS -->
-    <!-- ========================================================== -->
-    <canvas id="renderCanvas" style="display:none;"></canvas>
+    <!-- Hidden Canvas -->
+    <canvas id="offscreen-render-canvas" class="hidden"></canvas>
 
-    <!-- ========================================================== -->
-    <!-- FONT AWESOME -->
-    <!-- ========================================================== -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Toast -->
+    <div id="toast-container" class="fixed bottom-4 md:bottom-6 right-4 md:right-6 z-[60] space-y-2 pointer-events-none w-11/12 max-w-sm ml-auto"></div>
 
-    <!-- ========================================================== -->
-    <!-- SCRIPT -->
-    <!-- ========================================================== -->
     <script>
         // ============================================================
-        // STATE
+        // STUDIO KONTEN PRO - FULL VERSION (DENGAN DOWNLOAD AUDIO REAL)
         // ============================================================
-        let story = { title: '', description: '', hashtags: '', scenes: [] };
-        let playerIndex = 0;
-        let playerTimer = null;
-        let isRendering = false;
-        let renderCancel = false;
+
+        let generatedStory = { title: "", description: "", hashtags: "", scenes: [] };
+        let activeStyle = "realisticPhoto";
+        let currentActiveSceneIndex = 0;
+        let geminiAudioCache = {};
+        
+        let isCurrentlyRendering = false;
+        let recordStream = null;
         let mediaRecorder = null;
         let recordedChunks = [];
-        let speechSynth = window.speechSynthesis;
-        let availableModels = [];
+        let renderCanvas = null;
+        let renderCtx = null;
+        let cancelRenderFlag = false;
+        let finalVideoBlobUrl = null;
+        let finalVideoBlob = null;
 
         // ============================================================
-        // API KEY
+        // STYLE PRESETS
         // ============================================================
+        const STYLE_PRESETS = {
+            realisticPhoto: {
+                name: "📷 Realistik Fotografi",
+                promptAddon: "Ultra realistic photography, photorealistic, 8k resolution, highly detailed, professional cinematography, cinematic lighting, depth of field, real life, lifelike textures, natural lighting, sharp focus, award winning photography."
+            },
+            flatVector: {
+                name: "🎨 Modern Flat Vector",
+                promptAddon: "Modern professional flat vector illustration style, clean vibrant colors, minimalist geometric shapes, corporate visual aesthetic, premium character designs, crisp clear details, SVG-like quality."
+            },
+            cinematic3D: {
+                name: "✨ 3D Animation (Pixar)",
+                promptAddon: "Cute 3D stylized animation render style, beautiful cinematic soft volumetric lighting, Pixar-like visual design, clay materials, smooth premium surfaces, warm saturated colors, rich expressive characters."
+            },
+            animeManga: {
+                name: "🌸 Anime Manga Keyframe",
+                promptAddon: "Japanese anime keyframe storyboard illustration style, highly expressive stylized characters, clean digital inks, atmospheric scenic lighting, premium soft cel-shading."
+            },
+            cinematicSketch: {
+                name: "✏️ Cinematic Sketch",
+                promptAddon: "Professional cinematic film production concept sketch, highly detailed hand-drawn charcoal pencil drawing, dynamic artistic shading, directorial composition sketch."
+            },
+            retroComic: {
+                name: "📚 Retro Comic Book",
+                promptAddon: "Vintage 1960s pop-art comic book illustration style, neat ben-day halftone dot screens, bold ink outline borders, classic faded print retro color palette."
+            },
+            watercolor: {
+                name: "🖌️ Watercolor Concept",
+                promptAddon: "Fine artistic ink outlines combined with fluid watercolor wash textures, beautiful abstract bleeding pigments, cinematic layout painting, soft dreamlike color grading."
+            },
+            cinematicFilm: {
+                name: "🎬 Cinematic Film",
+                promptAddon: "Cinematic film still, 35mm photography, anamorphic lens, epic movie scene, highly detailed, dramatic color grading, theatrical lighting, masterpiece, deep shadows, bright highlights."
+            }
+        };
+
+        const offlineTemplates = {
+            mystery: {
+                title: "Misteri Tersembunyi",
+                description: "Sebuah rahasia alam yang belum terungkap...",
+                hashtags: "#misteri #fakta",
+                scenes: [
+                    { scene: 1, narration: "Desas-desus tentang tempat ini selalu memancing ketakutan.", visualPrompt: "dark gloomy rainy evening, cinematic horror lighting", soundEffect: "Hujan" },
+                    { scene: 2, narration: "Banyak bayangan yang terlihat melintasi lorong usang tersebut.", visualPrompt: "creepy abandoned corridor, horror atmosphere", soundEffect: "Angin" }
+                ]
+            }
+        };
+
+        // ============================================================
+        // API KEY FUNCTIONS
+        // ============================================================
+        function toggleProvider() {
+            const provider = document.getElementById('provider-select').value;
+            document.getElementById('openrouter-settings').style.display = provider === 'openrouter' ? 'block' : 'none';
+            document.getElementById('gemini-settings').style.display = provider === 'gemini' ? 'block' : 'none';
+        }
+
         function getAPIKey() {
-            const key = document.getElementById('apiKey').value.trim();
-            if (key) localStorage.setItem('openrouter_key', key);
-            return key;
+            const provider = document.getElementById('provider-select').value;
+            if (provider === 'openrouter') {
+                const key = document.getElementById('openrouter-api-key').value.trim();
+                if (key) localStorage.setItem('openrouter_key', key);
+                return key;
+            } else {
+                const key = document.getElementById('gemini-api-key').value.trim();
+                if (key) localStorage.setItem('gemini_key', key);
+                return key;
+            }
         }
 
         function getModel() {
-            return document.getElementById('modelSelect').value;
+            if (document.getElementById('provider-select').value === 'openrouter') {
+                return document.getElementById('openrouter-model').value;
+            }
+            return null;
         }
 
         function updateAPIStatus(valid, msg) {
-            const dot = document.getElementById('apiDot');
-            const status = document.getElementById('apiStatus');
-            if (valid) {
-                dot.className = 'dot on';
-                status.innerHTML = `<span class="valid">✅ ${msg || 'Valid'}</span>`;
+            const dot = document.getElementById('apiStatusDot');
+            const status = document.getElementById('api-status-text');
+            if (valid === true) {
+                dot.className = 'api-status-dot on';
+                status.innerHTML = `<span style="color:#10b981;">✅ ${msg || 'Valid'}</span>`;
             } else if (valid === null) {
-                dot.className = 'dot off';
-                status.innerHTML = `<span class="loading">⏳ ${msg || 'Loading...'}</span>`;
+                dot.className = 'api-status-dot testing';
+                status.innerHTML = `<span style="color:#fbbf24;">⏳ ${msg || 'Testing...'}</span>`;
             } else {
-                dot.className = 'dot off';
-                status.innerHTML = `<span class="invalid">❌ ${msg || 'Tidak valid'}</span>`;
+                dot.className = 'api-status-dot off';
+                status.innerHTML = `<span style="color:#ef4444;">❌ ${msg || 'Tidak valid'}</span>`;
             }
         }
 
         // ============================================================
-        // FETCH MODELS - DARI AKUN ANDA
+        // FETCH OPENROUTER MODELS
         // ============================================================
-        async function fetchModels() {
+        async function fetchOpenRouterModels() {
             const key = getAPIKey();
             if (!key) {
                 updateAPIStatus(false, 'Masukkan API Key dulu!');
@@ -1059,7 +650,7 @@
             }
 
             updateAPIStatus(null, 'Mengambil model...');
-            document.getElementById('modelStatus').textContent = '⏳ Mengambil model...';
+            document.getElementById('model-status-text').textContent = '⏳ Mengambil model...';
 
             try {
                 const response = await fetch('https://openrouter.ai/api/v1/models', {
@@ -1071,49 +662,45 @@
                 const data = await response.json();
                 const allModels = data.data || [];
                 
-                // Model free
                 const freeModels = allModels.filter(m => 
                     m.id && (m.id.includes('free') || 
                     (m.pricing && m.pricing.prompt === '0' && m.pricing.completion === '0'))
                 );
 
-                availableModels = freeModels;
-                
-                // Update dropdown
-                const select = document.getElementById('modelSelect');
+                const select = document.getElementById('openrouter-model');
                 const currentValue = select.value;
                 select.innerHTML = '';
                 
                 freeModels.forEach(m => {
                     const opt = document.createElement('option');
                     opt.value = m.id;
-                    const label = m.id.replace(':free', '').replace(/-/g, ' ').substring(0, 45);
+                    const label = m.id.replace(':free', '').replace(/-/g, ' ').substring(0, 40);
                     opt.textContent = `🧠 ${label} (free)`;
-                    if (m.id === currentValue || m.id === 'openrouter/free') {
+                    if (m.id === currentValue || m.id === 'openrouter/free' || m.id.includes('llama')) {
                         opt.selected = true;
                     }
                     select.appendChild(opt);
                 });
 
                 if (freeModels.length === 0) {
-                    document.getElementById('modelStatus').textContent = '⚠️ Tidak ada model free ditemukan';
+                    document.getElementById('model-status-text').textContent = '⚠️ Tidak ada model free ditemukan';
                 } else {
-                    document.getElementById('modelStatus').textContent = `✅ ${freeModels.length} model free tersedia`;
+                    document.getElementById('model-status-text').textContent = `✅ ${freeModels.length} model free tersedia`;
                     updateAPIStatus(true, `${freeModels.length} model free`);
                     showToast(`✅ ${freeModels.length} model free ditemukan!`, 'success');
                 }
 
             } catch(e) {
-                document.getElementById('modelStatus').textContent = `❌ ${e.message}`;
+                document.getElementById('model-status-text').textContent = `❌ ${e.message}`;
                 updateAPIStatus(false, 'Gagal ambil model');
                 showToast(`❌ Gagal ambil model: ${e.message}`, 'error');
             }
         }
 
         // ============================================================
-        // TEST API
+        // TEST OPENROUTER KEY
         // ============================================================
-        async function testAPI() {
+        async function testOpenRouterKey() {
             const key = getAPIKey();
             if (!key) {
                 updateAPIStatus(false, 'Key kosong!');
@@ -1143,9 +730,7 @@
                     );
                     updateAPIStatus(true, `${freeModels.length} model free`);
                     showToast(`✅ API Key valid! ${freeModels.length} model free`, 'success');
-                    
-                    // Auto fetch models
-                    await fetchModels();
+                    await fetchOpenRouterModels();
                 } else {
                     const err = await res.text();
                     updateAPIStatus(false, 'Key tidak valid');
@@ -1157,141 +742,193 @@
             }
         }
 
-        function openKeyPage() {
+        // ============================================================
+        // TEST GEMINI KEY
+        // ============================================================
+        async function testGeminiKey() {
+            const key = document.getElementById('gemini-api-key').value.trim();
+            if (!key) {
+                document.getElementById('gemini-status-text').innerHTML = '<span style="color:#ef4444;">❌ Masukkan API Key!</span>';
+                return;
+            }
+            document.getElementById('gemini-status-text').innerHTML = '<span style="color:#fbbf24;">⏳ Menguji...</span>';
+            
+            try {
+                const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${key}`);
+                if (res.ok) {
+                    document.getElementById('gemini-status-text').innerHTML = '<span style="color:#10b981;">✅ Gemini API valid!</span>';
+                    showToast('✅ Gemini API Key valid!', 'success');
+                } else {
+                    document.getElementById('gemini-status-text').innerHTML = '<span style="color:#ef4444;">❌ Key tidak valid</span>';
+                    showToast('❌ Gemini API Key tidak valid!', 'error');
+                }
+            } catch(e) {
+                document.getElementById('gemini-status-text').innerHTML = '<span style="color:#ef4444;">❌ Gagal koneksi</span>';
+                showToast('❌ Gagal koneksi ke Gemini', 'error');
+            }
+        }
+
+        function openRouterKeys() {
             window.open('https://openrouter.ai/keys', '_blank');
             showToast('📋 Ambil API Key dari OpenRouter (sk-or-v1-...)', 'info');
         }
 
         // ============================================================
+        // CALL AI API
+        // ============================================================
+        async function callAIAPI(messages) {
+            const provider = document.getElementById('provider-select').value;
+            
+            if (provider === 'openrouter') {
+                const key = getAPIKey();
+                if (!key) throw new Error('API Key OpenRouter tidak tersedia');
+                
+                const model = getModel() || 'openrouter/free';
+                
+                const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${key}`,
+                        'HTTP-Referer': window.location.href,
+                        'X-Title': 'Studio Konten Pro'
+                    },
+                    body: JSON.stringify({
+                        model: model,
+                        messages: messages,
+                        temperature: 0.8,
+                        max_tokens: 4096
+                    })
+                });
+
+                if (!response.ok) {
+                    const err = await response.text();
+                    if (response.status === 429) {
+                        throw new Error('⏳ Rate limit! Tunggu 10-15 detik lalu coba lagi.');
+                    }
+                    throw new Error(`Error ${response.status}: ${err}`);
+                }
+                const data = await response.json();
+                return data.choices[0].message.content;
+                
+            } else {
+                const key = document.getElementById('gemini-api-key').value.trim();
+                if (!key) throw new Error('API Key Gemini tidak tersedia');
+                
+                const payload = {
+                    contents: messages.map(m => ({ parts: [{ text: m.content }] })),
+                    generationConfig: { responseMimeType: "application/json" }
+                };
+                
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${key}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                
+                if (!response.ok) {
+                    const err = await response.text();
+                    throw new Error(`Error ${response.status}: ${err}`);
+                }
+                const data = await response.json();
+                return data.candidates[0].content.parts[0].text;
+            }
+        }
+
+        // ============================================================
         // TOAST
         // ============================================================
-        function showToast(msg, type = 'success') {
-            const container = document.getElementById('toastContainer');
-            const types = { success: 'success', error: 'error', info: 'info', warn: 'warning' };
-            const icons = { success: 'fa-check-circle', error: 'fa-circle-exclamation', info: 'fa-info-circle', warn: 'fa-triangle-exclamation' };
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
-            toast.className = `toast ${types[type] || 'info'}`;
-            toast.innerHTML = `<i class="fas ${icons[type] || icons.info}"></i> ${msg}`;
+            const colors = {
+                success: 'rgba(16,185,129,0.4)',
+                error: 'rgba(239,68,68,0.4)',
+                info: 'rgba(59,130,246,0.4)',
+                warn: 'rgba(251,191,36,0.4)'
+            };
+            const icons = {
+                success: 'fa-check-circle',
+                error: 'fa-circle-exclamation',
+                info: 'fa-info-circle',
+                warn: 'fa-triangle-exclamation'
+            };
+            const colorClasses = {
+                success: 'text-emerald-400 bg-emerald-500/10',
+                error: 'text-red-400 bg-red-500/10',
+                info: 'text-blue-400 bg-blue-500/10',
+                warn: 'text-yellow-400 bg-yellow-500/10'
+            };
+            toast.className = `glass-panel px-4 py-3 rounded-xl text-xs text-white shadow-xl flex items-center gap-3 border transition-all duration-300 transform translate-y-4 opacity-0`;
+            toast.style.borderColor = colors[type] || colors.info;
+            
+            toast.innerHTML = `
+                <div class="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center ${colorClasses[type] || colorClasses.info}">
+                    <i class="fa-solid ${icons[type] || icons.info}"></i>
+                </div>
+                <span class="font-semibold leading-snug">${message}</span>
+            `;
             container.appendChild(toast);
+            
+            void toast.offsetWidth;
+            toast.classList.remove('translate-y-4', 'opacity-0');
+
             setTimeout(() => {
-                toast.style.opacity = '0';
-                toast.style.transform = 'translateY(20px)';
+                toast.classList.add('opacity-0', 'translate-y-2');
                 setTimeout(() => toast.remove(), 300);
             }, 4000);
         }
 
         // ============================================================
-        // NAVIGATION
-        // ============================================================
-        function switchTab(tabId) {
-            document.querySelectorAll('.tab').forEach(el => el.classList.remove('active'));
-            document.getElementById(tabId).classList.add('active');
-            
-            const titles = {
-                'tab-ide': '🎯 Ideasi & Naskah',
-                'tab-suara': '🎤 Text-to-Speech',
-                'tab-visual': '🖼️ Storyboard Visual',
-                'tab-render': '🎬 Render Video'
-            };
-            const subs = {
-                'tab-ide': 'OpenRouter AI + Pollinations Image + Web Speech',
-                'tab-suara': 'Gunakan suara bawaan browser (gratis)',
-                'tab-visual': 'Generate gambar dengan Pollinations AI (gratis)',
-                'tab-render': 'Gabungkan gambar + narasi ke dalam video'
-            };
-            document.getElementById('pageTitle').textContent = titles[tabId] || 'Studio Konten';
-            document.getElementById('pageSub').textContent = subs[tabId] || '';
-            
-            document.querySelectorAll('.sidebar nav button').forEach(b => b.classList.remove('active'));
-            const navMap = { 'tab-ide': 'nav-ide', 'tab-suara': 'nav-suara', 'tab-visual': 'nav-visual', 'tab-render': 'nav-render' };
-            const activeNav = document.getElementById(navMap[tabId]);
-            if (activeNav) activeNav.classList.add('active');
-        }
-
-        // ============================================================
-        // CALL OPENROUTER
-        // ============================================================
-        async function callOpenRouter(messages) {
-            const key = getAPIKey();
-            if (!key) throw new Error('API Key tidak tersedia');
-
-            const model = getModel();
-            if (!model) throw new Error('Pilih model terlebih dahulu');
-
-            const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${key}`,
-                    'HTTP-Referer': window.location.href,
-                    'X-Title': 'Studio Konten Pro'
-                },
-                body: JSON.stringify({
-                    model: model,
-                    messages: messages,
-                    temperature: 0.8,
-                    max_tokens: 4096
-                })
-            });
-
-            if (!response.ok) {
-                const err = await response.text();
-                if (response.status === 429) {
-                    throw new Error('Rate limit! Tunggu 10 detik lalu coba lagi.');
-                }
-                throw new Error(`Error ${response.status}: ${err}`);
-            }
-            return await response.json();
-        }
-
-        // ============================================================
         // RESEARCH
         // ============================================================
-        async function researchTitles() {
-            const topic = document.getElementById('inputResearch').value.trim();
-            if (!topic) { showToast('Masukkan topik riset!', 'error'); return; }
-
-            const btn = document.getElementById('btnResearch');
-            const orig = btn.innerHTML;
-            btn.innerHTML = '<span class="fas fa-spinner fa-spin"></span> Mencari...';
+        async function researchProfessionalTitles() {
+            const rawTopic = document.getElementById('input-research-topic').value.trim();
+            if (!rawTopic) return showToast("Masukkan topik riset terlebih dahulu!", "error");
+            
+            const btn = document.getElementById('btn-research-titles');
+            const origText = btn.querySelector('span').innerText;
+            btn.querySelector('span').innerText = "Mencari...";
             btn.disabled = true;
 
             try {
-                const result = await callOpenRouter([
-                    { role: 'system', content: 'Kamu asisten riset. Berikan 10 judul video menarik dalam format JSON array. Hanya array JSON, tanpa teks lain.' },
-                    { role: 'user', content: `Riset 10 judul video viral tentang: "${topic}"` }
+                const result = await callAIAPI([
+                    { role: 'system', content: 'Kamu asisten riset. Berikan 10 judul video viral dalam format JSON array. Hanya array JSON, tanpa teks lain.' },
+                    { role: 'user', content: `Riset 10 judul video YouTube viral tentang: "${rawTopic}"` }
                 ]);
 
-                const raw = result.choices[0].message.content;
-                let titles = [];
+                const clean = result.replace(/```json|```|```javascript|```js/gi, '').trim();
+                let titles;
                 try {
-                    const clean = raw.replace(/```json|```|```javascript|```js/gi, '').trim();
                     titles = JSON.parse(clean);
                 } catch(e) {
-                    const match = raw.match(/\[([^\]]*)\]/);
+                    const match = clean.match(/\[([^\]]*)\]/);
                     if (match) titles = JSON.parse(match[0]);
-                    else titles = raw.split(',').map(s => s.replace(/["'\[\]]/g, '').trim()).filter(Boolean);
+                    else titles = clean.split(',').map(s => s.replace(/["'\[\]]/g, '').trim()).filter(Boolean);
                 }
 
                 titles = titles.slice(0, 10);
-                const grid = document.getElementById('titlesGrid');
-                grid.innerHTML = '';
+                const list = document.getElementById('titles-recommendation-list');
+                list.innerHTML = '';
                 titles.forEach((t, i) => {
-                    const item = document.createElement('div');
-                    item.className = 'title-item';
-                    item.innerHTML = `<span class="num">${i+1}</span> ${t}`;
-                    item.onclick = () => {
-                        document.getElementById('inputTopic').value = t;
-                        showToast(`"${t}" dipilih!`, 'success');
+                    const card = document.createElement('div');
+                    card.className = "flex items-start gap-2 bg-dark-900 border border-dark-800 p-2 rounded-lg cursor-pointer hover:border-purple-500 transition-all";
+                    card.onclick = () => { 
+                        document.getElementById('input-topic').value = t; 
+                        showToast("Judul disalin!", "success");
                     };
-                    grid.appendChild(item);
+                    card.innerHTML = `
+                        <span class="text-[9px] font-bold bg-purple-500/20 text-purple-400 px-1.5 py-0.5 rounded flex-shrink-0">${i+1}</span>
+                        <span class="text-[10px] md:text-xs text-white font-medium line-clamp-2">${t}</span>
+                    `;
+                    list.appendChild(card);
                 });
-                document.getElementById('titlesContainer').style.display = 'block';
-                showToast(`✅ ${titles.length} judul ditemukan!`, 'success');
+                document.getElementById('titles-recommendation-container').classList.remove('hidden');
+                showToast(`${titles.length} Judul berhasil diriset!`, "success");
             } catch(e) {
-                showToast(`❌ Gagal: ${e.message}`, 'error');
+                showToast(`Gagal riset: ${e.message}`, "error");
             } finally {
-                btn.innerHTML = orig;
+                btn.querySelector('span').innerText = origText;
                 btn.disabled = false;
             }
         }
@@ -1300,59 +937,54 @@
         // GENERATE NASKAH
         // ============================================================
         async function generateNaskah() {
-            const topic = document.getElementById('inputTopic').value.trim();
-            if (!topic) { showToast('Tulis topik cerita!', 'error'); return; }
+            const topic = document.getElementById('input-topic').value.trim();
+            if (!topic) return showToast("Tulis topik cerita!", "error");
 
-            const btn = document.getElementById('btnGenerate');
-            const orig = btn.innerHTML;
-            btn.innerHTML = '<span class="fas fa-spinner fa-spin"></span> Menulis...';
+            const btn = document.getElementById('btn-gen-naskah');
+            const origText = btn.querySelector('span').innerText;
+            btn.querySelector('span').innerText = "Merajut...";
             btn.disabled = true;
 
-            const count = document.getElementById('sceneCount').value;
+            const tScenes = document.getElementById('target-scenes-count-select').value;
+            const lang = document.getElementById('content-language-select').value === 'id' ? 'Bahasa Indonesia' : 'English';
+            adjustPlayerAspect();
 
             try {
-                const result = await callOpenRouter([
-                    { role: 'system', content: `Kamu penulis naskah profesional. Buat naskah video ${count} adegan. Format JSON murni: {"title":"","description":"","hashtags":"","scenes":[{"scene":1,"narration":"narasi","visualPrompt":"english prompt"}]}. Hanya JSON, tanpa teks lain.` },
-                    { role: 'user', content: `Buat naskah video estetik dengan tema: "${topic}" ${count} adegan. Bahasa Indonesia. Cerita sinematik.` }
+                const result = await callAIAPI([
+                    { role: 'system', content: `Kamu penulis naskah profesional. Buat naskah video ${tScenes} adegan. Format JSON murni: {"title":"","description":"","hashtags":"","scenes":[{"scene":1,"narration":"narasi","visualPrompt":"english prompt","soundEffect":"sfx"}]}. Hanya JSON, tanpa teks lain.` },
+                    { role: 'user', content: `Buat naskah video estetik dengan tema: "${topic}" ${tScenes} adegan. Bahasa: ${lang}. Cerita sinematik.` }
                 ]);
 
-                const raw = result.choices[0].message.content;
-                const clean = raw.replace(/```json|```|```javascript|```js/gi, '').trim();
-                
+                const clean = result.replace(/```json|```|```javascript|```js/gi, '').trim();
                 let parsed;
-                try { parsed = JSON.parse(clean); }
-                catch(e) {
+                try {
+                    parsed = JSON.parse(clean);
+                } catch(e) {
                     const fixed = clean.replace(/(\w+):/g, '"$1":').replace(/'/g, '"');
                     parsed = JSON.parse(fixed);
                 }
 
-                story = parsed;
-                if (!story.scenes || story.scenes.length === 0) throw new Error('Tidak ada adegan');
+                generatedStory = parsed;
+                if (!generatedStory.scenes || generatedStory.scenes.length === 0) {
+                    throw new Error("Tidak ada adegan");
+                }
 
-                story.scenes = story.scenes.map((s, i) => ({
+                generatedStory.scenes = generatedStory.scenes.map((s, i) => ({
                     scene: i + 1,
                     narration: s.narration || `Adegan ${i+1}`,
-                    visualPrompt: s.visualPrompt || 'cinematic scene, beautiful lighting, 8k'
+                    visualPrompt: s.visualPrompt || 'cinematic scene, beautiful lighting, 8k',
+                    soundEffect: s.soundEffect || 'ambient'
                 }));
 
-                renderOutput();
-                showToast(`✅ ${story.scenes.length} adegan berhasil dibuat!`, 'success');
+                geminiAudioCache = {};
+                renderOutputStory(generatedStory);
+                showToast(`Naskah ${generatedStory.scenes.length} adegan berhasil dibuat!`, "success");
             } catch(e) {
-                // Fallback
-                story = {
-                    title: topic || 'Cerita Menarik',
-                    description: 'Sebuah cerita yang menginspirasi',
-                    hashtags: '#cerita #inspirasi #video',
-                    scenes: [
-                        { scene: 1, narration: `Mulailah dengan ${topic} yang menarik perhatian.`, visualPrompt: 'cinematic scene, dramatic lighting' },
-                        { scene: 2, narration: 'Kembangkan alur cerita dengan konflik dan resolusi.', visualPrompt: 'storytelling scene, emotional' },
-                        { scene: 3, narration: 'Akhiri dengan pesan yang menginspirasi penonton.', visualPrompt: 'uplifting scene, hopeful' }
-                    ]
-                };
-                renderOutput();
-                showToast('⚠️ Menggunakan template lokal', 'warn');
+                generatedStory = offlineTemplates.mystery;
+                renderOutputStory(generatedStory);
+                showToast(`Naskah menggunakan template lokal: ${e.message}`, "warn");
             } finally {
-                btn.innerHTML = orig;
+                btn.querySelector('span').innerText = origText;
                 btn.disabled = false;
             }
         }
@@ -1360,478 +992,840 @@
         // ============================================================
         // RENDER OUTPUT
         // ============================================================
-        function renderOutput() {
-            document.getElementById('outTitle').value = story.title || 'Judul';
-            document.getElementById('outDesc').value = story.description || 'Deskripsi';
-            document.getElementById('outTags').value = story.hashtags || '#video';
-            document.getElementById('sceneBadge').textContent = `${story.scenes.length} Adegan`;
+        function renderOutputStory(parsed) {
+            document.getElementById('out-title').value = parsed.title || 'Judul';
+            document.getElementById('out-desc').value = parsed.description || 'Deskripsi';
+            document.getElementById('out-tags').value = parsed.hashtags || '#video';
+            document.getElementById('out-scenes-count').innerText = `${parsed.scenes.length} Adegan`;
 
-            const editor = document.getElementById('scriptEditor');
-            editor.innerHTML = '';
-            story.scenes.forEach((s, i) => {
-                const div = document.createElement('div');
-                div.className = 'scene-item';
-                div.innerHTML = `
-                    <div class="scene-header">
-                        <span class="num">Adegan ${s.scene}</span>
-                    </div>
-                    <label>Narasi</label>
-                    <textarea onchange="updateScene(${i},'narration',this.value)" rows="2">${s.narration}</textarea>
-                    <label style="margin-top:4px;">Visual Prompt</label>
-                    <input type="text" id="prompt-${i}" onchange="updateScene(${i},'visualPrompt',this.value)" value="${s.visualPrompt}">
-                `;
-                editor.appendChild(div);
-            });
-
-            document.getElementById('outputContainer').style.display = 'block';
-            buildAudioList();
-            buildVisualGrid();
-            buildPlaylist();
-        }
-
-        function updateScene(idx, prop, val) {
-            if (story.scenes[idx]) {
-                story.scenes[idx][prop] = val;
-                if (prop === 'narration') buildAudioList();
-                if (prop === 'visualPrompt') buildVisualGrid();
-                buildPlaylist();
-            }
+            buildSceneEditor(parsed.scenes);
+            buildVoiceList(parsed.scenes);
+            buildStoryboardGrid(parsed.scenes);
+            buildRenderPlaylist(parsed.scenes);
+            document.getElementById('metadata-container').classList.remove('hidden');
         }
 
         function copyMetadata() {
-            const txt = document.getElementById('outTitle').value + '\n\n' + 
-                       document.getElementById('outDesc').value + '\n\n' + 
-                       document.getElementById('outTags').value;
-            navigator.clipboard.writeText(txt).then(() => showToast('✅ Metadata disalin!', 'success'));
+            const txt = document.getElementById('out-title').value + "\n\n" + 
+                       document.getElementById('out-desc').value + "\n\n" + 
+                       document.getElementById('out-tags').value;
+            navigator.clipboard.writeText(txt).then(() => showToast("Metadata Disalin!", "success"));
         }
 
         // ============================================================
-        // AUDIO
+        // BUILD SCENE EDITOR
         // ============================================================
-        function buildAudioList() {
-            const container = document.getElementById('audioList');
-            container.innerHTML = '';
-            if (!story.scenes || story.scenes.length === 0) {
-                container.innerHTML = '<div style="text-align:center;padding:25px 0;color:#667799;font-size:12px;">Buat naskah dulu di Langkah 1</div>';
-                return;
-            }
-            story.scenes.forEach((s, i) => {
+        function buildSceneEditor(scenes) {
+            const cont = document.getElementById('script-scenes-editor');
+            cont.innerHTML = '';
+            scenes.forEach((s, i) => {
                 const div = document.createElement('div');
-                div.className = 'audio-item';
+                div.className = 'p-3 md:p-4 bg-dark-950/60 border border-dark-800 rounded-xl space-y-2';
                 div.innerHTML = `
-                    <div class="info">
-                        <div class="num">Adegan ${s.scene}</div>
-                        <div class="text">${s.narration}</div>
+                    <div class="flex justify-between items-center border-b border-dark-800 pb-2">
+                        <span class="text-[10px] md:text-xs font-bold text-purple-400">ADEGAN ${s.scene}</span>
                     </div>
-                    <button class="play-btn" onclick="playAudio(${i})"><i class="fas fa-play"></i></button>
+                    <div>
+                        <label class="block text-[9px] text-slate-400 font-bold mb-1 uppercase">Narasi Suara</label>
+                        <textarea onchange="updateSceneText(${i}, 'narration', this.value)" class="w-full bg-dark-900 border border-dark-800 rounded-lg p-2 text-sm md:text-xs text-slate-200 resize-none h-14 md:h-16 focus:outline-none focus:border-purple-500">${s.narration}</textarea>
+                    </div>
+                    <div>
+                        <label class="block text-[9px] text-slate-400 font-bold mb-1 uppercase">Visual Prompt</label>
+                        <input type="text" id="visual-prompt-input-${i}" onchange="updateSceneText(${i}, 'visualPrompt', this.value)" value="${s.visualPrompt}" class="w-full bg-dark-900 border border-dark-800 rounded-lg p-2 text-sm md:text-xs text-slate-300 focus:outline-none focus:border-purple-500">
+                    </div>
                 `;
-                container.appendChild(div);
+                cont.appendChild(div);
             });
         }
 
-        function playAudio(idx) {
-            speechSynth.cancel();
-            const text = story.scenes[idx].narration;
-            const utterance = new SpeechSynthesisUtterance(text);
-            utterance.lang = 'id-ID';
-            utterance.rate = 0.95;
-            const voices = speechSynth.getVoices();
-            const indo = voices.find(v => v.lang.includes('id'));
-            if (indo) utterance.voice = indo;
-            speechSynth.speak(utterance);
-            showToast(`🔊 Memutar adegan ${idx+1}`, 'info');
+        function updateSceneText(idx, prop, val) {
+            if(generatedStory.scenes[idx]) {
+                generatedStory.scenes[idx][prop] = val;
+                if(prop === 'narration') { 
+                    buildVoiceList(generatedStory.scenes); 
+                    delete geminiAudioCache[idx]; 
+                }
+                if(prop === 'visualPrompt') {
+                    buildStoryboardGrid(generatedStory.scenes);
+                }
+                buildRenderPlaylist(generatedStory.scenes);
+            }
         }
 
-        function playAllAudio() {
-            speechSynth.cancel();
-            if (!story.scenes || story.scenes.length === 0) return;
-            const texts = story.scenes.map(s => s.narration);
+        // ============================================================
+        // AUDIO FUNCTIONS
+        // ============================================================
+        function toggleAudioProvider() {
+            const p = document.getElementById('audio-provider-select').value;
+            document.getElementById('gemini-voices-div').classList.toggle('hidden', p !== 'gemini');
+            document.getElementById('webspeech-voices-div').classList.toggle('hidden', p === 'gemini');
+        }
+
+        function populateVoiceSelect() {
+            const sel = document.getElementById('tts-voice-select');
+            sel.innerHTML = '';
+            window.speechSynthesis.getVoices().forEach(v => {
+                const o = document.createElement('option');
+                o.value = v.name;
+                o.textContent = `${v.name} (${v.lang})`;
+                if(v.lang.includes('id-ID')) o.selected = true;
+                sel.appendChild(o);
+            });
+        }
+
+        function buildVoiceList(scenes) {
+            const c = document.getElementById('voice-narration-list');
+            c.innerHTML = '';
+            if (!scenes || scenes.length === 0) {
+                c.innerHTML = '<div class="text-center py-10 text-slate-500 text-xs">Buat naskah di Langkah 1 terlebih dahulu.</div>';
+                return;
+            }
+            scenes.forEach((s, i) => {
+                const div = document.createElement('div');
+                div.className = 'p-3 bg-dark-950/40 border border-dark-800 rounded-xl flex items-center justify-between gap-3';
+                div.innerHTML = `
+                    <div class="flex-1 min-w-0">
+                        <span class="text-[9px] md:text-[10px] bg-purple-500/10 text-purple-400 px-1.5 py-0.5 rounded font-bold">Adegan ${s.scene}</span>
+                        <p class="text-[10px] md:text-xs text-slate-200 font-medium leading-relaxed mt-1 truncate md:whitespace-normal">${s.narration}</p>
+                    </div>
+                    <button onclick="speakSingleNarration(${i})" class="flex-shrink-0 bg-dark-900 border border-dark-700 hover:border-purple-500 w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center text-purple-400">
+                        <i class="fa-solid fa-volume-high text-xs md:text-sm"></i>
+                    </button>
+                `;
+                c.appendChild(div);
+            });
+        }
+
+        function speakSingleNarration(idx) {
+            window.speechSynthesis.cancel();
+            const s = generatedStory.scenes[idx];
+            if(document.getElementById('audio-provider-select').value === 'gemini') {
+                playWebSpeech(s.narration);
+            } else {
+                playWebSpeech(s.narration);
+            }
+        }
+
+        function playWebSpeech(txt) {
+            const u = new SpeechSynthesisUtterance(txt);
+            u.lang = 'id-ID';
+            u.rate = 0.95;
+            const v = window.speechSynthesis.getVoices().find(x => x.lang.includes('id'));
+            if(v) u.voice = v;
+            window.speechSynthesis.speak(u);
+        }
+
+        function playAllNarrations() {
+            if (!generatedStory.scenes || generatedStory.scenes.length === 0) {
+                showToast("Buat naskah dulu!", "error");
+                return;
+            }
+            const texts = generatedStory.scenes.map(s => s.narration);
             let i = 0;
             function playNext() {
                 if (i >= texts.length) return;
-                const utterance = new SpeechSynthesisUtterance(texts[i]);
-                utterance.lang = 'id-ID';
-                utterance.rate = 0.95;
-                const voices = speechSynth.getVoices();
-                const indo = voices.find(v => v.lang.includes('id'));
-                if (indo) utterance.voice = indo;
-                utterance.onend = () => { i++; playNext(); };
-                speechSynth.speak(utterance);
+                const u = new SpeechSynthesisUtterance(texts[i]);
+                u.lang = 'id-ID';
+                u.rate = 0.95;
+                const v = window.speechSynthesis.getVoices().find(x => x.lang.includes('id'));
+                if(v) u.voice = v;
+                u.onend = () => { i++; playNext(); };
+                window.speechSynthesis.speak(u);
             }
             playNext();
-            showToast('🔊 Memutar semua narasi', 'info');
+            showToast("🔊 Memutar semua narasi", "info");
         }
 
-        function stopAllAudio() {
-            speechSynth.cancel();
-            showToast('⏹️ Audio dihentikan', 'info');
+        function stopAllNarrations() {
+            window.speechSynthesis.cancel();
+            showToast("⏹️ Audio dihentikan", "info");
         }
 
         // ============================================================
-        // VISUAL
+        // DOWNLOAD AUDIO - REKAM LANGSUNG JADI FILE AUDIO
         // ============================================================
-        function buildVisualGrid() {
-            const grid = document.getElementById('visualGrid');
-            grid.innerHTML = '';
-            if (!story.scenes || story.scenes.length === 0) {
-                grid.innerHTML = '<div style="grid-column:span 2;text-align:center;padding:25px 0;color:#667799;font-size:12px;">Buat naskah dulu di Langkah 1</div>';
+        async function downloadAllAudio() {
+            if (!generatedStory.scenes || generatedStory.scenes.length === 0) {
+                showToast("Buat naskah dulu!", "error");
                 return;
             }
 
-            const isShort = document.querySelector('input[name="format"]:checked').value === 'short';
-            const w = isShort ? 540 : 960;
-            const h = isShort ? 960 : 540;
+            const provider = document.getElementById('audio-provider-select').value;
+            const container = document.getElementById('download-options-container');
+            
+            // === GEMINI TTS ===
+            if (provider === 'gemini') {
+                try {
+                    showToast("🎵 Menggabungkan audio Gemini...", "info");
+                    let t = 0, sr = 24000, pcms = [];
+                    for (let i = 0; i < generatedStory.scenes.length; i++) {
+                        try {
+                            const d = await getGeminiTTSAudio(i, generatedStory.scenes[i].narration);
+                            pcms.push(d.pcm);
+                            t += d.pcm.length;
+                            sr = d.sampleRate;
+                        } catch(e) {
+                            console.warn(`Gemini gagal untuk scene ${i+1}, skip`, e);
+                            // Skip scene yang gagal
+                        }
+                    }
+                    
+                    if (pcms.length === 0) {
+                        showToast("⚠️ Gemini gagal untuk semua scene, coba WebSpeech", "warn");
+                        downloadWebSpeechAudio();
+                        return;
+                    }
+                    
+                    const totalLength = pcms.reduce((sum, p) => sum + p.length, 0);
+                    const merged = new Int16Array(totalLength);
+                    let offset = 0;
+                    pcms.forEach(p => {
+                        merged.set(p, offset);
+                        offset += p.length;
+                    });
+                    
+                    const url = URL.createObjectURL(pcmToWav(merged, sr));
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `Audio_Narasi_${Date.now()}.wav`;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    showToast("✅ Audio WAV berhasil diunduh!", "success");
+                    
+                } catch(e) {
+                    showToast(`⚠️ Gemini gagal: ${e.message}. Beralih ke WebSpeech`, "warn");
+                    downloadWebSpeechAudio();
+                }
+                return;
+            }
 
-            story.scenes.forEach((s, i) => {
-                const prompt = s.visualPrompt || 'cinematic scene';
-                const encoded = encodeURIComponent(prompt + ', masterpiece, 8k, no text');
-                const url = `https://image.pollinations.ai/prompt/${encoded}?width=${w}&height=${h}&nologo=true&private=true&seed=${i+99}`;
+            // === WEBSpeech - REKAM LANGSUNG ===
+            downloadWebSpeechAudio();
+        }
 
-                const item = document.createElement('div');
-                item.className = 'visual-item';
-                item.innerHTML = `
-                    <div class="img-wrap">
-                        <div class="spinner-overlay" id="spinner-${i}">
-                            <div class="loader"></div>
-                            <span>Membuat gambar...</span>
-                        </div>
-                        <img id="img-${i}" src="${url}" 
-                             onload="document.getElementById('spinner-${i}').classList.add('hidden')"
-                             onerror="this.src='https://placehold.co/${w}x${h}/0a0e1a/6c5ce7?text=Scene+${s.scene}'">
-                    </div>
-                    <div class="visual-footer">
-                        <span class="num">Adegan ${s.scene}</span>
-                        <div class="actions">
-                            <button onclick="regenerateImage(${i})"><i class="fas fa-rotate"></i></button>
-                        </div>
-                    </div>
-                `;
-                grid.appendChild(item);
+        // ============================================================
+        // REKAM WEBSpeech MENJADI AUDIO (REAL)
+        // ============================================================
+        function downloadWebSpeechAudio() {
+            if (!generatedStory.scenes || generatedStory.scenes.length === 0) {
+                showToast("Buat naskah dulu!", "error");
+                return;
+            }
+
+            const texts = generatedStory.scenes.map(s => s.narration);
+            const fullText = texts.join('. ');
+            
+            showToast("🎙️ Merekam suara... (tunggu sebentar)", "info");
+            
+            // Buat AudioContext
+            const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            const dest = audioCtx.createMediaStreamDestination();
+            const mediaRecorder = new MediaRecorder(dest.stream);
+            const chunks = [];
+            let isDone = false;
+            
+            mediaRecorder.ondataavailable = function(e) {
+                if (e.data.size > 0) chunks.push(e.data);
+            };
+            
+            mediaRecorder.onstop = function() {
+                if (chunks.length === 0) {
+                    showToast("❌ Gagal merekam, coba browser lain", "error");
+                    return;
+                }
+                
+                const blob = new Blob(chunks, { type: 'audio/webm' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `Audio_Narasi_${Date.now()}.webm`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                showToast("✅ Audio berhasil diunduh! (WebM)", "success");
+            };
+            
+            // Mulai rekam
+            mediaRecorder.start();
+            
+            // Siapkan speech
+            const utterance = new SpeechSynthesisUtterance(fullText);
+            utterance.lang = 'id-ID';
+            utterance.rate = 0.95;
+            
+            const voices = window.speechSynthesis.getVoices();
+            const indo = voices.find(v => v.lang.includes('id'));
+            if (indo) utterance.voice = indo;
+            
+            utterance.onend = function() {
+                setTimeout(() => {
+                    if (mediaRecorder.state === 'recording') {
+                        mediaRecorder.stop();
+                    }
+                    isDone = true;
+                }, 500);
+            };
+            
+            utterance.onerror = function() {
+                showToast("❌ Gagal memutar suara", "error");
+                if (mediaRecorder.state === 'recording') {
+                    mediaRecorder.stop();
+                }
+            };
+            
+            // Mulai bicara
+            window.speechSynthesis.speak(utterance);
+            
+            // Timeout fallback
+            setTimeout(() => {
+                if (!isDone && mediaRecorder.state === 'recording') {
+                    mediaRecorder.stop();
+                    isDone = true;
+                }
+            }, fullText.split(' ').length * 300 + 5000);
+        }
+
+        // ============================================================
+        // GEMINI TTS HELPER
+        // ============================================================
+        async function getGeminiTTSAudio(idx, txt) {
+            if (geminiAudioCache[idx]) return geminiAudioCache[idx];
+            const v = document.getElementById('gemini-voice-select').value;
+            const payload = {
+                contents: [{ parts: [{ text: `Baca ekspresif: "${txt}"` }] }],
+                generationConfig: { responseModalities: ["AUDIO"], speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: v } } } },
+                model: "models/gemini-2.5-flash-preview-tts"
+            };
+            const res = await callGeminiAPI("models/gemini-2.5-flash-preview-tts:generateContent", payload);
+            const part = res?.candidates?.[0]?.content?.parts?.[0];
+            const sampleRate = parseInt(part?.inlineData?.mimeType.match(/rate=(\d+)/)?.[1] || "24000");
+            const pcmData = base64ToArrayBuffer(part.inlineData.data);
+            const pcm16 = new Int16Array(pcmData);
+            const wavBlob = pcmToWav(pcm16, sampleRate);
+            const audioUrl = URL.createObjectURL(wavBlob);
+            
+            geminiAudioCache[idx] = { url: audioUrl, pcm: pcm16, sampleRate: sampleRate, duration: pcm16.length / sampleRate };
+            return geminiAudioCache[idx];
+        }
+
+        function base64ToArrayBuffer(b64) {
+            const str = window.atob(b64);
+            const bytes = new Uint8Array(str.length);
+            for(let i=0; i<str.length; i++) bytes[i] = str.charCodeAt(i);
+            return bytes.buffer;
+        }
+
+        function pcmToWav(pcm16, sampleRate) {
+            const buf = new ArrayBuffer(44 + pcm16.length * 2);
+            const view = new DataView(buf);
+            const writeStr = (off, s) => { for(let i=0; i<s.length; i++) view.setUint8(off+i, s.charCodeAt(i)); };
+            
+            writeStr(0, 'RIFF');
+            view.setUint32(4, 36 + pcm16.length * 2, true);
+            writeStr(8, 'WAVE'); writeStr(12, 'fmt ');
+            view.setUint32(16, 16, true); view.setUint16(20, 1, true); view.setUint16(22, 1, true);
+            view.setUint32(24, sampleRate, true); view.setUint32(28, sampleRate * 2, true);
+            view.setUint16(32, 2, true); view.setUint16(34, 16, true);
+            writeStr(36, 'data'); view.setUint32(40, pcm16.length * 2, true);
+            
+            for(let i=0; i<pcm16.length; i++) view.setInt16(44 + i * 2, pcm16[i], true);
+            return new Blob([view], { type: 'audio/wav' });
+        }
+
+        async function callGeminiAPI(endpoint, payload) {
+            const apiKey = document.getElementById('gemini-api-key').value.trim();
+            if (!apiKey) throw new Error('API Key Gemini tidak tersedia');
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/${endpoint}?key=${apiKey}`;
+            const maxRetries = 2;
+            let delay = 1000;
+            
+            for (let i = 0; i <= maxRetries; i++) {
+                try {
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    if (!response.ok) throw new Error(await response.text());
+                    return await response.json();
+                } catch (e) {
+                    if (i === maxRetries) throw e;
+                    await new Promise(r => setTimeout(r, delay)); delay *= 1.5;
+                }
+            }
+        }
+
+        // ============================================================
+        // VISUAL FUNCTIONS
+        // ============================================================
+        function initStylePresets() {
+            const container = document.getElementById('stylePresetsContainer');
+            container.innerHTML = '';
+            Object.keys(STYLE_PRESETS).forEach(key => {
+                const styleObj = STYLE_PRESETS[key];
+                const btn = document.createElement('button');
+                btn.className = `p-3 rounded-xl border text-left transition-all flex flex-col gap-1 cursor-pointer ${key === activeStyle ? 'border-purple-500 bg-purple-500/10 shadow-[0_0_15px_rgba(108,92,231,0.15)]' : 'border-dark-800 bg-dark-950/60 hover:bg-dark-900/80'}`;
+                btn.onclick = () => { activeStyle = key; initStylePresets(); showToast(`Gaya: "${styleObj.name}"`, "info"); };
+                btn.innerHTML = `<span class="text-xs font-bold text-slate-200">${styleObj.name}</span>`;
+                container.appendChild(btn);
             });
         }
 
-        function regenerateImage(idx) {
-            const s = story.scenes[idx];
-            const isShort = document.querySelector('input[name="format"]:checked').value === 'short';
-            const w = isShort ? 540 : 960;
-            const h = isShort ? 960 : 540;
+        function getEnhancedAestheticPrompt(p) {
+            return `${p}, ${STYLE_PRESETS[activeStyle]?.promptAddon || ""}, masterpiece, 8k, no watermark, textless`;
+        }
+
+        function buildStoryboardGrid(scenes) {
+            const grid = document.getElementById('visual-storyboard-grid');
+            grid.innerHTML = '';
+            if (!scenes || scenes.length === 0) {
+                grid.innerHTML = '<div class="col-span-2 text-center py-10 text-slate-500 text-xs">Silakan buat naskah terlebih dahulu.</div>';
+                return;
+            }
+
+            const isV = document.querySelector('input[name="video-duration"]:checked').value === "short";
+            const ratioLabel = isV ? "Rasio Vertikal 9:16 (Shorts)" : "Rasio Lanskap 16:9 (YouTube)";
+            const frameClass = isV ? "aspect-[9/16] w-[160px] md:w-[220px] mx-auto" : "aspect-video w-full";
+
+            scenes.forEach((s, i) => {
+                const card = document.createElement('div');
+                card.className = 'glass-panel p-3 md:p-5 rounded-2xl border border-dark-800 space-y-3 flex flex-col justify-between';
+                
+                const enhancedPrompt = getEnhancedAestheticPrompt(s.visualPrompt);
+                const encodedPrompt = encodeURIComponent(enhancedPrompt);
+                const pUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=${isV?540:960}&height=${isV?960:540}&nologo=true&private=true&model=flux&seed=${i+99}`;
+
+                card.innerHTML = `
+                    <div class="space-y-2">
+                        <div class="flex justify-between items-center">
+                            <span class="text-[10px] md:text-xs font-bold text-purple-400">ADEGAN ${s.scene} - VISUAL</span>
+                            <span class="text-[9px] bg-dark-950 text-slate-400 px-2 py-0.5 rounded border border-dark-800 font-semibold italic">${ratioLabel}</span>
+                        </div>
+                        
+                        <div class="relative ${frameClass} bg-dark-950 rounded-xl overflow-hidden border border-dark-800 flex items-center justify-center group shadow-inner">
+                            <div id="loading-spinner-${i}" class="absolute inset-0 flex flex-col items-center justify-center bg-dark-950/90 z-10 transition-opacity duration-300">
+                                <span class="loader mb-2"></span>
+                                <span class="text-[9px] text-purple-400 font-bold uppercase tracking-wider animate-pulse">Melukis dengan AI...</span>
+                            </div>
+
+                            <img id="sc-img-${i}" src="${pUrl}" 
+                                 onload="document.getElementById('loading-spinner-${i}').classList.add('opacity-0','pointer-events-none')" 
+                                 onerror="handleImageError(this, ${s.scene}, ${isV})"
+                                 class="w-full h-full object-cover select-none transition-all duration-500 group-hover:scale-105" 
+                                 alt="Adegan ${s.scene}">
+                            
+                            <div class="absolute bottom-2 right-2 bg-black/80 border border-white/10 px-2 py-1 rounded text-[9px] text-white flex items-center gap-1 cursor-pointer hover:bg-black transition-all z-20" onclick="regenerateImage(${i})">
+                                <i class="fa-solid fa-arrows-rotate"></i> Acak
+                            </div>
+                        </div>
+
+                        <div class="space-y-1">
+                            <label class="block text-[9px] text-slate-400 font-bold uppercase">Prompt Gambar Aktif</label>
+                            <textarea id="visual-prompt-input-${i}" onchange="updateSceneText(${i}, 'visualPrompt', this.value)" class="w-full bg-dark-900 border border-dark-800 rounded-lg p-2 text-sm md:text-xs text-slate-300 resize-none h-16 focus:outline-none focus:border-purple-500">${s.visualPrompt}</textarea>
+                        </div>
+                    </div>
+                    <div class="pt-2 border-t border-dark-800/50">
+                        <button onclick="generateImageForScene(${i})" class="w-full bg-purple-600 hover:bg-purple-500 text-white py-2 rounded-xl text-[10px] md:text-xs font-bold transition-all flex items-center justify-center gap-1.5 shadow-md">
+                            <i class="fa-solid fa-wand-magic-sparkles"></i> Render Visual
+                        </button>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function handleImageError(imgEl, sceneNum, isVertical) {
+            const w = isVertical ? 540 : 960;
+            const h = isVertical ? 960 : 540;
+            imgEl.src = `https://placehold.co/${w}x${h}/0a0f1d/6c5ce7?text=Adegan+${sceneNum}`;
+        }
+
+        function generateImageForScene(idx) {
+            const promptInput = document.getElementById(`visual-prompt-input-${idx}`);
+            const promptValue = promptInput ? promptInput.value.trim() : "";
+            
+            if(!promptValue) return showToast("Prompt gambar kosong!", "error");
+
+            const imgEl = document.getElementById(`sc-img-${idx}`);
+            const spinner = document.getElementById(`loading-spinner-${idx}`);
+            
+            if(spinner) spinner.classList.remove('opacity-0', 'pointer-events-none');
+            imgEl.classList.add('opacity-40');
+            showToast(`Membuat Gambar Adegan ${idx+1}...`, "info");
+
+            const isV = document.querySelector('input[name="video-duration"]:checked').value === "short";
+            const w = isV ? 540 : 960;
+            const h = isV ? 960 : 540;
+
+            generateFluxImage(idx, promptValue, isV, w, h, imgEl, spinner);
+        }
+
+        function generateFluxImage(index, promptValue, isVertical, width, height, imgEl, spinner) {
+            const seed = Math.floor(Math.random() * 99999);
+            const enhancedPrompt = getEnhancedAestheticPrompt(promptValue);
+            const encoded = encodeURIComponent(enhancedPrompt);
+            const targetUrl = `https://image.pollinations.ai/prompt/${encoded}?width=${width}&height=${height}&nologo=true&private=true&model=flux&seed=${seed}`;
+
+            const tempImg = new Image();
+            tempImg.src = targetUrl;
+            tempImg.onload = () => {
+                imgEl.src = targetUrl;
+                imgEl.classList.remove('opacity-40');
+                if(spinner) spinner.classList.add('opacity-0', 'pointer-events-none');
+                showToast(`Gambar Adegan ${index+1} Berhasil!`, "success");
+                buildRenderPlaylist(generatedStory.scenes);
+            };
+            tempImg.onerror = () => {
+                imgEl.classList.remove('opacity-40');
+                if(spinner) spinner.classList.add('opacity-0', 'pointer-events-none');
+                handleImageError(imgEl, index + 1, isVertical);
+            };
+        }
+
+        function regenerateImage(index) {
             const seed = Math.floor(Math.random() * 9999);
-            const prompt = s.visualPrompt || 'cinematic scene';
-            const encoded = encodeURIComponent(prompt + ', masterpiece, 8k, no text');
-            const url = `https://image.pollinations.ai/prompt/${encoded}?width=${w}&height=${h}&nologo=true&private=true&seed=${seed}`;
+            const promptInput = document.getElementById(`visual-prompt-input-${index}`);
+            const textPrompt = promptInput ? promptInput.value : generatedStory.scenes[index].visualPrompt;
             
-            const spinner = document.getElementById(`spinner-${idx}`);
-            if (spinner) spinner.classList.remove('hidden');
+            const isV = document.querySelector('input[name="video-duration"]:checked').value === "short";
+            const width = isV ? 540 : 960;
+            const height = isV ? 960 : 540;
+
+            const spinner = document.getElementById('loading-spinner-' + index);
+            if(spinner) spinner.classList.remove('opacity-0', 'pointer-events-none');
+
+            const enhancedPrompt = getEnhancedAestheticPrompt(textPrompt);
+            const encoded = encodeURIComponent(enhancedPrompt);
+            const targetUrl = `https://image.pollinations.ai/prompt/${encoded}?width=${width}&height=${height}&nologo=true&private=true&model=flux&seed=${seed}`;
             
-            const img = document.getElementById(`img-${idx}`);
-            img.src = url;
-            img.onload = () => {
-                if (spinner) spinner.classList.add('hidden');
-                showToast(`🔄 Gambar adegan ${idx+1} diperbarui`, 'success');
-            };
-            img.onerror = () => {
-                if (spinner) spinner.classList.add('hidden');
-                img.src = `https://placehold.co/${w}x${h}/0a0e1a/6c5ce7?text=Scene+${s.scene}`;
-            };
+            const imgEl = document.getElementById(`sc-img-${index}`);
+            imgEl.src = targetUrl;
+            showToast(`Visual diacak (Seed #${seed})!`, "success");
         }
 
         function generateAllImages() {
-            showToast('🖼️ Memulai render semua gambar...', 'info');
-            story.scenes.forEach((_, i) => {
-                setTimeout(() => regenerateImage(i), i * 800);
+            showToast("Memulai render serentak...", "info");
+            generatedStory.scenes.forEach((_, i) => {
+                setTimeout(() => {
+                    generateImageForScene(i);
+                }, i * 1200);
             });
         }
 
         // ============================================================
-        // PLAYER
+        // PLAYER FUNCTIONS
         // ============================================================
-        function buildPlaylist() {
-            const container = document.getElementById('playlistContainer');
-            container.innerHTML = '';
-            if (!story.scenes || story.scenes.length === 0) {
-                container.innerHTML = '<div style="width:100%;text-align:center;padding:14px 0;color:#667799;font-size:12px;">Belum ada adegan</div>';
+        function adjustPlayerAspect() {
+            const isV = document.querySelector('input[name="video-duration"]:checked').value === "short";
+            const f = document.getElementById('player-outer-frame');
+            if (isV) { 
+                f.style.maxWidth = "280px"; 
+                f.className = "w-full bg-slate-950/80 rounded-3xl border-8 border-dark-800 overflow-hidden shadow-2xl relative aspect-[9/16]"; 
+            } else { 
+                f.style.maxWidth = "100%"; 
+                f.className = "w-full bg-slate-950/80 rounded-2xl border-4 border-dark-800 overflow-hidden shadow-2xl relative aspect-video"; 
+            }
+        }
+
+        function buildRenderPlaylist(scenes) {
+            const p = document.getElementById('player-scene-playlist');
+            p.innerHTML = '';
+            document.getElementById('player-scene-count-badge').innerText = `${scenes.length} Scene`;
+            if (!scenes || scenes.length === 0) {
+                p.innerHTML = '<p class="text-xs text-slate-500 text-center py-4">Belum ada adegan.</p>';
                 return;
             }
-
-            story.scenes.forEach((s, i) => {
-                const img = document.getElementById(`img-${i}`);
-                const div = document.createElement('div');
-                div.className = 'playlist-item';
-                div.onclick = () => selectScene(i);
-                div.innerHTML = `
-                    <div class="thumb">
-                        <img src="${img ? img.src : 'https://placehold.co/160x90/0a0e1a/334466'}">
+            scenes.forEach((s, i) => {
+                const img = document.getElementById(`sc-img-${i}`);
+                const d = document.createElement('div');
+                d.id = `playlist-item-${i}`;
+                d.className = `p-2 rounded-lg border border-dark-800 hover:bg-dark-800/50 flex gap-2 cursor-pointer transition-all`;
+                d.onclick = () => selectVideoPlayerScene(i);
+                d.innerHTML = `
+                    <div class="w-12 h-8 md:w-16 md:h-10 bg-black flex-shrink-0">
+                        <img src="${img ? img.src : ''}" class="w-full h-full object-cover">
                     </div>
-                    <div class="name">Scene ${s.scene}</div>
+                    <div class="min-w-0">
+                        <p class="text-[9px] text-purple-400 font-bold">Sc ${s.scene}</p>
+                        <p class="text-[10px] text-slate-300 truncate">${s.narration}</p>
+                    </div>
                 `;
-                container.appendChild(div);
+                p.appendChild(d);
             });
         }
 
-        function selectScene(idx) {
-            playerIndex = idx;
-            const img = document.getElementById(`img-${idx}`);
-            document.getElementById('playerImg').src = img ? img.src : 'https://placehold.co/1280x720/0d1423/334466';
-            document.getElementById('playerText').textContent = story.scenes[idx].narration;
-            document.getElementById('playerStatus').textContent = `Adegan ${idx+1}/${story.scenes.length}`;
+        function selectVideoPlayerScene(idx) {
+            if(idx < 0 || idx >= generatedStory.scenes.length) return;
+            currentActiveSceneIndex = idx;
+            const img = document.getElementById(`sc-img-${idx}`);
+            document.getElementById('player-scene-img').src = img ? img.src : '';
+            document.getElementById('player-hud-narration').innerText = generatedStory.scenes[idx].narration;
+            
+            const playerImg = document.getElementById('player-scene-img');
+            playerImg.classList.remove('animate-kenburns');
+            void playerImg.offsetWidth;
+            playerImg.classList.add('animate-kenburns');
         }
 
         function togglePlayer() {
-            if (playerTimer) {
-                clearInterval(playerTimer);
-                playerTimer = null;
-                document.getElementById('playerBtn').innerHTML = '<i class="fas fa-play"></i>';
-                document.getElementById('playerStatus').textContent = 'Berhenti';
+            if (generatedStory.scenes.length === 0) {
+                showToast("Buat naskah dulu!", "error");
                 return;
             }
-
-            if (!story.scenes || story.scenes.length === 0) {
-                showToast('Buat naskah dulu!', 'error');
-                return;
-            }
-
-            if (playerIndex >= story.scenes.length) playerIndex = 0;
-            selectScene(playerIndex);
-            document.getElementById('playerBtn').innerHTML = '<i class="fas fa-pause"></i>';
-            document.getElementById('playerStatus').textContent = 'Memutar...';
-
-            playerTimer = setInterval(() => {
-                playerIndex++;
-                if (playerIndex >= story.scenes.length) {
-                    clearInterval(playerTimer);
-                    playerTimer = null;
-                    document.getElementById('playerBtn').innerHTML = '<i class="fas fa-play"></i>';
-                    document.getElementById('playerStatus').textContent = 'Selesai';
-                    return;
-                }
-                selectScene(playerIndex);
-            }, 4500);
+            selectVideoPlayerScene(0);
         }
+
+        function seekPlayer(e) {}
 
         // ============================================================
-        // RENDER VIDEO
+        // RENDER VIDEO - TANPA TEKS
         // ============================================================
-        async function startRender() {
-            if (!story.scenes || story.scenes.length === 0) {
-                showToast('Buat naskah dan gambar dulu!', 'error');
-                return;
+        function updateRenderProgress(pct, step, desc) {
+            const rng = document.getElementById('render-progress-ring');
+            const strokeVal = 251;
+            rng.style.strokeDashoffset = strokeVal - (pct/100 * strokeVal);
+            document.getElementById('render-progress-percent').innerText = `${Math.round(pct)}%`;
+            if(step) document.getElementById('render-step-indicator').innerText = step;
+            if(desc) document.getElementById('render-step-desc').innerText = desc;
+        }
+
+        function resetRenderModalUI() {
+            document.getElementById('render-action-buttons').innerHTML = `
+                <button onclick="cancelVideoRendering()" class="w-full bg-dark-800 hover:bg-dark-700 text-slate-400 py-3 rounded-xl text-xs font-bold">
+                    Batalkan Export
+                </button>
+            `;
+            document.getElementById('render-progress-ring').style.strokeDashoffset = 251;
+            document.getElementById('render-progress-percent').innerText = "0%";
+        }
+
+        function closeRenderModal() {
+            document.getElementById('rendering-modal').classList.add('hidden');
+        }
+
+        function cancelVideoRendering() {
+            cancelRenderFlag = true;
+            isCurrentlyRendering = false;
+            closeRenderModal();
+            if(mediaRecorder) mediaRecorder.stop();
+        }
+
+        function showDownloadButtons() {
+            document.getElementById('render-step-indicator').innerText = "SUKSES DISIMPAN";
+            document.getElementById('render-step-desc').innerText = "Video Visual WebM berhasil dirakit.";
+            
+            const btnContainer = document.getElementById('render-action-buttons');
+            const cTitle = generatedStory.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').substring(0, 30) || 'video';
+            const filename = `Visual_${cTitle}.webm`;
+            
+            btnContainer.innerHTML = `
+                <div class="flex flex-col gap-2 w-full mt-2">
+                    <video src="${finalVideoBlobUrl}" controls loop autoplay class="w-full rounded-xl bg-black border border-dark-700" style="max-height: 160px; object-fit: contain;"></video>
+                    <p class="text-[9px] text-purple-400 mt-1 mb-2 font-bold bg-purple-500/10 p-2 rounded">
+                        💡 Tips: Long press video → "Save Video"
+                    </p>
+                    <button onclick="shareOrDownloadVideo('${filename}')" class="w-full btn-download text-white py-3 rounded-xl text-xs font-bold flex items-center justify-center gap-2 shadow-lg">
+                        <i class="fa-solid fa-share-nodes"></i> Bagikan / Unduh
+                    </button>
+                    <button onclick="closeRenderModal()" class="w-full bg-dark-800 text-slate-400 py-2.5 rounded-xl text-[10px] font-bold">Tutup</button>
+                </div>
+            `;
+        }
+
+        async function shareOrDownloadVideo(filename) {
+            if (navigator.share && navigator.canShare) {
+                try {
+                    const file = new File([finalVideoBlob], filename, { type: 'video/webm' });
+                    if (navigator.canShare({ files: [file] })) {
+                        await navigator.share({ files: [file], title: 'Video Studio Konten' });
+                        return;
+                    }
+                } catch(e) {}
             }
-
-            const btn = document.getElementById('btnRender');
-            btn.disabled = true;
-            btn.innerHTML = '<span class="fas fa-spinner fa-spin"></span> Render...';
-
-            document.getElementById('modalOverlay').classList.add('open');
-            document.getElementById('modalStatus').textContent = 'Memuat gambar...';
-            updateModalProgress(0);
-
-            renderCancel = false;
-            recordedChunks = [];
-            isRendering = true;
-
-            try {
-                // Load images
-                const images = [];
-                for (let i = 0; i < story.scenes.length; i++) {
-                    if (renderCancel) throw new Error('Dibatalkan');
-                    const img = document.getElementById(`img-${i}`);
-                    const src = img ? img.src : `https://placehold.co/1280x720/0a0e1a/6c5ce7?text=Scene+${i+1}`;
-                    const loaded = new Image();
-                    loaded.crossOrigin = 'anonymous';
-                    loaded.src = src;
-                    await new Promise(r => { loaded.onload = r; loaded.onerror = r; });
-                    images.push(loaded);
-                    updateModalProgress((i + 1) / story.scenes.length * 30);
-                    document.getElementById('modalStatus').textContent = `Memuat gambar ${i+1}/${story.scenes.length}`;
-                }
-
-                if (renderCancel) throw new Error('Dibatalkan');
-
-                // Setup canvas
-                const isShort = document.querySelector('input[name="format"]:checked').value === 'short';
-                const canvas = document.getElementById('renderCanvas');
-                canvas.width = isShort ? 720 : 1280;
-                canvas.height = isShort ? 1280 : 720;
-                const ctx = canvas.getContext('2d');
-
-                const stream = canvas.captureStream(30);
-                const options = { mimeType: 'video/webm;codecs=vp9' };
-                if (!MediaRecorder.isTypeSupported(options.mimeType)) {
-                    options.mimeType = 'video/webm;codecs=vp8';
-                }
-                if (!MediaRecorder.isTypeSupported(options.mimeType)) {
-                    options.mimeType = 'video/webm';
-                }
-
-                mediaRecorder = new MediaRecorder(stream, options);
-                mediaRecorder.ondataavailable = e => {
-                    if (e.data && e.data.size > 0) recordedChunks.push(e.data);
-                };
-                mediaRecorder.onstop = () => {
-                    if (!renderCancel && recordedChunks.length > 0) {
-                        const blob = new Blob(recordedChunks, { type: options.mimeType });
-                        const url = URL.createObjectURL(blob);
-                        downloadVideo(url);
-                    }
-                    isRendering = false;
-                };
-
-                mediaRecorder.start();
-
-                // Render scenes
-                for (let i = 0; i < story.scenes.length; i++) {
-                    if (renderCancel) break;
-                    document.getElementById('modalStatus').textContent = `Merekam adegan ${i+1}/${story.scenes.length}`;
-                    await renderScene(ctx, canvas, images[i], story.scenes[i].narration, i);
-                    updateModalProgress(30 + ((i + 1) / story.scenes.length) * 60);
-                }
-
-                if (renderCancel) {
-                    mediaRecorder.stop();
-                    throw new Error('Dibatalkan');
-                }
-
-                document.getElementById('modalStatus').textContent = 'Menyelesaikan...';
-                updateModalProgress(100);
-                setTimeout(() => mediaRecorder.stop(), 300);
-
-            } catch(e) {
-                if (e.message !== 'Dibatalkan') {
-                    showToast(`❌ Render gagal: ${e.message}`, 'error');
-                }
-                document.getElementById('modalOverlay').classList.remove('open');
-            } finally {
-                btn.disabled = false;
-                btn.innerHTML = '<i class="fas fa-play"></i> Mulai Render';
-            }
-        }
-
-        function renderScene(ctx, canvas, img, text, idx) {
-            return new Promise((resolve) => {
-                const duration = Math.max(text.split(' ').length * 250 + 500, 3000);
-                const start = performance.now();
-                const cw = canvas.width;
-                const ch = canvas.height;
-                const isV = cw < ch;
-
-                function frame(time) {
-                    if (renderCancel) { resolve(); return; }
-                    const elapsed = time - start;
-                    if (elapsed >= duration) { resolve(); return; }
-
-                    const scale = 1 + 0.04 * (elapsed / duration);
-                    ctx.clearRect(0, 0, cw, ch);
-                    
-                    ctx.save();
-                    ctx.translate(cw/2, ch/2);
-                    ctx.scale(scale, scale);
-                    ctx.translate(-cw/2, -ch/2);
-                    ctx.drawImage(img, 0, 0, cw, ch);
-                    ctx.restore();
-
-                    const grad = ctx.createLinearGradient(0, ch - (isV ? 300 : 200), 0, ch);
-                    grad.addColorStop(0, 'transparent');
-                    grad.addColorStop(1, 'rgba(0,0,0,0.85)');
-                    ctx.fillStyle = grad;
-                    ctx.fillRect(0, ch - (isV ? 300 : 200), cw, isV ? 300 : 200);
-
-                    ctx.textAlign = 'center';
-                    ctx.textBaseline = 'bottom';
-                    const fontSize = isV ? Math.min(cw / 18, 40) : Math.min(cw / 24, 48);
-                    ctx.font = `bold ${fontSize}px 'Segoe UI', system-ui, sans-serif`;
-                    ctx.shadowColor = 'rgba(0,0,0,0.9)';
-                    ctx.shadowBlur = 12;
-                    ctx.fillStyle = '#ffffff';
-                    
-                    const maxW = cw * 0.85;
-                    const words = text.split(' ');
-                    let line = '';
-                    let lines = [];
-                    for (let w of words) {
-                        const test = line + w + ' ';
-                        if (ctx.measureText(test).width > maxW && line) {
-                            lines.push(line.trim());
-                            line = w + ' ';
-                        } else {
-                            line = test;
-                        }
-                    }
-                    lines.push(line.trim());
-
-                    const lineHeight = fontSize * 1.3;
-                    let y = ch - (isV ? 50 : 40) - ((lines.length - 1) * lineHeight);
-                    for (let l of lines) {
-                        ctx.fillText(l, cw/2, y);
-                        y += lineHeight;
-                    }
-
-                    ctx.shadowBlur = 0;
-                    requestAnimationFrame(frame);
-                }
-                requestAnimationFrame(frame);
-            });
-        }
-
-        function updateModalProgress(pct) {
-            const ring = document.getElementById('modalRing');
-            const circumference = 220;
-            ring.style.strokeDashoffset = circumference - (pct / 100) * circumference;
-            document.getElementById('modalPct').textContent = `${Math.round(pct)}%`;
-        }
-
-        function downloadVideo(url) {
-            document.getElementById('modalOverlay').classList.remove('open');
-            showToast('✅ Video selesai dirender!', 'success');
             
             const a = document.createElement('a');
-            a.href = url;
-            a.download = `video_${Date.now()}.webm`;
+            a.href = finalVideoBlobUrl;
+            a.download = filename;
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
-            
-            document.getElementById('playerImg').src = url;
-            document.getElementById('playerText').textContent = '🎬 Video siap diputar!';
         }
 
-        function cancelRender() {
-            renderCancel = true;
-            if (mediaRecorder && mediaRecorder.state === 'recording') {
-                mediaRecorder.stop();
+        async function startVideoRenderingProcess() {
+            if (generatedStory.scenes.length === 0) return showToast("Buat naskah dulu!", "error");
+
+            cancelRenderFlag = false;
+            isCurrentlyRendering = true;
+            recordedChunks = [];
+            finalVideoBlobUrl = null;
+            finalVideoBlob = null;
+            
+            const modal = document.getElementById('rendering-modal');
+            resetRenderModalUI();
+            modal.classList.remove('hidden');
+
+            updateRenderProgress(5, "LANGKAH 1/3 (MEMUAT)", "Memuat gambar ke memori...");
+            const preloadedImages = [];
+            for (let i = 0; i < generatedStory.scenes.length; i++) {
+                if (cancelRenderFlag) return;
+                
+                const imgCard = document.getElementById(`sc-img-${i}`);
+                const src = imgCard ? imgCard.src : `https://placehold.co/1280x720/0a0f1d/6c5ce7?text=A${i+1}`;
+                
+                const imgObj = new Image();
+                imgObj.crossOrigin = "anonymous";
+                imgObj.src = src;
+                
+                await new Promise(r => { imgObj.onload = r; imgObj.onerror = r; });
+                preloadedImages.push(imgObj);
+                
+                updateRenderProgress(5 + ((i+1)/generatedStory.scenes.length)*15, "LANGKAH 1/3 (MEMUAT)", `Memuat ${i+1}/${generatedStory.scenes.length}...`);
             }
-            document.getElementById('modalOverlay').classList.remove('open');
-            showToast('⏹️ Render dibatalkan', 'warn');
+
+            if (cancelRenderFlag) return;
+            updateRenderProgress(25, "LANGKAH 2/3 (INISIALISASI)", "Menghangatkan kanvas...");
+
+            const isV = document.querySelector('input[name="video-duration"]:checked').value === "short";
+            renderCanvas = document.getElementById('offscreen-render-canvas');
+            renderCanvas.width = isV ? 720 : 1280;
+            renderCanvas.height = isV ? 1280 : 720;
+            renderCtx = renderCanvas.getContext('2d');
+
+            recordStream = renderCanvas.captureStream(30);
+            
+            let vOpts = { mimeType: 'video/webm;codecs=vp9' };
+            if(!MediaRecorder.isTypeSupported(vOpts.mimeType)) vOpts = { mimeType: 'video/webm;codecs=vp8' };
+            if(!MediaRecorder.isTypeSupported(vOpts.mimeType)) vOpts = { mimeType: 'video/webm' };
+
+            try { 
+                mediaRecorder = new MediaRecorder(recordStream, vOpts); 
+            } catch(e) { 
+                return showToast("Perekam tidak didukung.", "error"); 
+            }
+
+            mediaRecorder.ondataavailable = e => { 
+                if (e.data && e.data.size > 0) recordedChunks.push(e.data); 
+            };
+            mediaRecorder.onstop = () => {
+                if(cancelRenderFlag) return;
+                updateRenderProgress(100, "LANGKAH 3/3 (SELESAI)", "Berkas final siap.");
+                finalVideoBlob = new Blob(recordedChunks, { type: vOpts.mimeType });
+                finalVideoBlobUrl = URL.createObjectURL(finalVideoBlob);
+                showDownloadButtons();
+                showToast("Video Berhasil!", "success");
+            };
+
+            mediaRecorder.start();
+            processScenePerekaman(0, preloadedImages); 
+        }
+
+        // ============================================================
+        // RENDER PER SCENE - TANPA TEKS (HANYA GAMBAR + ZOOM)
+        // ============================================================
+        async function processScenePerekaman(sIdx, preloadedImages) {
+            if (cancelRenderFlag || !isCurrentlyRendering) return;
+            const tScenes = generatedStory.scenes.length;
+
+            if (sIdx >= tScenes) { 
+                mediaRecorder.stop(); 
+                return; 
+            }
+
+            const sData = generatedStory.scenes[sIdx];
+            const imgSource = preloadedImages[sIdx];
+            
+            const stepNum = 25 + ((sIdx + 1) / tScenes) * 70;
+            updateRenderProgress(stepNum, `LANGKAH 3/3 (MEREKAM ${sIdx + 1}/${tScenes})`, `Animasi gambar...`);
+
+            let startT = performance.now();
+            let duration = 3500;
+
+            function renderFrame(time) {
+                if (cancelRenderFlag) return;
+                const elapsed = time - startT;
+
+                if (elapsed >= duration) {
+                    processScenePerekaman(sIdx + 1, preloadedImages);
+                    return;
+                }
+
+                const cW = renderCanvas.width;
+                const cH = renderCanvas.height;
+
+                const scale = 1.0 + (0.05 * (elapsed / duration));
+
+                renderCtx.clearRect(0, 0, cW, cH);
+                renderCtx.save();
+                renderCtx.translate(cW/2, cH/2);
+                renderCtx.scale(scale, scale);
+                renderCtx.translate(-cW/2, -cH/2);
+                renderCtx.drawImage(imgSource, 0, 0, cW, cH);
+                renderCtx.restore();
+
+                // TIDAK ADA TEKS DI SINI
+
+                requestAnimationFrame(renderFrame);
+            }
+            requestAnimationFrame(renderFrame);
+        }
+
+        // ============================================================
+        // SWITCH TAB
+        // ============================================================
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+
+            const navIds = ['nav-ideasi', 'nav-suara', 'nav-visual', 'nav-render'];
+            navIds.forEach(id => {
+                const btn = document.getElementById(id);
+                const target = tabId.split('-')[1];
+                const btnTarget = id.split('-')[1];
+                if (btnTarget === target) {
+                    btn.className = "flex-shrink-0 w-auto md:w-full flex items-center gap-2 md:gap-3 px-4 py-2.5 md:py-3 rounded-xl transition-all text-xs md:text-sm font-semibold text-left text-purple-400 bg-purple-500/10 border border-purple-500/30";
+                } else {
+                    btn.className = "flex-shrink-0 w-auto md:w-full flex items-center gap-2 md:gap-3 px-4 py-2.5 md:py-3 rounded-xl text-slate-400 hover:bg-dark-800/50 hover:text-white transition-all text-xs md:text-sm font-semibold text-left border border-transparent";
+                }
+            });
         }
 
         // ============================================================
         // INIT
         // ============================================================
         window.onload = function() {
-            const saved = localStorage.getItem('openrouter_key');
-            if (saved) {
-                document.getElementById('apiKey').value = saved;
-                if (saved.startsWith('sk-or-v1-')) {
-                    updateAPIStatus(null, 'Mengambil model...');
-                    setTimeout(() => {
-                        testAPI();
-                    }, 500);
-                } else {
-                    updateAPIStatus(false, 'Format key salah! Harus sk-or-v1-...');
-                }
-            } else {
-                updateAPIStatus(false, 'Masukkan API Key');
-                showToast('🔑 Masukkan API Key OpenRouter di sidebar', 'info');
-            }
-
+            populateVoiceSelect();
             if (window.speechSynthesis.onvoiceschanged !== undefined) {
-                window.speechSynthesis.onvoiceschanged = () => {};
+                window.speechSynthesis.onvoiceschanged = populateVoiceSelect;
+            }
+            adjustPlayerAspect();
+            initStylePresets();
+            toggleProvider();
+            
+            const savedOpenRouter = localStorage.getItem('openrouter_key');
+            if (savedOpenRouter) {
+                document.getElementById('openrouter-api-key').value = savedOpenRouter;
+                if (savedOpenRouter.startsWith('sk-or-v1-')) {
+                    setTimeout(() => {
+                        testOpenRouterKey();
+                    }, 500);
+                }
+            }
+            
+            const savedGemini = localStorage.getItem('gemini_key');
+            if (savedGemini) {
+                document.getElementById('gemini-api-key').value = savedGemini;
             }
 
-            console.log('🎬 Studio Konten Pro - FINAL VERSION');
-            console.log('📌 Fitur: Riset | Naskah | TTS | Gambar | Video');
-            console.log('📌 Model akan otomatis diambil dari akun Anda');
+            if (!savedOpenRouter && !savedGemini) {
+                showToast("🔑 Masukkan API Key OpenRouter di sidebar", "info");
+                document.getElementById('api-settings').classList.remove('hidden');
+            }
         };
-    </script>
 
+        console.log("🎬 Studio Konten Pro - Full Version");
+        console.log("📌 Fitur: Riset | Naskah | TTS | Gambar | Video (tanpa teks)");
+        console.log("📌 Download audio: WebSpeech (rekaman langsung) atau Gemini (wav)");
+    </script>
 </body>
 </html>
