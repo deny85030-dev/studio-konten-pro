@@ -114,9 +114,37 @@
         .password-toggle { position:absolute; right:12px; top:50%; transform:translateY(-50%); color:#667799; cursor:pointer; background:none; border:none; font-size:16px; }
         .password-toggle:hover { color:#a855f7; }
         
-        /* Style untuk progress ring */
         .progress-ring { transform: rotate(-90deg); }
         .progress-ring circle { transition: stroke-dashoffset 0.35s; }
+
+        .download-progress {
+            position: fixed;
+            bottom: 80px;
+            right: 20px;
+            z-index: 99998;
+            background: rgba(13,20,35,0.95);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 16px;
+            padding: 16px 20px;
+            min-width: 280px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.8);
+            display: none;
+        }
+        .download-progress.show { display: block; animation: fadeIn 0.3s ease; }
+        .download-progress .progress-bar {
+            height: 4px;
+            background: #1f2937;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 8px;
+        }
+        .download-progress .progress-bar .fill {
+            height: 100%;
+            background: linear-gradient(90deg, #6c5ce7, #a855f7);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
     </style>
 </head>
 <body>
@@ -154,12 +182,24 @@
                 <br>
                 <span style="font-size:11px; color:#445566;">(WhatsApp / Telepon)</span>
             </div>
-            <div class="version">v2.1 • by Kreatorpedia</div>
+            <div class="version">v2.2 • by Kreatorpedia</div>
         </div>
     </div>
 
     <!-- TOAST -->
     <div id="toast-container"></div>
+
+    <!-- DOWNLOAD PROGRESS -->
+    <div id="downloadProgress" class="download-progress">
+        <div class="flex justify-between items-center">
+            <span class="text-xs font-bold text-white" id="downloadStatus">Menggabungkan Audio...</span>
+            <span class="text-xs text-purple-400 font-bold" id="downloadPercent">0%</span>
+        </div>
+        <div class="progress-bar">
+            <div class="fill" id="downloadProgressFill"></div>
+        </div>
+        <p class="text-[9px] text-slate-400 mt-2" id="downloadDetail">Memproses potongan audio...</p>
+    </div>
 
     <!-- MAIN APP -->
     <div id="mainApp" class="flex flex-col md:flex-row h-screen w-full overflow-hidden select-none">
@@ -423,9 +463,12 @@
                                             <i class="fa-solid fa-stop"></i> Henti
                                         </button>
                                     </div>
-                                    <div class="mt-4 pt-4 border-t border-dark-800">
+                                    <div class="mt-4 pt-4 border-t border-dark-800 space-y-2">
                                         <button onclick="downloadAllAudio()" id="btn-download-audio" class="w-full btn-download text-white py-3 px-4 rounded-xl text-xs font-bold flex items-center justify-center gap-2 shadow-lg">
-                                            <i class="fa-solid fa-download"></i> Unduh Suara Gabungan
+                                            <i class="fa-solid fa-download"></i> Unduh Semua Audio (Gabungan)
+                                        </button>
+                                        <button onclick="downloadAudioPerScene()" id="btn-download-per-scene" class="w-full bg-purple-600 hover:bg-purple-500 text-white py-3 px-4 rounded-xl text-xs font-bold flex items-center justify-center gap-2 shadow-lg">
+                                            <i class="fa-solid fa-scissors"></i> Unduh Per Adegan (Potongan)
                                         </button>
                                         <p id="download-hint" class="text-[8px] text-amber-400 text-center mt-1 hidden">💡 Dengan WebSpeech, unduh sebagai teks (.txt). Pilih Gemini untuk file WAV.</p>
                                     </div>
@@ -479,7 +522,7 @@
                     </div>
                 </section>
 
-                <!-- TAB 4: Render - DIPERBAIKI -->
+                <!-- TAB 4: Render -->
                 <section id="tab-render" class="tab-content space-y-4 md:space-y-6">
                     <div class="glass-panel p-4 md:p-6 rounded-2xl border border-dark-800 space-y-5">
                         <div class="flex flex-col md:flex-row md:items-center justify-between border-b border-dark-800 pb-4 gap-4">
@@ -507,6 +550,22 @@
                                 <p class="text-[9px] text-slate-500 mt-1">
                                     <i class="fa-solid fa-info-circle"></i> Durasi video otomatis mengikuti total durasi narasi dari TTS
                                 </p>
+                            </div>
+                        </div>
+
+                        <!-- Tambahan: Gabungkan Audio & Video -->
+                        <div class="bg-dark-900/50 border border-emerald-500/30 rounded-xl p-4 flex gap-3 items-start md:items-center">
+                            <div class="w-8 h-8 md:w-10 md:h-10 rounded-full bg-emerald-500/20 flex items-center justify-center text-emerald-400 flex-shrink-0 mt-1 md:mt-0">
+                                <i class="fa-solid fa-merge"></i>
+                            </div>
+                            <div class="flex-1">
+                                <p class="text-[10px] md:text-xs text-slate-300 leading-relaxed">
+                                    <strong class="text-white">Gabungkan Audio & Video:</strong> 
+                                    <span class="text-slate-400">Buat video final dengan suara narasi</span>
+                                </p>
+                                <button onclick="mergeAudioVideo()" class="mt-2 bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2">
+                                    <i class="fa-solid fa-merge"></i> Gabung Audio + Video
+                                </button>
                             </div>
                         </div>
 
@@ -555,7 +614,7 @@
         </main>
     </div>
 
-    <!-- MODAL RENDER - DIPERBAIKI -->
+    <!-- MODAL RENDER -->
     <div id="rendering-modal" class="fixed inset-0 bg-black/95 backdrop-filter backdrop-blur-md z-50 flex items-center justify-center hidden">
         <div class="glass-panel w-full max-w-sm md:max-w-lg p-6 md:p-8 rounded-3xl border border-dark-800 shadow-2xl text-center space-y-5 mx-4 relative">
             <div class="absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-transparent via-purple-500 to-transparent"></div>
@@ -713,7 +772,6 @@
             }
         }
 
-        // Toggle password visibility
         document.addEventListener('DOMContentLoaded', function() {
             const toggleLogin = document.getElementById('togglePasswordBtn');
             const loginPass = document.getElementById('passwordInput');
@@ -775,6 +833,9 @@
         let cancelRenderFlag = false;
         let finalVideoBlobUrl = null;
         let finalVideoBlob = null;
+        let finalAudioBlob = null;
+        let finalMergedBlob = null;
+        let finalMergedUrl = null;
 
         // VARIABEL DURASI AUDIO
         let audioDurationTotal = 0;
@@ -847,7 +908,6 @@
             return null;
         }
 
-        // ===== API KEY FUNCTIONS =====
         const FALLBACK_MODELS = [
             { id: 'openrouter/free', label: 'openrouter/free' },
             { id: 'deepseek/deepseek-r1:free', label: 'deepseek-r1:free' },
@@ -1132,7 +1192,6 @@
             buildStoryboardGrid(parsed.scenes);
             buildRenderPlaylist(parsed.scenes);
             document.getElementById('metadata-container').classList.remove('hidden');
-            // Update durasi setelah naskah dibuat
             updateDurationDisplay();
         }
 
@@ -1188,14 +1247,10 @@
             let totalDuration = 0;
             perSceneDurations = [];
             
-            // Perkiraan durasi berdasarkan jumlah kata (rata-rata 3 kata/detik untuk bahasa Indonesia)
             generatedStory.scenes.forEach((s, i) => {
                 const wordCount = s.narration.split(/\s+/).length;
-                // Estimasi durasi: 0.3 detik per kata + 0.8 detik jeda antar kalimat
                 let estimatedDuration = (wordCount * 0.3) + 0.8;
-                // Minimal 1.5 detik per adegan
                 estimatedDuration = Math.max(estimatedDuration, 1.5);
-                // Maksimal 10 detik per adegan
                 estimatedDuration = Math.min(estimatedDuration, 10);
                 perSceneDurations[i] = estimatedDuration;
                 totalDuration += estimatedDuration;
@@ -1307,6 +1362,118 @@
             showToast("⏹️ Audio dihentikan", "info");
         }
 
+        // ===== PERBAIKAN: DOWNLOAD AUDIO PER POTONGAN =====
+        async function downloadAudioPerScene() {
+            if (!generatedStory.scenes || generatedStory.scenes.length === 0) {
+                showToast("Buat naskah dulu!", "error");
+                return;
+            }
+
+            const provider = document.getElementById('audio-provider-select').value;
+            
+            if (provider === 'webspeech') {
+                // Untuk WebSpeech, unduh sebagai teks per scene
+                try {
+                    const zip = [];
+                    generatedStory.scenes.forEach((s, i) => {
+                        zip.push(`=== ADEGAN ${i+1} ===\n${s.narration}\n`);
+                    });
+                    const content = zip.join('\n');
+                    const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `Narasi_Per_Adegan_${Date.now()}.txt`;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    showToast("✅ Teks per adegan berhasil diunduh!", "success");
+                } catch (e) {
+                    showToast(`❌ Gagal: ${e.message}`, "error");
+                }
+                return;
+            }
+
+            // GEMINI: Unduh per potongan audio
+            showDownloadProgress(true, "Memproses potongan audio...", 0);
+            
+            try {
+                const audioBlobs = [];
+                let totalScenes = generatedStory.scenes.length;
+                
+                for (let i = 0; i < totalScenes; i++) {
+                    const progress = ((i) / totalScenes) * 100;
+                    showDownloadProgress(true, `Memproses Adegan ${i+1}/${totalScenes}...`, progress);
+                    
+                    try {
+                        const audioData = await getGeminiTTSAudio(i, generatedStory.scenes[i].narration);
+                        // Buat WAV dari PCM
+                        const wavBlob = pcmToWav(audioData.pcm, audioData.sampleRate);
+                        audioBlobs.push({
+                            blob: wavBlob,
+                            scene: i + 1,
+                            text: generatedStory.scenes[i].narration.substring(0, 30) + '...'
+                        });
+                    } catch (e) {
+                        console.warn(`Gagal scene ${i+1}:`, e);
+                        showToast(`⚠️ Scene ${i+1} gagal, dilewati`, 'warn');
+                    }
+                }
+                
+                showDownloadProgress(true, "Membuat arsip zip...", 90);
+                
+                // Buat ZIP sederhana dengan JSZip jika tersedia, atau unduh satu per satu
+                if (typeof JSZip !== 'undefined') {
+                    // Gunakan JSZip jika tersedia
+                    try {
+                        const zip = new JSZip();
+                        audioBlobs.forEach((item, idx) => {
+                            zip.file(`Adegan_${item.scene}_${Date.now()}.wav`, item.blob);
+                        });
+                        const zipBlob = await zip.generateAsync({ type: 'blob' });
+                        const url = URL.createObjectURL(zipBlob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = `Audio_Per_Adegan_${Date.now()}.zip`;
+                        document.body.appendChild(a);
+                        a.click();
+                        document.body.removeChild(a);
+                        showToast(`✅ ${audioBlobs.length} audio selesai diunduh!`, "success");
+                    } catch (e) {
+                        // Fallback: unduh satu per satu
+                        downloadAudioOneByOne(audioBlobs);
+                    }
+                } else {
+                    // Tanpa JSZip, unduh satu per satu dengan delay
+                    downloadAudioOneByOne(audioBlobs);
+                }
+                
+                showDownloadProgress(false);
+                
+            } catch (e) {
+                showDownloadProgress(false);
+                showToast(`❌ Gagal: ${e.message}`, "error");
+            }
+        }
+
+        function downloadAudioOneByOne(audioBlobs) {
+            showToast(`📦 Mengunduh ${audioBlobs.length} file audio...`, "info");
+            audioBlobs.forEach((item, idx) => {
+                setTimeout(() => {
+                    const url = URL.createObjectURL(item.blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `Adegan_${item.scene}_${Date.now()}.wav`;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    setTimeout(() => URL.revokeObjectURL(url), 5000);
+                }, idx * 500);
+            });
+            showToast(`✅ ${audioBlobs.length} file audio diunduh!`, "success");
+        }
+
+        // ===== FUNGSI DOWNLOAD GABUNGAN (DIPERBAIKI) =====
         async function downloadAllAudio() {
             if (!generatedStory.scenes || generatedStory.scenes.length === 0) {
                 showToast("Buat naskah dulu!", "error");
@@ -1336,44 +1503,235 @@
                 return;
             }
 
-            // --- GEMINI TTS: unduh WAV ---
+            // GEMINI: Gabungkan semua audio
+            showDownloadProgress(true, "Menggabungkan audio...", 0);
+            
             try {
-                showToast("🎵 Menggabungkan audio Gemini...", "info");
-                let sr = 24000,
-                    pcms = [];
-                for (let i = 0; i < generatedStory.scenes.length; i++) {
+                let sr = 24000;
+                let allPcm = [];
+                let totalScenes = generatedStory.scenes.length;
+                
+                for (let i = 0; i < totalScenes; i++) {
+                    const progress = ((i) / totalScenes) * 100;
+                    showDownloadProgress(true, `Memproses Adegan ${i+1}/${totalScenes}...`, progress);
+                    
                     try {
                         const d = await getGeminiTTSAudio(i, generatedStory.scenes[i].narration);
-                        pcms.push(d.pcm);
+                        allPcm.push(d.pcm);
                         sr = d.sampleRate;
                     } catch (e) {
                         console.warn(`Gemini gagal untuk scene ${i+1}, skip`, e);
+                        showToast(`⚠️ Scene ${i+1} gagal, dilewati`, 'warn');
                     }
                 }
-                if (pcms.length === 0) {
-                    showToast('⚠️ Gemini gagal untuk semua scene. Periksa API Key atau coba lagi.', 'error');
+                
+                if (allPcm.length === 0) {
+                    showDownloadProgress(false);
+                    showToast('⚠️ Gemini gagal untuk semua scene.', 'error');
                     return;
                 }
-                const totalLength = pcms.reduce((sum, p) => sum + p.length, 0);
+                
+                showDownloadProgress(true, "Menggabungkan potongan audio...", 80);
+                
+                // Gabungkan semua PCM
+                const totalLength = allPcm.reduce((sum, p) => sum + p.length, 0);
                 const merged = new Int16Array(totalLength);
                 let offset = 0;
-                pcms.forEach(p => {
+                allPcm.forEach(p => {
                     merged.set(p, offset);
                     offset += p.length;
                 });
-                const url = URL.createObjectURL(pcmToWav(merged, sr));
+                
+                // Buat WAV
+                const wavBlob = pcmToWav(merged, sr);
+                finalAudioBlob = wavBlob;
+                
+                showDownloadProgress(true, "Menyimpan file...", 95);
+                
+                const url = URL.createObjectURL(wavBlob);
                 const a = document.createElement('a');
                 a.href = url;
-                a.download = `Audio_Narasi_${Date.now()}.wav`;
+                a.download = `Audio_Gabungan_${Date.now()}.wav`;
                 document.body.appendChild(a);
                 a.click();
                 document.body.removeChild(a);
-                showToast("✅ Audio WAV berhasil diunduh!", "success");
+                setTimeout(() => URL.revokeObjectURL(url), 5000);
+                
+                showDownloadProgress(false);
+                showToast("✅ Audio gabungan WAV berhasil diunduh!", "success");
             } catch (e) {
-                showToast(`⚠️ Gemini gagal: ${e.message}`, 'error');
+                showDownloadProgress(false);
+                showToast(`⚠️ Gagal: ${e.message}`, 'error');
             }
         }
 
+        // ===== FUNGSI GABUNG AUDIO + VIDEO =====
+        async function mergeAudioVideo() {
+            if (!generatedStory.scenes || generatedStory.scenes.length === 0) {
+                showToast("Buat naskah dulu!", "error");
+                return;
+            }
+            
+            const provider = document.getElementById('audio-provider-select').value;
+            if (provider !== 'gemini') {
+                showToast("⚠️ Fitur gabung audio+video hanya tersedia dengan Gemini TTS", "warn");
+                return;
+            }
+            
+            // Cek apakah video sudah dirender
+            if (!finalVideoBlob) {
+                showToast("⚠️ Render video dulu di Langkah 4!", "error");
+                return;
+            }
+            
+            // Cek apakah audio sudah digabung
+            if (!finalAudioBlob) {
+                showToast("⚠️ Unduh audio gabungan dulu (tombol 'Unduh Semua Audio')!", "error");
+                return;
+            }
+            
+            showDownloadProgress(true, "Menggabungkan Audio & Video...", 0);
+            
+            try {
+                // Gunakan Web Audio API untuk menggabungkan audio dan video
+                const videoUrl = URL.createObjectURL(finalVideoBlob);
+                const audioUrl = URL.createObjectURL(finalAudioBlob);
+                
+                // Buat elemen video dan audio tersembunyi
+                const videoEl = document.createElement('video');
+                const audioEl = document.createElement('audio');
+                
+                videoEl.src = videoUrl;
+                audioEl.src = audioUrl;
+                
+                await new Promise((resolve) => {
+                    videoEl.onloadedmetadata = resolve;
+                    videoEl.load();
+                });
+                
+                await new Promise((resolve) => {
+                    audioEl.onloadedmetadata = resolve;
+                    audioEl.load();
+                });
+                
+                showDownloadProgress(true, "Menggabungkan track...", 30);
+                
+                // Gunakan MediaStream untuk menggabungkan
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                canvas.width = videoEl.videoWidth || 1280;
+                canvas.height = videoEl.videoHeight || 720;
+                
+                // Setup MediaRecorder untuk menggabungkan
+                const stream = canvas.captureStream(30);
+                
+                // Tambahkan audio dari audioEl ke stream
+                const audioContext = new AudioContext();
+                const audioSource = audioContext.createMediaElementSource(audioEl);
+                const destination = audioContext.createMediaStreamDestination();
+                audioSource.connect(destination);
+                
+                // Gabungkan audio ke stream video
+                const combinedStream = new MediaStream([
+                    ...stream.getTracks(),
+                    ...destination.stream.getTracks()
+                ]);
+                
+                const mergedDuration = Math.max(videoEl.duration, audioEl.duration);
+                
+                let vOpts = { mimeType: 'video/webm;codecs=vp9' };
+                if (!MediaRecorder.isTypeSupported(vOpts.mimeType)) {
+                    vOpts = { mimeType: 'video/webm;codecs=vp8' };
+                }
+                if (!MediaRecorder.isTypeSupported(vOpts.mimeType)) {
+                    vOpts = { mimeType: 'video/webm' };
+                }
+                
+                const recorder = new MediaRecorder(combinedStream, vOpts);
+                const chunks = [];
+                
+                recorder.ondataavailable = (e) => {
+                    if (e.data && e.data.size > 0) chunks.push(e.data);
+                };
+                
+                recorder.onstop = () => {
+                    const blob = new Blob(chunks, { type: vOpts.mimeType });
+                    finalMergedBlob = blob;
+                    finalMergedUrl = URL.createObjectURL(blob);
+                    
+                    // Unduh otomatis
+                    const a = document.createElement('a');
+                    a.href = finalMergedUrl;
+                    a.download = `Video_Audio_${Date.now()}.webm`;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    
+                    showDownloadProgress(false);
+                    showToast("✅ Video + Audio berhasil digabung!", "success");
+                };
+                
+                recorder.start();
+                showDownloadProgress(true, "Merekam gabungan...", 50);
+                
+                // Play video dan audio
+                audioEl.play();
+                videoEl.play();
+                
+                // Render frame video ke canvas
+                const startTime = Date.now();
+                let lastFrameTime = 0;
+                
+                function renderFrame() {
+                    const elapsed = (Date.now() - startTime) / 1000;
+                    const progress = Math.min(elapsed / mergedDuration, 1);
+                    
+                    ctx.drawImage(videoEl, 0, 0, canvas.width, canvas.height);
+                    
+                    // Update progress
+                    const pct = 50 + (progress * 40);
+                    showDownloadProgress(true, `Merekam ${Math.round(progress * 100)}%...`, pct);
+                    
+                    if (progress < 1 && !videoEl.paused) {
+                        requestAnimationFrame(renderFrame);
+                    } else {
+                        // Selesai
+                        showDownloadProgress(true, "Finalisasi...", 95);
+                        recorder.stop();
+                        videoEl.pause();
+                        audioEl.pause();
+                        setTimeout(() => {
+                            audioContext.close();
+                        }, 1000);
+                    }
+                }
+                
+                // Tunggu video mulai diputar
+                setTimeout(renderFrame, 100);
+                
+            } catch (e) {
+                showDownloadProgress(false);
+                showToast(`❌ Gagal menggabung: ${e.message}`, "error");
+                console.error(e);
+            }
+        }
+
+        // ===== PROGRESS BAR DOWNLOAD =====
+        function showDownloadProgress(show, status, percent) {
+            const el = document.getElementById('downloadProgress');
+            if (!show) {
+                el.classList.remove('show');
+                return;
+            }
+            el.classList.add('show');
+            if (status) document.getElementById('downloadStatus').textContent = status;
+            if (percent !== undefined) {
+                document.getElementById('downloadPercent').textContent = Math.round(percent) + '%';
+                document.getElementById('downloadProgressFill').style.width = Math.round(percent) + '%';
+            }
+        }
+
+        // ===== FUNGSI GEMINI TTS =====
         async function getGeminiTTSAudio(idx, txt) {
             if (geminiAudioCache[idx]) return geminiAudioCache[idx];
             const v = document.getElementById('gemini-voice-select').value;
@@ -1444,7 +1802,7 @@
             }
         }
 
-        // ----- Fungsi Visual (serentak) -----
+        // ----- Fungsi Visual -----
         function initStylePresets() {
             const container = document.getElementById('stylePresetsContainer');
             container.innerHTML = '';
@@ -1727,13 +2085,12 @@
             document.body.removeChild(a);
         }
 
-        // ===== PROSES RENDER VIDEO YANG DIPERBAIKI =====
+        // ===== PROSES RENDER VIDEO =====
         async function startVideoRenderingProcess() {
             if (generatedStory.scenes.length === 0) {
                 return showToast("Buat naskah dulu!", "error");
             }
             
-            // Hitung durasi audio terlebih dahulu
             const totalAudioDuration = calculateAudioDuration();
             
             cancelRenderFlag = false;
@@ -1746,13 +2103,11 @@
             resetRenderModalUI();
             modal.classList.remove('hidden');
             
-            // Tampilkan informasi durasi di modal
             document.getElementById('render-audio-duration').textContent = totalAudioDuration.toFixed(1) + 's';
             document.getElementById('render-video-duration').textContent = totalAudioDuration.toFixed(1) + 's';
             
             updateRenderProgress(5, "LANGKAH 1/4 (MEMUAT)", "Memuat gambar ke memori...");
             
-            // Preload semua gambar
             const preloadedImages = [];
             for (let i = 0; i < generatedStory.scenes.length; i++) {
                 if (cancelRenderFlag) return;
@@ -1778,7 +2133,6 @@
             renderCanvas.height = isV ? 1280 : 720;
             renderCtx = renderCanvas.getContext('2d');
             
-            // Setup MediaRecorder
             recordStream = renderCanvas.captureStream(30);
             let vOpts = { mimeType: 'video/webm;codecs=vp9' };
             if (!MediaRecorder.isTypeSupported(vOpts.mimeType)) {
@@ -1811,7 +2165,6 @@
             mediaRecorder.start();
             updateRenderProgress(25, "LANGKAH 3/4 (MEREKAM)", "Merekam video...");
             
-            // Proses perekaman dengan durasi per scene dari perhitungan audio
             processSceneRekaman(0, preloadedImages, totalAudioDuration);
         }
 
@@ -1825,10 +2178,8 @@
             }
             
             const imgSource = preloadedImages[sIdx];
-            // Gunakan durasi yang sudah dihitung per scene
             const sceneDuration = perSceneDurations[sIdx] || 3.5;
             
-            // Update progress
             const progressStart = 25;
             const progressEnd = 95;
             const currentProgress = progressStart + ((sIdx + 1) / tScenes) * (progressEnd - progressStart);
@@ -1837,7 +2188,7 @@
                 `Adegan ${sIdx+1}: ${sceneDuration.toFixed(1)} detik`);
             
             let startT = performance.now();
-            const durationMs = sceneDuration * 1000; // Konversi ke milidetik
+            const durationMs = sceneDuration * 1000;
             
             function renderFrame(time) {
                 if (cancelRenderFlag) {
@@ -1846,14 +2197,12 @@
                 }
                 const elapsed = time - startT;
                 if (elapsed >= durationMs) {
-                    // Lanjut ke scene berikutnya
                     processSceneRekaman(sIdx + 1, preloadedImages, totalDuration);
                     return;
                 }
                 
                 const cW = renderCanvas.width;
                 const cH = renderCanvas.height;
-                // Efek zoom lambat (ken burns effect)
                 const progress = elapsed / durationMs;
                 const scale = 1.0 + (0.06 * progress);
                 
@@ -1865,7 +2214,6 @@
                 renderCtx.drawImage(imgSource, 0, 0, cW, cH);
                 renderCtx.restore();
                 
-                // Opsional: tambahkan efek fade in/out halus di awal/akhir scene
                 if (progress < 0.05) {
                     const alpha = progress / 0.05;
                     renderCtx.fillStyle = `rgba(0,0,0,${1-alpha})`;
@@ -1919,7 +2267,7 @@
             if (savedGemini) {
                 document.getElementById('gemini-api-key').value = savedGemini;
             }
-            console.log("🎬 Studio Konten Pro v2.1 - Full Version siap.");
+            console.log("🎬 Studio Konten Pro v2.2 - Full Version siap.");
         }
     </script>
 </body>
